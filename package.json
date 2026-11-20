@@ -4,6 +4,7 @@
   "description": "Private, PIN-Protected Multi-Page Birthday Experience for Ma'am",
   "main": "server.js",
   "scripts": {
+    "build": "node build.js",
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
