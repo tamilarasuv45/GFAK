@@ -51,5 +51,18 @@ Visit **http://localhost:3000** in your browser.
 
 ---
 
+## 🌐 Deploy to Render (Free Cloud Hosting)
+
+1. Log in to [render.com](https://render.com) and click **New +** > **Web Service**.
+2. Connect your GitHub repository: `https://github.com/tamilarasuv45/GFAK`.
+3. Set the build and start settings:
+   - **Runtime**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `node server.js`
+   - **Instance Type**: `Free`
+4. Click **Deploy Web Service**. Render will generate a live HTTPS URL (e.g., `https://skyward-ambition.onrender.com`).
+
+---
+
 ## 🛡️ Security Note
 All sensitive clearance PINs and puzzle solution validations are handled via salted cryptographic hashes (`crypto.createHash('sha256')`) and timing-safe comparisons to prevent unauthorized bypass.
