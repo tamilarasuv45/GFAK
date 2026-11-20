@@ -1,0 +1,29 @@
+{
+  "name": "skyward-ambition-birthday",
+  "version": "2.0.0",
+  "description": "Private, PIN-Protected Multi-Page Birthday Experience for Ma'am",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "birthday",
+    "private",
+    "pin-protected",
+    "aviation",
+    "photo-gallery"
+  ],
+  "author": "Squadron 101",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.10",
+    "express": "^4.21.1",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^10.6.0"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1"
+  }
+}

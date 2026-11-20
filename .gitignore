@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Environment Variables & Secrets
+.env
+.env.local
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+*.log
+
+# Private uploads photos (keep metadata templates)
+private_uploads/*.jpg
+private_uploads/*.jpeg
+private_uploads/*.png
+private_uploads/*.webp
