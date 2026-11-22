@@ -1676,6 +1676,415 @@
         width: 100%;
       }
     }
+
+    /* ==========================================================================
+       GLOBAL PERMISSION GATE & ASSESSMENT MODE STYLING
+       ========================================================================== */
+    .gate-hero-insignia {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 1.5rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gate-hero-radar {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1px dashed rgba(197, 164, 109, 0.35);
+      animation: radar-spin 25s linear infinite;
+    }
+    .gate-badge-tag {
+      display: inline-block;
+      font-family: var(--font-military);
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      color: var(--gold-light);
+      background: rgba(197, 164, 109, 0.12);
+      border: 1px solid rgba(197, 164, 109, 0.3);
+      padding: 4px 14px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    /* Instructions & Warnings */
+    .instructions-card-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      background: radial-gradient(circle at 50% 10%, rgba(35, 59, 83, 0.8), rgba(16, 28, 44, 0.96));
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 44px 36px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(197, 164, 109, 0.12);
+      backdrop-filter: blur(16px);
+      text-align: left;
+    }
+    .instruction-rules-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin: 1.8rem 0;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .instruction-rule-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: rgba(11, 19, 30, 0.65);
+      border: 1px solid rgba(197, 164, 109, 0.15);
+      border-radius: 12px;
+      padding: 12px 16px;
+      transition: all 0.2s ease;
+    }
+    .instruction-rule-item:hover {
+      border-color: rgba(197, 164, 109, 0.4);
+      background: rgba(26, 42, 61, 0.75);
+    }
+    .rule-number-pill {
+      flex: 0 0 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(197, 164, 109, 0.2);
+      color: var(--gold-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-military);
+      font-weight: 700;
+      font-size: 0.8rem;
+      border: 1px solid rgba(197, 164, 109, 0.4);
+    }
+    .rule-text-content {
+      font-size: 0.92rem;
+      color: var(--ivory);
+      line-height: 1.5;
+    }
+    .privacy-notice-box {
+      background: rgba(35, 59, 83, 0.45);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 10px 10px 0;
+      padding: 14px 18px;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+      color: var(--ivory-dim);
+      line-height: 1.6;
+    }
+    .ack-checkbox-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 1.5rem 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .ack-checkbox-wrap input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--gold);
+    }
+    .ack-checkbox-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gold-light);
+    }
+
+    /* Permission Cards */
+    .perms-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 2rem 0;
+    }
+    .perm-card {
+      background: rgba(11, 19, 30, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 170px;
+      transition: all 0.3s ease;
+    }
+    .perm-card-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    .perm-card-title {
+      font-family: var(--font-military);
+      font-size: 0.88rem;
+      letter-spacing: 0.1em;
+      color: var(--gold-light);
+      margin-bottom: 4px;
+    }
+    .perm-card-desc {
+      font-size: 0.78rem;
+      color: var(--ivory-dim);
+      opacity: 0.8;
+      margin-bottom: 12px;
+    }
+    .perm-status-pill {
+      font-family: var(--font-military);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .perm-status-pill.status-pending {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--ivory-dim);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .perm-status-pill.status-granted {
+      background: rgba(82, 168, 112, 0.2);
+      color: #76cf96;
+      border: 1px solid #52a870;
+    }
+    .perm-status-pill.status-denied {
+      background: rgba(207, 79, 54, 0.2);
+      color: #ff8b73;
+      border: 1px solid var(--danger);
+    }
+
+    /* Device Preview & Audio Visualizer */
+    .device-hud-stage {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 4/3;
+      background: #000;
+      border-radius: 18px;
+      overflow: hidden;
+      margin: 1.5rem auto;
+      border: 2px solid rgba(197, 164, 109, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+    .device-hud-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+    .hud-corner-bracket {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: var(--gold);
+      border-style: solid;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .hud-corner-tl { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
+    .hud-corner-tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
+    .hud-corner-bl { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
+    .hud-corner-br { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+    .hud-rec-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 28, 44, 0.75);
+      border: 1px solid rgba(197, 164, 109, 0.3);
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-family: var(--font-military);
+      letter-spacing: 0.1em;
+      color: var(--gold-light);
+    }
+    .hud-rec-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #cf4f36;
+      animation: pulse-dot 1.2s infinite ease-in-out;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.8); }
+    }
+
+    /* VU Meter */
+    .vu-meter-container {
+      width: 100%;
+      max-width: 480px;
+      margin: 1rem auto 1.5rem;
+      background: rgba(11, 19, 30, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+    }
+    .vu-meter-bar-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 6px;
+      position: relative;
+    }
+    .vu-meter-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #52a870 0%, #c5a46d 70%, #cf4f36 100%);
+      border-radius: 5px;
+      transition: width 0.08s ease-out;
+    }
+
+    /* Device Checklist */
+    .checklist-container {
+      max-width: 480px;
+      margin: 1.5rem auto;
+      text-align: left;
+      background: rgba(11, 19, 30, 0.6);
+      border: 1px solid rgba(197, 164, 109, 0.2);
+      border-radius: 14px;
+      padding: 16px 20px;
+    }
+    .checklist-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.88rem;
+    }
+    .checklist-row:last-child {
+      border-bottom: none;
+    }
+    .check-icon-badge {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .check-icon-badge.passed {
+      background: rgba(82, 168, 112, 0.25);
+      color: #76cf96;
+      border: 1px solid #52a870;
+    }
+    .check-icon-badge.pending {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--ivory-dim);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Chrome Site Settings Help Accordion */
+    .chrome-help-card {
+      margin-top: 1.5rem;
+      background: rgba(26, 42, 61, 0.75);
+      border: 1px dashed rgba(197, 164, 109, 0.35);
+      border-radius: 14px;
+      padding: 18px 20px;
+      text-align: left;
+      display: none;
+    }
+    .chrome-help-card.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    .help-step-list {
+      margin: 10px 0 0 20px;
+      font-size: 0.85rem;
+      color: var(--ivory);
+      line-height: 1.6;
+    }
+
+    /* Fullscreen Enforce Overlay */
+    #overlay-fullscreen-guard {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 14, 23, 0.95);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    #overlay-fullscreen-guard.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Tab Switch Warning Overlay */
+    #overlay-tabswitch-guard {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99998;
+      max-width: 520px;
+      width: 90%;
+      background: radial-gradient(circle at 50% 0%, rgba(166, 93, 63, 0.95), rgba(16, 28, 44, 0.98));
+      border: 2px solid var(--danger);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(207, 79, 54, 0.4);
+      border-radius: 16px;
+      padding: 18px 22px;
+      display: none;
+      text-align: left;
+    }
+    #overlay-tabswitch-guard.active {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    /* Floating Proctor HUD */
+    #floating-proctor-hud {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      background: rgba(16, 28, 44, 0.92);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 20px rgba(197, 164, 109, 0.15);
+      border-radius: 16px;
+      padding: 10px;
+      backdrop-filter: blur(14px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: none;
+      width: 190px;
+    }
+    #floating-proctor-hud.minimized {
+      width: auto;
+      padding: 8px 12px;
+    }
+    #floating-proctor-hud.minimized .hud-expandable-content {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .perms-grid {
+        grid-template-columns: 1fr;
+      }
+      .instructions-card-wrap {
+        padding: 28px 20px;
+      }
+      #floating-proctor-hud {
+        bottom: 12px;
+        right: 12px;
+        width: 150px;
+      }
+    }
   </style>
 </head>
 
@@ -1686,9 +2095,293 @@
   <div class="telemetry-overlay"></div>
 
   <!-- ==========================================================================
+     GLOBAL ENTRY STEP 1: WELCOME & ENTRY SCREEN
+     ========================================================================== -->
+  <div id="view-welcome" class="app-view active-view">
+    <div class="gate-wrapper">
+      <div class="gate-card" style="max-width:540px;">
+        <div class="gate-hero-insignia">
+          <div class="gate-hero-radar"></div>
+          <svg viewBox="0 0 48 48" width="56" height="56" fill="none">
+            <path d="M24 6 L28 18 L40 22 L28 26 L24 42 L20 26 L8 22 L20 18 Z" fill="#233B53" stroke="#C5A46D" stroke-width="2"/>
+            <circle cx="24" cy="22" r="5" fill="#A65D3F" stroke="#E0C79B" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <span class="gate-badge-tag">CLASSIFIED SQUADRON PROTOCOL // FLIGHT EVALUATION</span>
+        <h1 style="font-family:var(--font-military); font-size:1.85rem; letter-spacing:0.08em; color:var(--ivory); margin-bottom:0.6rem;">SKYWARD AMBITION</h1>
+        <p style="font-family:var(--font-display); font-style:italic; font-size:1.15rem; color:var(--gold-light); margin-bottom:1.5rem;">"Not every dream needs a runway to take flight. Some inspire simply by the way they live."</p>
+
+        <p style="color:var(--ivory-dim); font-size:0.92rem; line-height:1.6; margin-bottom:1.8rem;">
+          Welcome to the private interactive birthday storybook and flight evaluation honoring Ma'am. To preserve assessment integrity, this experience operates in strict full-screen mode with media presence verification.
+        </p>
+
+        <div style="background:rgba(11,19,30,0.6); border:1px solid rgba(197,164,109,0.2); border-radius:14px; padding:16px 20px; margin-bottom:2rem; text-align:left; font-size:0.85rem; color:var(--ivory-dim);">
+          <div style="font-family:var(--font-military); color:var(--gold-light); font-weight:700; margin-bottom:6px; font-size:0.8rem; letter-spacing:0.1em;">
+            ✦ MANDATORY ACCESS REQUIREMENTS
+          </div>
+          <div>• Full-screen browser environment throughout the session</div>
+          <div>• Standard camera &amp; microphone permission check</div>
+          <div>• Multi-gate cryptographic PIN authorization</div>
+        </div>
+
+        <button id="btnEnterWebsite" class="btn-primary" style="font-size:1.05rem; padding:15px 36px; width:100%;">
+          Enter Website ✦
+        </button>
+
+        <div style="margin-top:1.2rem; font-size:0.75rem; color:var(--ivory-dim); opacity:0.65;">
+          No media devices or permissions are activated until explicitly approved in the next steps.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+     GLOBAL ENTRY STEP 2: INSTRUCTIONS & MANDATORY WARNINGS
+     ========================================================================== -->
+  <div id="view-instructions" class="app-view">
+    <div class="gate-wrapper">
+      <div class="instructions-card-wrap">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(197,164,109,0.25); padding-bottom:14px; margin-bottom:1.2rem;">
+          <div>
+            <span class="gate-badge-tag" style="margin-bottom:4px;">PROTOCOL BRIEFING</span>
+            <h2 style="font-family:var(--font-military); font-size:1.4rem; color:var(--ivory); letter-spacing:0.05em;">IMPORTANT TEST INSTRUCTIONS</h2>
+          </div>
+          <span style="font-family:var(--font-military); color:var(--gold); font-size:0.8rem; border:1px solid var(--gold); border-radius:8px; padding:4px 10px;">STEP 02 // 05</span>
+        </div>
+
+        <p style="color:var(--ivory-dim); font-size:0.9rem; line-height:1.6; margin-bottom:1rem;">
+          Please read and acknowledge all mandatory session guidelines before proceeding to device verification:
+        </p>
+
+        <div class="instruction-rules-grid">
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">1</div>
+            <div class="rule-text-content"><strong>Full-screen mode is mandatory</strong> throughout the assessment.</div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">2</div>
+            <div class="rule-text-content"><strong>Camera permission is required.</strong></div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">3</div>
+            <div class="rule-text-content"><strong>Microphone permission is required.</strong></div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">4</div>
+            <div class="rule-text-content">Check your camera and microphone before starting.</div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">5</div>
+            <div class="rule-text-content">Ensure your internet connection is stable.</div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">6</div>
+            <div class="rule-text-content">Verify that your personal details and assessment information are correct.</div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">7</div>
+            <div class="rule-text-content"><strong>Do not close or refresh</strong> the assessment tab during the test.</div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">8</div>
+            <div class="rule-text-content"><strong>Do not switch tabs or windows</strong> during the assessment.</div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">9</div>
+            <div class="rule-text-content"><strong>Do not exit full-screen mode</strong> during the assessment.</div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">10</div>
+            <div class="rule-text-content">Follow all assessment instructions carefully.</div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">11</div>
+            <div class="rule-text-content">Read every question completely before submitting your answer.</div>
+          </div>
+          <div class="instruction-rule-item">
+            <div class="rule-number-pill">12</div>
+            <div class="rule-text-content">Once the assessment begins, follow the displayed submission and navigation rules.</div>
+          </div>
+        </div>
+
+        <div class="privacy-notice-box">
+          <strong style="color:var(--gold-light);">🔒 Privacy &amp; Data Handling Disclosure:</strong>
+          Camera and microphone access are utilized strictly in volatile browser memory for live presence verification, level monitoring, and assessment proctoring during active testing. No video or audio is secretly recorded, permanently stored on server hard drives, or saved to browser localStorage without explicit consent.
+        </div>
+
+        <div style="font-size:0.8rem; color:var(--ivory-dim); opacity:0.7; margin-bottom:1.5rem; line-height:1.5;">
+          <em>Notice on Browser Architecture: Standard web browsers cannot override operating system level shortcuts (e.g., Alt+Tab, Windows Key) or prevent application switches. Session integrity relies on event-based window focus monitoring.</em>
+        </div>
+
+        <label class="ack-checkbox-wrap" id="ackLabel">
+          <input type="checkbox" id="chkInstructionsAck">
+          <span class="ack-checkbox-label">I have read and understood all instructions and warnings.</span>
+        </label>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-top:2rem;">
+          <button class="btn-secondary" onclick="router.navigateTo('welcome')">← Back to Welcome</button>
+          <button id="btnContinueFromInstructions" class="btn-primary" disabled style="opacity:0.5;">
+            Proceed to Permission Verification →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+     GLOBAL ENTRY STEP 3 & 4: PERMISSIONS & FULLSCREEN ACTIVATION
+     ========================================================================== -->
+  <div id="view-permissions" class="app-view">
+    <div class="gate-wrapper">
+      <div class="gate-card" style="max-width:680px;">
+        <span class="gate-badge-tag">STEP 03 // SECURITY CLEARANCE GATE</span>
+        <h2 style="font-family:var(--font-military); font-size:1.6rem; margin-bottom:0.4rem;">Permission Verification</h2>
+        <p class="gate-subtitle">Explicit browser authorization required for flight evaluation</p>
+
+        <div class="perms-grid">
+          <div class="perm-card" id="cardPermCamera">
+            <div class="perm-card-icon">📷</div>
+            <div class="perm-card-title">Camera</div>
+            <div class="perm-card-desc">Visual identity telemetry &amp; live preview verification</div>
+            <span class="perm-status-pill status-pending" id="permStatusCamera">Pending Check</span>
+          </div>
+
+          <div class="perm-card" id="cardPermMic">
+            <div class="perm-card-icon">🎙️</div>
+            <div class="perm-card-title">Microphone</div>
+            <div class="perm-card-desc">Real-time acoustic presence &amp; audio level check</div>
+            <span class="perm-status-pill status-pending" id="permStatusMic">Pending Check</span>
+          </div>
+
+          <div class="perm-card" id="cardPermFullscreen">
+            <div class="perm-card-icon">⛶</div>
+            <div class="perm-card-title">Full-Screen</div>
+            <div class="perm-card-desc">Mandatory secure display mode without browser toolbars</div>
+            <span class="perm-status-pill status-pending" id="permStatusFullscreen">Inactive</span>
+          </div>
+        </div>
+
+        <div style="display:grid; gap:12px; max-width:440px; margin:0 auto 1.5rem;">
+          <button id="btnRequestMediaPerms" class="btn-primary" style="padding:14px 20px;">
+            Grant Camera &amp; Microphone Access 🎥🎙️
+          </button>
+          <button id="btnRequestFullscreen" class="btn-secondary" style="padding:14px 20px;">
+            Activate Full-Screen Mode ⛶
+          </button>
+        </div>
+
+        <!-- Chrome Site Settings Guidance Card (Appears if permission denied) -->
+        <div class="chrome-help-card" id="chromeSettingsHelpBox">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:#ff8b73; font-size:0.9rem; margin-bottom:6px;">
+            <span>⚠️ Permission Denied / Blocked</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--ivory-dim); line-height:1.5;">
+            Camera and microphone access are required for this assessment. Please enable both permissions in Chrome Site Settings and try again:
+          </p>
+          <ol class="help-step-list">
+            <li>Click the lock or site controls icon (tune icon) beside the website address in Chrome.</li>
+            <li>Open <strong>Site Settings</strong>.</li>
+            <li>Find <strong>Camera</strong> and select <strong>Allow</strong>.</li>
+            <li>Find <strong>Microphone</strong> and select <strong>Allow</strong>.</li>
+            <li>Return to the assessment tab.</li>
+            <li>Click <strong>Retry Permissions</strong> below.</li>
+          </ol>
+          <p style="font-size:0.8rem; color:var(--gold-light); margin-top:8px;">
+            * If blocked at the operating-system level, ensure Camera &amp; Microphone access are enabled in Windows Settings &gt; Privacy &amp; Security.
+          </p>
+          <div style="margin-top:12px;">
+            <button class="btn-primary" id="btnRetryPermissions" style="padding:8px 18px; font-size:0.85rem;">
+              Retry Permissions ↻
+            </button>
+          </div>
+        </div>
+
+        <div style="margin-top:2rem; display:flex; justify-content:space-between; align-items:center;">
+          <button class="btn-secondary" onclick="router.navigateTo('instructions')">← Back to Instructions</button>
+          <button id="btnProceedToDeviceCheck" class="btn-primary" disabled style="opacity:0.5;">
+            Proceed to Device Verification →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+     GLOBAL ENTRY STEP 5: LIVE DEVICE VERIFICATION SCREEN
+     ========================================================================== -->
+  <div id="view-device-check" class="app-view">
+    <div class="gate-wrapper">
+      <div class="gate-card" style="max-width:640px;">
+        <span class="gate-badge-tag">STEP 04 // SQUADRON TELEMETRY VERIFICATION</span>
+        <h2 style="font-family:var(--font-military); font-size:1.6rem; margin-bottom:0.4rem;">Device Verification</h2>
+        <p class="gate-subtitle">Confirm video feed &amp; audio input before clearance authorization</p>
+
+        <!-- Live Camera Preview Frame -->
+        <div class="device-hud-stage">
+          <div class="hud-corner-bracket hud-corner-tl"></div>
+          <div class="hud-corner-bracket hud-corner-tr"></div>
+          <div class="hud-corner-bracket hud-corner-bl"></div>
+          <div class="hud-corner-bracket hud-corner-br"></div>
+          <div class="hud-rec-badge">
+            <span class="hud-rec-dot"></span>
+            <span>LIVE TELEMETRY</span>
+          </div>
+          <video id="deviceVideoPreview" class="device-hud-video" autoplay playsinline muted></video>
+        </div>
+
+        <!-- Real-Time Microphone VU Meter -->
+        <div class="vu-meter-container">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+            <span style="font-family:var(--font-military); color:var(--gold-light);">MICROPHONE ACOUSTIC LEVEL</span>
+            <span id="micLevelText" style="color:#76cf96; font-weight:600;">Testing input...</span>
+          </div>
+          <div class="vu-meter-bar-track">
+            <div id="vuMeterBar" class="vu-meter-bar-fill"></div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--ivory-dim); opacity:0.7; margin-top:6px; text-align:left;">
+            Speak into your microphone to verify live sound detection.
+          </div>
+        </div>
+
+        <!-- Mandatory Verification Checklist -->
+        <div class="checklist-container">
+          <div class="checklist-row">
+            <div class="check-icon-badge passed" id="chkBadgeInstructions">✓</div>
+            <div style="flex:1;">Instructions &amp; warnings acknowledged</div>
+          </div>
+          <div class="checklist-row">
+            <div class="check-icon-badge passed" id="chkBadgeCamera">✓</div>
+            <div style="flex:1;">Camera hardware stream active &amp; rendered</div>
+          </div>
+          <div class="checklist-row">
+            <div class="check-icon-badge passed" id="chkBadgeMic">✓</div>
+            <div style="flex:1;">Microphone detected &amp; signal responsive</div>
+          </div>
+          <div class="checklist-row">
+            <div class="check-icon-badge passed" id="chkBadgeFullscreen">✓</div>
+            <div style="flex:1;">Full-screen mode active &amp; verified</div>
+          </div>
+          <div class="checklist-row">
+            <div class="check-icon-badge passed" id="chkBadgeHardware">✓</div>
+            <div style="flex:1;">Device checks completed successfully</div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:2rem;">
+          <button class="btn-secondary" onclick="router.navigateTo('permissions')">← Recheck Permissions</button>
+          <button id="btnProceedToGate1" class="btn-primary" style="font-size:1.02rem; padding:14px 28px;">
+            Proceed to Clearance PIN Gate ✦
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
      PAGE 1: SECRET SECURITY GATE (CLEARANCE REQUIRED)
      ========================================================================== -->
-  <div id="view-gate1" class="app-view active-view">
+  <div id="view-gate1" class="app-view">
     <div class="gate-wrapper">
       <div class="gate-card">
         <div class="gate-icon-stage">
@@ -2535,6 +3228,9 @@
         <button class="gallery-ctrl-btn" id="galleryLockBtn">
           <span>🔒 Lock Gallery</span>
         </button>
+        <button class="gallery-ctrl-btn" id="gallerySessionExitBtn" onclick="router.secureSessionExit()" style="border-color:var(--danger); color:#ff8b73;">
+          <span>✕ Exit Session</span>
+        </button>
       </div>
     </header>
 
@@ -2616,6 +3312,74 @@
         style="position:absolute; top:24px; right:24px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.5rem; cursor:pointer;"
         id="fsCloseBtn">&times;</button>
       <img id="fsImg" src="" alt="Full-screen view">
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+     GLOBAL OVERLAY 1: MANDATORY FULL-SCREEN RE-ENTRY GUARD
+     ========================================================================== -->
+  <div id="overlay-fullscreen-guard">
+    <div class="gate-card" style="max-width:520px; border-color:var(--danger); box-shadow:0 0 50px rgba(207,79,54,0.35);">
+      <div style="font-size:3rem; margin-bottom:1rem; color:var(--danger);">⚠️</div>
+      <span class="gate-badge-tag" style="background:rgba(207,79,54,0.15); border-color:var(--danger); color:#ff8b73;">
+        SECURITY ENFORCEMENT
+      </span>
+      <h2 style="font-family:var(--font-military); font-size:1.5rem; color:var(--ivory); margin-bottom:0.6rem;">
+        Please Return to Full-Screen Mode
+      </h2>
+      <p style="color:var(--ivory-dim); font-size:0.92rem; line-height:1.6; margin-bottom:1.5rem;">
+        Full-screen mode is mandatory for this assessment and storybook experience. All questions and content are paused until full-screen is restored.
+      </p>
+      <button id="btnReenterFullscreen" class="btn-primary" style="background:linear-gradient(135deg, #A65D3F, #7d3c23); font-size:1.05rem; padding:15px 32px; width:100%;">
+        Re-Enter Full-Screen Mode ⛶
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+     GLOBAL OVERLAY 2: TAB-SWITCHING SECURITY WARNING BANNER
+     ========================================================================== -->
+  <div id="overlay-tabswitch-guard">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:1.5rem;">⚠️</span>
+        <div>
+          <div style="font-family:var(--font-military); font-size:0.85rem; font-weight:700; color:#fff; letter-spacing:0.05em;">
+            TAB SWITCH DETECTED (<span id="tabSwitchCountDisplay">1</span>)
+          </div>
+          <div style="font-size:0.8rem; color:var(--ivory-dim); margin-top:2px;">
+            Do not switch tabs or windows during this session. All transitions are logged for assessment integrity.
+          </div>
+        </div>
+      </div>
+      <button id="btnDismissTabWarning" style="background:none; border:none; color:var(--ivory); font-size:1.2rem; cursor:pointer; padding:0 6px;">×</button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+     GLOBAL OVERLAY 3: FLOATING PROCTOR TELEMETRY HUD
+     ========================================================================== -->
+  <div id="floating-proctor-hud">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <div style="display:flex; align-items:center; gap:5px;">
+        <span class="hud-rec-dot" style="width:7px; height:7px;"></span>
+        <span style="font-family:var(--font-military); font-size:0.65rem; color:var(--gold-light); letter-spacing:0.08em;">PROCTOR HUD</span>
+      </div>
+      <button id="btnToggleHud" style="background:none; border:none; color:var(--ivory-dim); font-size:0.75rem; cursor:pointer; padding:0 4px;" title="Minimize/Expand">_</button>
+    </div>
+    <div class="hud-expandable-content">
+      <div style="width:100%; aspect-ratio:4/3; background:#000; border-radius:8px; overflow:hidden; border:1px solid rgba(197,164,109,0.3); margin-bottom:6px;">
+        <video id="hudProctorVideo" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
+      </div>
+      <div style="background:rgba(0,0,0,0.5); border-radius:6px; padding:4px 6px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:var(--ivory-dim); margin-bottom:2px;">
+          <span>MIC</span>
+          <span id="hudMicStatus">OK</span>
+        </div>
+        <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden;">
+          <div id="hudVuBar" style="width:0%; height:100%; background:#76cf96; transition:width 0.08s ease;"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2874,18 +3638,380 @@
     const state = new StateManager();
 
     /* ==========================================================================
-       3. ROUTING & STORYBOOK CONTROLLER
+       3. GLOBAL PERMISSION & ASSESSMENT CONTROLLER
+       ========================================================================== */
+    class AssessmentPermissionGate {
+      constructor() {
+        this.welcomeEntered = false;
+        this.instructionsAcknowledged = false;
+        this.cameraPermission = 'pending'; // 'pending' | 'granted' | 'denied' | 'unavailable'
+        this.microphonePermission = 'pending';
+        this.fullscreenActive = false;
+        this.deviceCheckPassed = false;
+        this.mediaStream = null;
+        this.audioContext = null;
+        this.analyser = null;
+        this.audioSource = null;
+        this.micDataArray = null;
+        this.vuAnimId = null;
+        this.tabSwitchCount = 0;
+        this.tabSwitchLog = [];
+        this.isSessionActive = false;
+        this.isHudMinimized = false;
+        this.soundDetected = false;
+
+        this.bindGlobalEvents();
+      }
+
+      isMediaGranted() {
+        return this.cameraPermission === 'granted' && this.microphonePermission === 'granted' && !!this.mediaStream;
+      }
+
+      isFullscreenActive() {
+        return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+      }
+
+      bindGlobalEvents() {
+        const onFsChange = () => {
+          this.fullscreenActive = this.isFullscreenActive();
+          this.updatePermissionStatusUI();
+
+          const fsOverlay = document.getElementById('overlay-fullscreen-guard');
+          if (this.isSessionActive) {
+            if (!this.fullscreenActive) {
+              if (fsOverlay) fsOverlay.classList.add('active');
+            } else {
+              if (fsOverlay) fsOverlay.classList.remove('active');
+            }
+          }
+        };
+        document.addEventListener('fullscreenchange', onFsChange);
+        document.addEventListener('webkitfullscreenchange', onFsChange);
+        document.addEventListener('mozfullscreenchange', onFsChange);
+        document.addEventListener('MSFullscreenChange', onFsChange);
+
+        document.addEventListener('visibilitychange', () => {
+          if (this.isSessionActive) {
+            if (document.hidden) {
+              this.tabSwitchCount++;
+              this.tabSwitchLog.push({ timestamp: new Date().toISOString(), count: this.tabSwitchCount });
+            } else {
+              const tabOverlay = document.getElementById('overlay-tabswitch-guard');
+              const countDisp = document.getElementById('tabSwitchCountDisplay');
+              if (countDisp) countDisp.textContent = this.tabSwitchCount;
+              if (tabOverlay) tabOverlay.classList.add('active');
+            }
+          }
+        });
+
+        if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+          navigator.mediaDevices.addEventListener('devicechange', async () => {
+            if (this.isSessionActive) {
+              const tracks = this.mediaStream ? this.mediaStream.getTracks() : [];
+              const allActive = tracks.length > 0 && tracks.every(t => t.readyState === 'live');
+              if (!allActive) {
+                console.warn('Device change detected - track inactive');
+                this.handleDeviceRevocation();
+              }
+            }
+          });
+        }
+
+        const btnDismissTab = document.getElementById('btnDismissTabWarning');
+        if (btnDismissTab) {
+          btnDismissTab.addEventListener('click', () => {
+            const tabOverlay = document.getElementById('overlay-tabswitch-guard');
+            if (tabOverlay) tabOverlay.classList.remove('active');
+          });
+        }
+
+        const btnReenterFs = document.getElementById('btnReenterFullscreen');
+        if (btnReenterFs) {
+          btnReenterFs.addEventListener('click', async () => {
+            await this.requestFullscreen();
+          });
+        }
+
+        const btnToggleHud = document.getElementById('btnToggleHud');
+        if (btnToggleHud) {
+          btnToggleHud.addEventListener('click', () => {
+            this.isHudMinimized = !this.isHudMinimized;
+            const hud = document.getElementById('floating-proctor-hud');
+            if (hud) {
+              hud.classList.toggle('minimized', this.isHudMinimized);
+              btnToggleHud.textContent = this.isHudMinimized ? '□' : '_';
+            }
+          });
+        }
+      }
+
+      handleDeviceRevocation() {
+        alert('Security Alert: Camera or Microphone access was disrupted or revoked. Please verify permissions to continue.');
+        this.deviceCheckPassed = false;
+        this.isSessionActive = false;
+        this.stopMediaStreams();
+        router.navigateTo('permissions');
+      }
+
+      async requestMediaPermissions() {
+        const helpBox = document.getElementById('chromeSettingsHelpBox');
+        try {
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error('MediaDevices API not supported or requires HTTPS/localhost.');
+          }
+
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 640 }, height: { ideal: 480 } },
+            audio: true
+          });
+
+          this.mediaStream = stream;
+          this.cameraPermission = 'granted';
+          this.microphonePermission = 'granted';
+
+          stream.getTracks().forEach(track => {
+            track.onended = () => {
+              this.handleDeviceRevocation();
+            };
+          });
+
+          if (helpBox) helpBox.classList.remove('active');
+          this.updatePermissionStatusUI();
+          return true;
+        } catch (err) {
+          console.warn('getUserMedia error:', err);
+          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            this.cameraPermission = 'denied';
+            this.microphonePermission = 'denied';
+            if (helpBox) helpBox.classList.add('active');
+          } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+            this.cameraPermission = 'unavailable';
+            this.microphonePermission = 'unavailable';
+            alert('Hardware Error: No camera or microphone was found on this device. Please connect required media devices.');
+          } else {
+            this.cameraPermission = 'denied';
+            this.microphonePermission = 'denied';
+            if (helpBox) helpBox.classList.add('active');
+          }
+          this.updatePermissionStatusUI();
+          return false;
+        }
+      }
+
+      async requestFullscreen() {
+        try {
+          const docEl = document.documentElement;
+          if (docEl.requestFullscreen) {
+            await docEl.requestFullscreen();
+          } else if (docEl.webkitRequestFullscreen) {
+            await docEl.webkitRequestFullscreen();
+          } else if (docEl.mozRequestFullScreen) {
+            await docEl.mozRequestFullScreen();
+          } else if (docEl.msRequestFullscreen) {
+            await docEl.msRequestFullscreen();
+          }
+          this.fullscreenActive = true;
+          this.updatePermissionStatusUI();
+          const fsOverlay = document.getElementById('overlay-fullscreen-guard');
+          if (fsOverlay) fsOverlay.classList.remove('active');
+          return true;
+        } catch (err) {
+          console.warn('Fullscreen request error:', err);
+          return false;
+        }
+      }
+
+      updatePermissionStatusUI() {
+        const camPill = document.getElementById('permStatusCamera');
+        const micPill = document.getElementById('permStatusMic');
+        const fsPill = document.getElementById('permStatusFullscreen');
+        const btnProceed = document.getElementById('btnProceedToDeviceCheck');
+
+        if (camPill) {
+          camPill.className = 'perm-status-pill ' + (this.cameraPermission === 'granted' ? 'status-granted' : this.cameraPermission === 'denied' ? 'status-denied' : 'status-pending');
+          camPill.textContent = this.cameraPermission === 'granted' ? 'Granted ✓' : this.cameraPermission === 'denied' ? 'Access Denied ✕' : this.cameraPermission === 'unavailable' ? 'Not Available' : 'Pending Check';
+        }
+
+        if (micPill) {
+          micPill.className = 'perm-status-pill ' + (this.microphonePermission === 'granted' ? 'status-granted' : this.microphonePermission === 'denied' ? 'status-denied' : 'status-pending');
+          micPill.textContent = this.microphonePermission === 'granted' ? 'Granted ✓' : this.microphonePermission === 'denied' ? 'Access Denied ✕' : this.microphonePermission === 'unavailable' ? 'Not Available' : 'Pending Check';
+        }
+
+        if (fsPill) {
+          this.fullscreenActive = this.isFullscreenActive();
+          fsPill.className = 'perm-status-pill ' + (this.fullscreenActive ? 'status-granted' : 'status-pending');
+          fsPill.textContent = this.fullscreenActive ? 'Active ⛶' : 'Inactive';
+        }
+
+        if (btnProceed) {
+          const canProceed = this.cameraPermission === 'granted' && this.microphonePermission === 'granted' && this.fullscreenActive;
+          btnProceed.disabled = !canProceed;
+          btnProceed.style.opacity = canProceed ? '1' : '0.5';
+        }
+      }
+
+      startDeviceVerification() {
+        const video = document.getElementById('deviceVideoPreview');
+        if (video && this.mediaStream) {
+          video.srcObject = this.mediaStream;
+          video.play().catch(e => console.warn('Video preview play error:', e));
+        }
+
+        try {
+          if (!this.audioContext || this.audioContext.state === 'closed') {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            this.audioContext = new AudioCtx();
+          }
+          if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+          }
+
+          if (this.mediaStream) {
+            if (!this.audioSource) {
+              this.audioSource = this.audioContext.createMediaStreamSource(this.mediaStream);
+            }
+            if (!this.analyser) {
+              this.analyser = this.audioContext.createAnalyser();
+              this.analyser.fftSize = 64;
+              this.audioSource.connect(this.analyser);
+            }
+            this.micDataArray = new Uint8Array(this.analyser.frequencyBinCount);
+            this.renderVuMeter();
+          }
+        } catch (e) {
+          console.warn('Audio Context VU error:', e);
+        }
+
+        this.updateChecklistUI();
+      }
+
+      renderVuMeter() {
+        if (!this.analyser || !this.micDataArray) return;
+        this.analyser.getByteFrequencyData(this.micDataArray);
+
+        let sum = 0;
+        for (let i = 0; i < this.micDataArray.length; i++) {
+          sum += this.micDataArray[i];
+        }
+        const avg = sum / this.micDataArray.length;
+        const pct = Math.min(100, Math.round((avg / 128) * 100));
+
+        const bar = document.getElementById('vuMeterBar');
+        const hudBar = document.getElementById('hudVuBar');
+        const levelText = document.getElementById('micLevelText');
+
+        if (bar) bar.style.width = pct + '%';
+        if (hudBar) hudBar.style.width = pct + '%';
+
+        if (pct > 5) {
+          this.soundDetected = true;
+          if (levelText) {
+            levelText.textContent = 'Audio Signal Detected ✓';
+            levelText.style.color = '#76cf96';
+          }
+        }
+
+        this.vuAnimId = requestAnimationFrame(() => this.renderVuMeter());
+      }
+
+      updateChecklistUI() {
+        const bInst = document.getElementById('chkBadgeInstructions');
+        const bCam = document.getElementById('chkBadgeCamera');
+        const bMic = document.getElementById('chkBadgeMic');
+        const bFs = document.getElementById('chkBadgeFullscreen');
+        const bHw = document.getElementById('chkBadgeHardware');
+        const btnProceed = document.getElementById('btnProceedToGate1');
+
+        this.fullscreenActive = this.isFullscreenActive();
+
+        if (bInst) bInst.className = 'check-icon-badge ' + (this.instructionsAcknowledged ? 'passed' : 'pending');
+        if (bCam) bCam.className = 'check-icon-badge ' + (this.cameraPermission === 'granted' ? 'passed' : 'pending');
+        if (bMic) bMic.className = 'check-icon-badge ' + (this.microphonePermission === 'granted' ? 'passed' : 'pending');
+        if (bFs) bFs.className = 'check-icon-badge ' + (this.fullscreenActive ? 'passed' : 'pending');
+        if (bHw) bHw.className = 'check-icon-badge ' + (this.isMediaGranted() ? 'passed' : 'pending');
+
+        const allOk = this.instructionsAcknowledged && this.cameraPermission === 'granted' && this.microphonePermission === 'granted' && this.fullscreenActive;
+        if (btnProceed) {
+          btnProceed.disabled = !allOk;
+          btnProceed.style.opacity = allOk ? '1' : '0.5';
+        }
+      }
+
+      startProctorHud() {
+        const hud = document.getElementById('floating-proctor-hud');
+        const hudVideo = document.getElementById('hudProctorVideo');
+        if (hud) hud.style.display = 'block';
+        if (hudVideo && this.mediaStream) {
+          hudVideo.srcObject = this.mediaStream;
+          hudVideo.play().catch(e => console.warn('HUD video play error:', e));
+        }
+      }
+
+      stopMediaStreams() {
+        if (this.vuAnimId) {
+          cancelAnimationFrame(this.vuAnimId);
+          this.vuAnimId = null;
+        }
+        if (this.mediaStream) {
+          this.mediaStream.getTracks().forEach(track => {
+            try { track.stop(); } catch (e) {}
+          });
+          this.mediaStream = null;
+        }
+        if (this.audioContext && this.audioContext.state !== 'closed') {
+          try { this.audioContext.close(); } catch (e) {}
+          this.audioContext = null;
+        }
+        this.audioSource = null;
+        this.analyser = null;
+
+        const hud = document.getElementById('floating-proctor-hud');
+        if (hud) hud.style.display = 'none';
+
+        const devVideo = document.getElementById('deviceVideoPreview');
+        if (devVideo) devVideo.srcObject = null;
+
+        const hudVideo = document.getElementById('hudProctorVideo');
+        if (hudVideo) hudVideo.srcObject = null;
+      }
+    }
+
+    const permissionGate = new AssessmentPermissionGate();
+
+    /* ==========================================================================
+       4. ROUTING & STORYBOOK CONTROLLER (STRICT 10-STEP SEQUENCE ENFORCED)
        ========================================================================== */
     class StorybookRouter {
       constructor() {
-        this.currentView = 'gate1';
+        this.currentView = 'welcome';
         this.currentChapter = 1;
       }
 
       navigateTo(viewId) {
-        if (viewId === 'birthday' && !state.gate1Token) viewId = 'gate1';
-        if ((viewId === 'gate2' || viewId === 'gallery') && !state.gate1Token) viewId = 'gate1';
-        if (viewId === 'gallery' && !state.gate2Token) viewId = 'gate2';
+        const gate = permissionGate;
+
+        // Strict 10-step sequence protection:
+        if (viewId === 'instructions' && !gate.welcomeEntered) {
+          viewId = 'welcome';
+        }
+        if (viewId === 'permissions' && !gate.instructionsAcknowledged) {
+          viewId = 'instructions';
+        }
+        if (viewId === 'device-check' && (!gate.isMediaGranted() || !gate.isFullscreenActive())) {
+          viewId = 'permissions';
+        }
+        if (viewId === 'gate1' && !gate.deviceCheckPassed) {
+          viewId = 'device-check';
+        }
+        if (viewId === 'birthday' && (!gate.deviceCheckPassed || !state.gate1Token)) {
+          viewId = 'gate1';
+        }
+        if (viewId === 'gate2' && (!gate.deviceCheckPassed || !state.gate1Token)) {
+          viewId = 'gate1';
+        }
+        if (viewId === 'gallery' && (!gate.deviceCheckPassed || !state.gate1Token || !state.gate2Token)) {
+          viewId = 'gate2';
+        }
 
         document.querySelectorAll('.app-view').forEach(v => {
           v.classList.remove('active-view');
@@ -2900,12 +4026,42 @@
         this.currentView = viewId;
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
+        if (viewId === 'device-check') {
+          gate.startDeviceVerification();
+        }
+        if (viewId === 'gate1' || viewId === 'birthday' || viewId === 'gate2' || viewId === 'gallery') {
+          gate.startProctorHud();
+        }
         if (viewId === 'birthday') {
           this.renderStorybook();
         }
         if (viewId === 'gallery') {
           galleryManager.init();
         }
+      }
+
+      secureSessionExit() {
+        if (!confirm('Are you sure you want to securely exit this session? Camera, microphone, and full-screen will be deactivated.')) return;
+        permissionGate.isSessionActive = false;
+        permissionGate.deviceCheckPassed = false;
+        permissionGate.stopMediaStreams();
+
+        if (document.fullscreenElement) {
+          try { document.exitFullscreen(); } catch (e) {}
+        }
+
+        state.gate1Token = null;
+        state.gate2Token = null;
+        sessionStorage.removeItem('gate1_token');
+        sessionStorage.removeItem('gate2_token');
+
+        const fsOverlay = document.getElementById('overlay-fullscreen-guard');
+        if (fsOverlay) fsOverlay.classList.remove('active');
+
+        const tabOverlay = document.getElementById('overlay-tabswitch-guard');
+        if (tabOverlay) tabOverlay.classList.remove('active');
+
+        this.navigateTo('welcome');
       }
 
       renderStorybook() {
@@ -2959,6 +4115,84 @@
     }
 
     const router = new StorybookRouter();
+    window.router = router;
+    window.permissionGate = permissionGate;
+
+    // Event binding for Entry Flow Steps
+    const btnEnter = document.getElementById('btnEnterWebsite');
+    if (btnEnter) {
+      btnEnter.addEventListener('click', () => {
+        permissionGate.welcomeEntered = true;
+        router.navigateTo('instructions');
+      });
+    }
+
+    const chkAck = document.getElementById('chkInstructionsAck');
+    const btnContinueInst = document.getElementById('btnContinueFromInstructions');
+    if (chkAck && btnContinueInst) {
+      chkAck.addEventListener('change', () => {
+        permissionGate.instructionsAcknowledged = chkAck.checked;
+        btnContinueInst.disabled = !chkAck.checked;
+        btnContinueInst.style.opacity = chkAck.checked ? '1' : '0.5';
+      });
+
+      btnContinueInst.addEventListener('click', () => {
+        if (permissionGate.instructionsAcknowledged) {
+          router.navigateTo('permissions');
+          permissionGate.updatePermissionStatusUI();
+        }
+      });
+    }
+
+    const btnReqMedia = document.getElementById('btnRequestMediaPerms');
+    if (btnReqMedia) {
+      btnReqMedia.addEventListener('click', async () => {
+        btnReqMedia.disabled = true;
+        btnReqMedia.textContent = 'Verifying Devices...';
+        await permissionGate.requestMediaPermissions();
+        btnReqMedia.disabled = false;
+        btnReqMedia.textContent = 'Grant Camera & Microphone Access 🎥🎙️';
+      });
+    }
+
+    const btnReqFs = document.getElementById('btnRequestFullscreen');
+    if (btnReqFs) {
+      btnReqFs.addEventListener('click', async () => {
+        await permissionGate.requestFullscreen();
+      });
+    }
+
+    const btnRetryPerms = document.getElementById('btnRetryPermissions');
+    if (btnRetryPerms) {
+      btnRetryPerms.addEventListener('click', async () => {
+        await permissionGate.requestMediaPermissions();
+      });
+    }
+
+    const btnProceedDev = document.getElementById('btnProceedToDeviceCheck');
+    if (btnProceedDev) {
+      btnProceedDev.addEventListener('click', () => {
+        if (permissionGate.isMediaGranted() && permissionGate.isFullscreenActive()) {
+          router.navigateTo('device-check');
+        }
+      });
+    }
+
+    const btnProceedGate1 = document.getElementById('btnProceedToGate1');
+    if (btnProceedGate1) {
+      btnProceedGate1.addEventListener('click', () => {
+        permissionGate.deviceCheckPassed = true;
+        permissionGate.isSessionActive = true;
+        router.navigateTo('gate1');
+      });
+    }
+
+    const lockBirthdayBtn = document.getElementById('lockBirthdayBtn');
+    if (lockBirthdayBtn) {
+      lockBirthdayBtn.addEventListener('click', () => {
+        router.secureSessionExit();
+      });
+    }
 
     // Chapter ribbon clicks
     document.getElementById('chapterNavRibbon').addEventListener('click', (e) => {
@@ -3703,11 +4937,7 @@
        ========================================================================== */
     (async function initApp() {
       await state.checkBackend();
-      if (state.gate1Token) {
-        router.navigateTo('birthday');
-      } else {
-        router.navigateTo('gate1');
-      }
+      router.navigateTo('welcome');
     })();
   </script>
 
