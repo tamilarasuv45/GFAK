@@ -3328,33 +3328,46 @@
           </button>
         </div>
 
-        <!-- Chrome Site Settings Guidance Card (Appears if permission denied) -->
+<!-- Chrome Site Settings Guidance Card (Appears if permission denied or camera error) -->
         <div class="chrome-help-card" id="chromeSettingsHelpBox">
-          <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:#ff8b73; font-size:0.9rem; margin-bottom:6px;">
-            <span>⚠️ Permission Denied / Blocked</span>
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:#ff8b73; font-size:0.95rem; margin-bottom:6px;">
+            <span id="chromeHelpTitle">⚠️ Camera &amp; Microphone Access Required</span>
           </div>
-          <p style="font-size:0.85rem; color:var(--ivory-dim); line-height:1.5;">
-            Camera and microphone access are required for this assessment. Please enable both permissions in Chrome Site Settings and try again:
+          <p id="chromeHelpMessage" style="font-size:0.85rem; color:var(--ivory-dim); line-height:1.5;">
+            Camera access is required for flight assessment. Please follow the instructions below:
           </p>
-          <ol class="help-step-list">
-            <li>Click the lock or site controls icon (tune icon) beside the website address in Chrome.</li>
-            <li>Open <strong>Site Settings</strong>.</li>
-            <li>Find <strong>Camera</strong> and select <strong>Allow</strong>.</li>
-            <li>Find <strong>Microphone</strong> and select <strong>Allow</strong>.</li>
-            <li>Return to the assessment tab.</li>
-            <li>Click <strong>Retry Permissions</strong> below.</li>
+
+          <!-- Warning banner if opened via file:/// -->
+          <div id="fileProtocolWarningBox" style="display:none; background:rgba(230,81,0,0.25); border:1px solid #ff9800; border-radius:8px; padding:12px 14px; margin:10px 0; text-align:left;">
+            <strong style="color:#ffb74d; font-size:0.85rem;">📁 Local File Detected (file://)</strong>
+            <p style="font-size:0.8rem; color:var(--ivory); margin:4px 0 8px;">
+              Google Chrome and other browsers strictly block camera and microphone access on direct local files (file:///) for security. Please run the website through the local server:
+            </p>
+            <a href="http://localhost:3000" class="btn-primary" style="display:inline-block; text-decoration:none; font-size:0.82rem; padding:6px 14px;">
+              🚀 Open http://localhost:3000
+            </a>
+          </div>
+
+          <ol class="help-step-list" id="helpStepsList">
+            <li>Click the site controls icon (tune icon 🎛️ or lock icon 🔒) on the left side of the address bar.</li>
+            <li>Ensure <strong>Camera</strong> is set to <strong>Allow</strong>.</li>
+            <li>Ensure <strong>Microphone</strong> is set to <strong>Allow</strong>.</li>
+            <li>If using a laptop, ensure the <strong>physical webcam privacy shutter/slider</strong> is slid open, and the camera Fn key (e.g., F8 or F10) is enabled.</li>
+            <li>Close any applications that may have an exclusive lock on the camera (Windows Camera app, Microsoft Teams, Zoom, or Windows Phone Link).</li>
           </ol>
-          <p style="font-size:0.8rem; color:var(--gold-light); margin-top:8px;">
-            * If blocked at the operating-system level, ensure Camera &amp; Microphone access are enabled in Windows Settings &gt; Privacy &amp; Security.
-          </p>
-          <div style="margin-top:12px;">
-            <button class="btn-primary" id="btnRetryPermissions" style="padding:8px 18px; font-size:0.85rem;">
+          <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+            <button type="button" class="btn-primary" id="btnRetryPermissions" style="padding:8px 18px; font-size:0.85rem;">
               Retry Permissions ↻
             </button>
+            <button type="button" class="btn-secondary" id="btnDiagnoseCamera" style="padding:8px 18px; font-size:0.85rem;">
+              🔍 Run Camera Diagnostic
+            </button>
+          </div>
+          <div id="cameraDiagnosticLog" style="display:none; margin-top:12px; padding:10px; background:#070d18; border:1px solid var(--card-border); border-radius:8px; font-family:monospace; font-size:0.75rem; color:#76cf96; text-align:left; max-height:160px; overflow-y:auto; line-height:1.4;">
           </div>
         </div>
 
-        <div style="margin-top:2rem; display:flex; justify-content:space-between; align-items:center;">
+                <div style="margin-top:2rem; display:flex; justify-content:space-between; align-items:center;">
           <button class="btn-secondary" onclick="router.navigateTo('instructions')">← Back to Instructions</button>
           <button id="btnProceedToDeviceCheck" class="btn-primary" disabled style="opacity:0.5;">
             Proceed to Device Verification →
@@ -3385,6 +3398,12 @@
             <span>LIVE TELEMETRY</span>
           </div>
           <video id="deviceVideoPreview" class="device-hud-video" autoplay playsinline muted></video>
+        </div>
+
+        <!-- Camera Switcher on Device Verification Screen (Integrated Camera Prioritized) -->
+        <div class="device-selector-strip" style="margin: 12px auto; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+          <label for="deviceCheckCameraSelect" style="font-family: var(--font-military); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--gold-light);">ACTIVE CAMERA:</label>
+          <select id="deviceCheckCameraSelect" class="studio-select" style="max-width: 380px; padding: 6px 12px; font-size: 0.85rem; border-radius: 8px; background: #0c1726; color: var(--ivory); border: 1px solid var(--card-border); cursor: pointer;" title="Select Integrated Camera or other device"></select>
         </div>
 
         <!-- Real-Time Microphone VU Meter -->
@@ -5013,90 +5032,39 @@
     /* ==========================================================================
        3. GLOBAL PERMISSION & ASSESSMENT CONTROLLER
        ========================================================================== */
-    class AssessmentPermissionGate {
+class AssessmentPermissionGate {
       constructor() {
-        this.welcomeEntered = false;
-        this.instructionsAcknowledged = false;
-        this.cameraPermission = 'pending'; // 'pending' | 'granted' | 'denied' | 'unavailable'
-        this.microphonePermission = 'pending';
+        this.cameraPermission = 'prompt';
+        this.microphonePermission = 'prompt';
         this.fullscreenActive = false;
         this.deviceCheckPassed = false;
+        this.isSessionActive = false;
+        this.instructionsAcknowledged = false;
         this.mediaStream = null;
         this.audioContext = null;
         this.analyser = null;
         this.audioSource = null;
         this.micDataArray = null;
-        this.vuAnimId = null;
-        this.tabSwitchCount = 0;
-        this.tabSwitchLog = [];
-        this.isSessionActive = false;
-        this.isHudMinimized = false;
         this.soundDetected = false;
-
-        this.bindGlobalEvents();
+        this.vuAnimId = null;
+        this.isHudMinimized = false;
+        this.initEventListeners();
       }
 
-      isMediaGranted() {
-        return this.cameraPermission === 'granted' && this.microphonePermission === 'granted' && !!this.mediaStream;
-      }
-
-      isFullscreenActive() {
-        return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
-      }
-
-      bindGlobalEvents() {
-        const onFsChange = () => {
+      initEventListeners() {
+        document.addEventListener('fullscreenchange', () => {
           this.fullscreenActive = this.isFullscreenActive();
           this.updatePermissionStatusUI();
-
-          const fsOverlay = document.getElementById('overlay-fullscreen-guard');
-          if (this.isSessionActive) {
-            if (!this.fullscreenActive) {
-              if (fsOverlay) fsOverlay.classList.add('active');
+          this.updateChecklistUI();
+          const overlay = document.getElementById('overlay-fullscreen-guard');
+          if (overlay) {
+            if (this.isSessionActive && !this.fullscreenActive) {
+              overlay.classList.add('active');
             } else {
-              if (fsOverlay) fsOverlay.classList.remove('active');
-            }
-          }
-        };
-        document.addEventListener('fullscreenchange', onFsChange);
-        document.addEventListener('webkitfullscreenchange', onFsChange);
-        document.addEventListener('mozfullscreenchange', onFsChange);
-        document.addEventListener('MSFullscreenChange', onFsChange);
-
-        document.addEventListener('visibilitychange', () => {
-          if (this.isSessionActive) {
-            if (document.hidden) {
-              this.tabSwitchCount++;
-              this.tabSwitchLog.push({ timestamp: new Date().toISOString(), count: this.tabSwitchCount });
-            } else {
-              const tabOverlay = document.getElementById('overlay-tabswitch-guard');
-              const countDisp = document.getElementById('tabSwitchCountDisplay');
-              if (countDisp) countDisp.textContent = this.tabSwitchCount;
-              if (tabOverlay) tabOverlay.classList.add('active');
+              overlay.classList.remove('active');
             }
           }
         });
-
-        if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
-          navigator.mediaDevices.addEventListener('devicechange', async () => {
-            if (this.isSessionActive) {
-              const tracks = this.mediaStream ? this.mediaStream.getTracks() : [];
-              const allActive = tracks.length > 0 && tracks.every(t => t.readyState === 'live');
-              if (!allActive) {
-                console.warn('Device change detected - track inactive');
-                this.handleDeviceRevocation();
-              }
-            }
-          });
-        }
-
-        const btnDismissTab = document.getElementById('btnDismissTabWarning');
-        if (btnDismissTab) {
-          btnDismissTab.addEventListener('click', () => {
-            const tabOverlay = document.getElementById('overlay-tabswitch-guard');
-            if (tabOverlay) tabOverlay.classList.remove('active');
-          });
-        }
 
         const btnReenterFs = document.getElementById('btnReenterFullscreen');
         if (btnReenterFs) {
@@ -5116,10 +5084,17 @@
             }
           });
         }
+
+        const btnDiag = document.getElementById('btnDiagnoseCamera');
+        if (btnDiag) {
+          btnDiag.addEventListener('click', () => {
+            this.runCameraDiagnostic();
+          });
+        }
       }
 
       handleDeviceRevocation() {
-        alert('Security Alert: Camera or Microphone access was disrupted or revoked. Please verify permissions to continue.');
+        console.warn('Media track ended or revoked.');
         this.deviceCheckPassed = false;
         this.isSessionActive = false;
         this.stopMediaStreams();
@@ -5128,46 +5103,283 @@
 
       async requestMediaPermissions() {
         const helpBox = document.getElementById('chromeSettingsHelpBox');
-        try {
-          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            throw new Error('MediaDevices API not supported or requires HTTPS/localhost.');
-          }
+        const fileBox = document.getElementById('fileProtocolWarningBox');
 
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { width: { ideal: 640 }, height: { ideal: 480 } },
-            audio: true
-          });
+        if (window.location.protocol === 'file:' && fileBox) {
+          fileBox.style.display = 'block';
+        }
 
-          this.mediaStream = stream;
-          this.cameraPermission = 'granted';
-          this.microphonePermission = 'granted';
-
-          stream.getTracks().forEach(track => {
-            track.onended = () => {
-              this.handleDeviceRevocation();
-            };
-          });
-
-          if (helpBox) helpBox.classList.remove('active');
-          this.updatePermissionStatusUI();
-          return true;
-        } catch (err) {
-          console.warn('getUserMedia error:', err);
-          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            this.cameraPermission = 'denied';
-            this.microphonePermission = 'denied';
-            if (helpBox) helpBox.classList.add('active');
-          } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-            this.cameraPermission = 'unavailable';
-            this.microphonePermission = 'unavailable';
-            alert('Hardware Error: No camera or microphone was found on this device. Please connect required media devices.');
-          } else {
-            this.cameraPermission = 'denied';
-            this.microphonePermission = 'denied';
-            if (helpBox) helpBox.classList.add('active');
-          }
-          this.updatePermissionStatusUI();
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          this.handleCameraFailure(new Error('MediaDevices API not supported or requires HTTPS/localhost.'));
           return false;
+        }
+
+        let stream = null;
+        let videoDevices = [];
+
+        const isIntegrated = (label) => {
+          const l = (label || '').toLowerCase();
+          return /integrated|built-in|internal|facetime|front|webcam|wide vision/i.test(l) && !/phone|link|virtual|obs|droid|iriun|epoccam/i.test(l);
+        };
+        const isPhone = (label) => /phone|link|virtual|obs|droid|iriun|epoccam/i.test(label || '');
+
+        // 1. Probe devices to see if integrated camera deviceId is already visible
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          videoDevices = devices.filter(d => d.kind === 'videoinput');
+        } catch (e) {}
+
+        let preferredDeviceId = null;
+        if (videoDevices.length > 0) {
+          const intCam = videoDevices.find(d => isIntegrated(d.label));
+          const nonPhoneCam = videoDevices.find(d => !isPhone(d.label));
+          preferredDeviceId = intCam?.deviceId || nonPhoneCam?.deviceId || null;
+        }
+
+        // 2. Ladder of fallback attempts
+        const attempts = [
+          // Attempt A: Preferred Integrated Camera + Audio
+          preferredDeviceId 
+            ? { video: { deviceId: { ideal: preferredDeviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true }
+            : { video: { width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true },
+          // Attempt B: Preferred Camera alone (in case microphone is locked/failed)
+          preferredDeviceId 
+            ? { video: { deviceId: { ideal: preferredDeviceId } } }
+            : { video: true },
+          // Attempt C: Generic video and audio
+          { video: true, audio: true },
+          // Attempt D: Generic video only
+          { video: true },
+          // Attempt E: Soft video constraints
+          { video: { width: { min: 320 } } }
+        ];
+
+        let lastError = null;
+        for (const constraint of attempts) {
+          try {
+            stream = await navigator.mediaDevices.getUserMedia(constraint);
+            if (stream && stream.getVideoTracks().length > 0) {
+              console.log('Successfully acquired video stream using constraint:', constraint);
+              break;
+            }
+          } catch (err) {
+            lastError = err;
+            console.warn('getUserMedia attempt failed with constraint:', constraint, err.name, err.message);
+          }
+        }
+
+        if (!stream) {
+          console.error('All camera attempts failed. Last error:', lastError);
+          this.handleCameraFailure(lastError);
+          return false;
+        }
+
+        this.mediaStream = stream;
+        this.cameraPermission = 'granted';
+
+        // 3. Post-grant: enumerate devices now that labels are unlocked, and ensure Integrated Camera is selected
+        try {
+          const fullDevices = await navigator.mediaDevices.enumerateDevices();
+          const fullVideoDevs = fullDevices.filter(d => d.kind === 'videoinput');
+          const bestCam = fullVideoDevs.find(d => isIntegrated(d.label)) || fullVideoDevs.find(d => !isPhone(d.label));
+
+          const activeTrack = stream.getVideoTracks()[0];
+          const currentLabel = activeTrack?.label || '';
+
+          // If currently running Phone Link when an Integrated Camera exists, switch track
+          if (bestCam && bestCam.deviceId && isPhone(currentLabel)) {
+            console.log('Phone Link was chosen by default. Auto-switching to Integrated Camera:', bestCam.label);
+            try {
+              const switchStream = await navigator.mediaDevices.getUserMedia({
+                video: { deviceId: { exact: bestCam.deviceId } }
+              });
+              const newTrack = switchStream.getVideoTracks()[0];
+              stream.removeTrack(activeTrack);
+              activeTrack.stop();
+              stream.addTrack(newTrack);
+            } catch (switchErr) {
+              console.warn('Auto-switch to integrated camera failed:', switchErr);
+            }
+          }
+
+          // Populate the camera select on the device check screen
+          this.populateDeviceCheckCameraSelect(fullVideoDevs);
+        } catch (enumErr) {
+          console.warn('Post-grant enumerate error:', enumErr);
+        }
+
+        // 4. Ensure audio track exists; if not, request audio separately so mic failure does not block camera
+        if (stream.getAudioTracks().length === 0) {
+          try {
+            const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const aTrack = audioStream.getAudioTracks()[0];
+            if (aTrack) {
+              stream.addTrack(aTrack);
+              this.microphonePermission = 'granted';
+            }
+          } catch (aErr) {
+            console.warn('Microphone request warning:', aErr.name, aErr.message);
+            this.microphonePermission = 'unavailable';
+          }
+        } else {
+          this.microphonePermission = 'granted';
+        }
+
+        stream.getTracks().forEach(track => {
+          track.onended = () => {
+            this.handleDeviceRevocation();
+          };
+        });
+
+        if (helpBox) helpBox.classList.remove('active');
+        this.updatePermissionStatusUI();
+        return true;
+      }
+
+      handleCameraFailure(err) {
+        const helpBox = document.getElementById('chromeSettingsHelpBox');
+        const helpTitle = document.getElementById('chromeHelpTitle');
+        const helpMessage = document.getElementById('chromeHelpMessage');
+        const fileBox = document.getElementById('fileProtocolWarningBox');
+
+        if (window.location.protocol === 'file:' && fileBox) {
+          fileBox.style.display = 'block';
+        }
+
+        const errName = err ? err.name : 'UnknownError';
+        const errMsg = err ? err.message : '';
+
+        if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError') {
+          this.cameraPermission = 'denied';
+          this.microphonePermission = 'denied';
+          if (helpTitle) helpTitle.textContent = '⚠️ Camera Access Denied in Browser';
+          if (helpMessage) helpMessage.textContent = 'Chrome is currently blocking camera access for this site. Click the icon beside the website address (tune icon 🎛️ or lock 🔒) and set Camera & Microphone to "Allow", then click Retry.';
+        } else if (errName === 'NotReadableError' || errName === 'AbortError' || errName === 'TrackStartError') {
+          this.cameraPermission = 'unavailable';
+          this.microphonePermission = 'unavailable';
+          if (helpTitle) helpTitle.textContent = '⚠️ Camera in Use by Another Application';
+          if (helpMessage) helpMessage.textContent = 'Your laptop\'s Integrated Camera is locked by another program (Windows Camera app, Microsoft Teams, Zoom, or Windows Phone Link). Please close those applications and click Retry.';
+        } else if (errName === 'NotFoundError' || errName === 'DevicesNotFoundError') {
+          this.cameraPermission = 'unavailable';
+          this.microphonePermission = 'unavailable';
+          if (helpTitle) helpTitle.textContent = '⚠️ No Camera Found';
+          if (helpMessage) helpMessage.textContent = 'No physical webcam was detected. Check your laptop\'s physical privacy switch/slider or Fn camera key.';
+        } else {
+          this.cameraPermission = 'denied';
+          this.microphonePermission = 'denied';
+          if (helpTitle) helpTitle.textContent = '⚠️ Camera Access Error: ' + errName;
+          if (helpMessage) helpMessage.textContent = (errMsg || 'Could not start camera.') + ' Please check browser and Windows camera privacy settings.';
+        }
+
+        if (helpBox) helpBox.classList.add('active');
+        this.updatePermissionStatusUI();
+      }
+
+      populateDeviceCheckCameraSelect(videoDevices) {
+        const select = document.getElementById('deviceCheckCameraSelect');
+        if (!select || !videoDevices || videoDevices.length === 0) return;
+
+        const isIntegrated = (label) => {
+          const l = (label || '').toLowerCase();
+          return /integrated|built-in|internal|facetime|front|webcam|wide vision/i.test(l) && !/phone|link|virtual|obs|droid|iriun|epoccam/i.test(l);
+        };
+        const isPhone = (label) => /phone|link|virtual|obs|droid|iriun|epoccam/i.test(label || '');
+
+        videoDevices.sort((a, b) => {
+          const aBuiltIn = isIntegrated(a.label);
+          const bBuiltIn = isIntegrated(b.label);
+          const aPhone = isPhone(a.label);
+          const bPhone = isPhone(b.label);
+          if (aBuiltIn && !bBuiltIn) return -1;
+          if (!aBuiltIn && bBuiltIn) return 1;
+          if (!aPhone && bPhone) return -1;
+          if (aPhone && !bPhone) return 1;
+          return (a.label || '').localeCompare(b.label || '');
+        });
+
+        const activeTrack = this.mediaStream?.getVideoTracks()[0];
+        const activeLabel = activeTrack?.label;
+
+        select.innerHTML = videoDevices.map(d => {
+          const label = d.label || 'Camera';
+          const badge = isIntegrated(label) ? ' ★ [Integrated Camera]' : (isPhone(label) ? ' 📱 [Phone Link]' : '');
+          const isSelected = activeLabel && label === activeLabel;
+          return `<option value="${d.deviceId}" ${isSelected ? 'selected' : ''}>${label}${badge}</option>`;
+        }).join('');
+
+        select.onchange = async () => {
+          const selectedDeviceId = select.value;
+          if (!selectedDeviceId) return;
+          try {
+            const newStream = await navigator.mediaDevices.getUserMedia({
+              video: { deviceId: { exact: selectedDeviceId } }
+            });
+            const newTrack = newStream.getVideoTracks()[0];
+            if (this.mediaStream) {
+              const oldTrack = this.mediaStream.getVideoTracks()[0];
+              if (oldTrack) {
+                this.mediaStream.removeTrack(oldTrack);
+                oldTrack.stop();
+              }
+              this.mediaStream.addTrack(newTrack);
+              const devVideo = document.getElementById('deviceVideoPreview');
+              if (devVideo) {
+                devVideo.srcObject = this.mediaStream;
+                devVideo.play().catch(() => {});
+              }
+            }
+          } catch (e) {
+            console.warn('Switch camera error:', e);
+            alert('Could not switch to selected camera: ' + e.message);
+          }
+        };
+      }
+
+      async runCameraDiagnostic() {
+        const logBox = document.getElementById('cameraDiagnosticLog');
+        if (logBox) {
+          logBox.style.display = 'block';
+          logBox.innerHTML = 'Starting camera diagnostic...<br>';
+        }
+        const log = (msg) => {
+          console.log('[DIAG]', msg);
+          if (logBox) logBox.innerHTML += '• ' + msg + '<br>';
+        };
+
+        log('Origin: ' + window.location.origin + ' | Protocol: ' + window.location.protocol);
+        log('isSecureContext: ' + window.isSecureContext);
+        log('mediaDevices supported: ' + !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia));
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          log('❌ ERROR: navigator.mediaDevices is undefined. In Chrome, cameras cannot be accessed on file:/// URLs or insecure HTTP (except localhost).');
+          return;
+        }
+
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const vidDevs = devices.filter(d => d.kind === 'videoinput');
+          const audDevs = devices.filter(d => d.kind === 'audioinput');
+          log('Detected video devices: ' + vidDevs.length);
+          vidDevs.forEach((d, i) => log('  Camera ' + (i + 1) + ': "' + (d.label || '(Label hidden until permission granted)') + '" [ID: ' + d.deviceId.slice(0, 8) + '...]'));
+          log('Detected audio devices: ' + audDevs.length);
+        } catch (e) {
+          log('Warning on enumerate: ' + e.message);
+        }
+
+        log('Testing generic getUserMedia({ video: true })...');
+        try {
+          const testStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const track = testStream.getVideoTracks()[0];
+          log('✅ SUCCESS! Opened camera: "' + track.label + '"');
+          track.stop();
+          log('Diagnostic complete. Camera hardware is fully functional!');
+        } catch (err) {
+          log('❌ CAMERA TEST FAILED: ' + err.name + ' - ' + err.message);
+          if (err.name === 'NotReadableError') {
+            log('⚠️ CAUSE: Camera hardware is in use by another app or Phone Link is intercepting.');
+          } else if (err.name === 'NotAllowedError') {
+            log('⚠️ CAUSE: Chrome permission was denied for this origin.');
+          }
         }
       }
 
@@ -5217,7 +5429,7 @@
         }
 
         if (btnProceed) {
-          const canProceed = this.cameraPermission === 'granted' && this.microphonePermission === 'granted' && this.fullscreenActive;
+          const canProceed = this.cameraPermission === 'granted' && this.fullscreenActive;
           btnProceed.disabled = !canProceed;
           btnProceed.style.opacity = canProceed ? '1' : '0.5';
         }
@@ -5239,7 +5451,7 @@
             this.audioContext.resume();
           }
 
-          if (this.mediaStream) {
+          if (this.mediaStream && this.mediaStream.getAudioTracks().length > 0) {
             if (!this.audioSource) {
               this.audioSource = this.audioContext.createMediaStreamSource(this.mediaStream);
             }
@@ -5303,7 +5515,7 @@
         if (bFs) bFs.className = 'check-icon-badge ' + (this.fullscreenActive ? 'passed' : 'pending');
         if (bHw) bHw.className = 'check-icon-badge ' + (this.isMediaGranted() ? 'passed' : 'pending');
 
-        const allOk = this.instructionsAcknowledged && this.cameraPermission === 'granted' && this.microphonePermission === 'granted' && this.fullscreenActive;
+        const allOk = this.instructionsAcknowledged && this.cameraPermission === 'granted' && this.fullscreenActive;
         if (btnProceed) {
           btnProceed.disabled = !allOk;
           btnProceed.style.opacity = allOk ? '1' : '0.5';
@@ -5347,9 +5559,17 @@
         const hudVideo = document.getElementById('hudProctorVideo');
         if (hudVideo) hudVideo.srcObject = null;
       }
+
+      isFullscreenActive() {
+        return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+      }
+
+      isMediaGranted() {
+        return this.cameraPermission === 'granted';
+      }
     }
 
-    const permissionGate = new AssessmentPermissionGate();
+        const permissionGate = new AssessmentPermissionGate();
 
     /* ==========================================================================
        4. ROUTING & STORYBOOK CONTROLLER (STRICT 10-STEP SEQUENCE ENFORCED)
@@ -6392,6 +6612,11 @@
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           this.showAlert('Camera and Microphone are not supported by this browser.', true);
           return;
+        }
+
+        // Release any existing stream from permissionGate to release Windows hardware camera lock
+        if (window.permissionGate && window.permissionGate.mediaStream) {
+          window.permissionGate.stopMediaStreams();
         }
 
         const selectedCamId = this.videoSelect?.value;
