@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const db = require('./db.js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -318,12 +319,15 @@ app.post('/api/storybook/verify-chapter', authenticateGate1, (req, res) => {
 // --------------------------------------------------------------------------
 // 6. PRIVATE PHOTO GALLERY ENDPOINTS (AUTHENTICATED)
 // --------------------------------------------------------------------------
-app.get('/api/gallery/photos', authenticateGate2, (req, res) => {
-  const photos = loadPhotoMetadata();
+app.get('/api/gallery/photos', authenticateGate2, async (req, res) => {
+  let photos = await db.getPhotosFromDb();
+  if (!photos || photos.length === 0) {
+    photos = loadPhotoMetadata();
+  }
   res.json({ success: true, photos });
 });
 
-app.post('/api/gallery/upload', authenticateGate2, upload.array('photos', 20), (req, res) => {
+app.post('/api/gallery/upload', authenticateGate2, upload.array('photos', 20), async (req, res) => {
   try {
     const files = req.files || [];
     if (files.length === 0) return res.status(400).json({ error: 'No image files provided.' });
@@ -342,6 +346,11 @@ app.post('/api/gallery/upload', authenticateGate2, upload.array('photos', 20), (
 
     const updated = [...currentPhotos, ...newItems];
     savePhotoMetadata(updated);
+
+    // Persist new photos to PostgreSQL Database
+    for (const item of newItems) {
+      await db.insertPhotoToDb(item);
+    }
 
     res.json({
       success: true,
@@ -420,6 +429,9 @@ app.post('/api/wishes/send', async (req, res) => {
     // 1. Save to local server persistent archive
     saveWishToLog(newWish);
 
+    // Save to PostgreSQL (Supabase) Database
+    await db.insertWishToDb(newWish.author, newWish.message, newWish.receivedAt);
+
     // 2. Optional Nodemailer delivery if SMTP env vars or config are set
     let emailSent = false;
     let emailNote = 'Saved locally to server archive.';
@@ -477,8 +489,11 @@ app.post('/api/wishes/send', async (req, res) => {
   }
 });
 
-app.get('/api/wishes', (req, res) => {
-  const wishes = loadWishesLog();
+app.get('/api/wishes', async (req, res) => {
+  let wishes = await db.getWishesFromDb();
+  if (!wishes) {
+    wishes = loadWishesLog();
+  }
   res.json({ success: true, wishes });
 });
 
@@ -499,7 +514,7 @@ app.get('*', (req, res) => {
 // --------------------------------------------------------------------------
 // START SERVER
 // --------------------------------------------------------------------------
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`================================================================`);
   console.log(`✈️  SKYWARD AMBITION - STORYBOOK & PUZZLE SERVER RUNNING`);
   console.log(`================================================================`);
@@ -508,5 +523,18 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🔒 Gate 2 Memory Vault PIN Protection: Active (Salted Hash)`);
   console.log(`🧩 6 Cryptography & Logic Challenges Configured`);
   console.log(`🖼️  Private Storage: ${PRIVATE_STORAGE_DIR}`);
+
+  // Connect to Supabase PostgreSQL Database
+  const dbConnected = await db.initDatabase();
+  if (dbConnected) {
+    console.log(`🗄️  PostgreSQL Database: Connected to Supabase Cloud`);
+    // Sync any existing local photos to PostgreSQL
+    const localPhotos = loadPhotoMetadata();
+    for (const p of localPhotos) {
+      await db.insertPhotoToDb(p);
+    }
+  } else {
+    console.log(`📁 Local Storage Fallback: Active`);
+  }
   console.log(`================================================================`);
 });
