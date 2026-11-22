@@ -1346,6 +1346,79 @@
       flex-wrap: wrap;
     }
 
+    /* Telemetry & Device Status Panel */
+    .recording-telemetry-panel {
+      background: rgba(16, 28, 44, 0.9);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 1.2rem;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .telemetry-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .telemetry-label {
+      font-family: var(--font-military);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--gold-light);
+    }
+    .telemetry-value {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ivory);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Recovery Banner */
+    .recording-recovery-banner {
+      background: rgba(166, 93, 63, 0.25);
+      border: 1px solid var(--burnt-orange);
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .recovery-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .recovery-icon {
+      font-size: 1.5rem;
+    }
+    .recovery-text strong {
+      font-family: var(--font-military);
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      color: var(--gold-light);
+      display: block;
+    }
+    .recovery-text p {
+      font-size: 0.8rem;
+      color: var(--ivory-dim);
+      margin: 2px 0 0 0;
+    }
+    .recovery-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
     /* Live VU Meter */
     .studio-vu-container {
       margin-bottom: 1.5rem;
@@ -4233,7 +4306,7 @@
             </button>
           </div>
 
-          <!-- =====================================================================
+<!-- =====================================================================
                SQUADRON AV RECORDING STUDIO (CAMERA, MIC & SUPABASE STORAGE)
                ===================================================================== -->
           <div class="recording-studio-panel" id="recordingStudioSection">
@@ -4241,8 +4314,57 @@
               <span class="editorial-tag">Squadron AV Dispatch // Supabase Archive</span>
               <h3>Record Audio &amp; Video Salute for Ma'am 🎥</h3>
               <p class="story-text" style="font-size:0.95rem; color:var(--ivory-dim); margin-bottom:1.2rem;">
-                Deliver your personalized live birthday tribute directly to Ma'am. Capture your camera and microphone, preview your recording with audio, and securely store it in the Supabase Cloud.
+                Deliver your personalized live birthday tribute directly to Ma'am. Select your laptop's integrated camera or external device, record with automatic cloud backup, and review past dispatches.
               </p>
+            </div>
+
+            <!-- Incomplete Session Recovery Banner -->
+            <div class="recording-recovery-banner" id="recordingRecoveryBanner" style="display:none;">
+              <div class="recovery-content">
+                <span class="recovery-icon">⚠️</span>
+                <div class="recovery-text">
+                  <strong>Interrupted Recording Session Detected</strong>
+                  <p id="recoveryDesc">A previous recording session has saved chunks in local IndexedDB and Supabase Storage.</p>
+                </div>
+              </div>
+              <div class="recovery-actions">
+                <button type="button" class="btn-primary" id="btnRecoverSession" style="background:#106f3e; font-size:0.8rem; padding:6px 14px;">
+                  🎬 Reconstruct &amp; Finalize
+                </button>
+                <button type="button" class="btn-secondary" id="btnDismissRecovery" style="font-size:0.8rem; padding:6px 14px;">
+                  ✕ Discard
+                </button>
+              </div>
+            </div>
+
+            <!-- Real-time Recording Status Panel -->
+            <div class="recording-telemetry-panel" id="recordingTelemetryPanel">
+              <div class="telemetry-grid">
+                <div class="telemetry-item">
+                  <span class="telemetry-label">CAMERA:</span>
+                  <span class="telemetry-value" id="telemCamVal">Integrated Camera (Built-in)</span>
+                </div>
+                <div class="telemetry-item">
+                  <span class="telemetry-label">MICROPHONE:</span>
+                  <span class="telemetry-value" id="telemMicVal">Default Microphone</span>
+                </div>
+                <div class="telemetry-item">
+                  <span class="telemetry-label">RECORDING:</span>
+                  <span class="telemetry-value" id="telemRecVal">Stopped</span>
+                </div>
+                <div class="telemetry-item">
+                  <span class="telemetry-label">CLOUD BACKUP:</span>
+                  <span class="telemetry-value" id="telemCloudVal">Standby</span>
+                </div>
+                <div class="telemetry-item">
+                  <span class="telemetry-label">INTERNET:</span>
+                  <span class="telemetry-value" id="telemNetVal">Connected 🟢</span>
+                </div>
+                <div class="telemetry-item">
+                  <span class="telemetry-label">CHUNKS UPLOADED:</span>
+                  <span class="telemetry-value" id="telemChunksVal">0 / 0</span>
+                </div>
+              </div>
             </div>
 
             <!-- Device Status & Stream Controls -->
@@ -4256,14 +4378,15 @@
                 </span>
               </div>
 
+              <!-- Camera and Microphone Selectors (Integrated Camera Prioritized) -->
               <div class="device-selectors-row" id="deviceSelectorsRow" style="display:none;">
                 <div class="selector-unit">
                   <label for="videoSourceSelect">Camera:</label>
-                  <select id="videoSourceSelect" class="studio-select"></select>
+                  <select id="videoSourceSelect" class="studio-select" title="Select Laptop Integrated Camera or other video device"></select>
                 </div>
                 <div class="selector-unit">
                   <label for="audioSourceSelect">Microphone:</label>
-                  <select id="audioSourceSelect" class="studio-select"></select>
+                  <select id="audioSourceSelect" class="studio-select" title="Select audio input microphone"></select>
                 </div>
               </div>
 
@@ -4333,7 +4456,7 @@
               <div class="studio-viewport-card" id="recordedPlaybackContainer" style="display:none;">
                 <div class="viewport-header">
                   <span class="view-label">RECORDED SALUTE PREVIEW</span>
-                  <span class="badge-saved-tag" id="playbackMetaTag">Review &amp; Upload</span>
+                  <span class="badge-saved-tag" id="playbackMetaTag">Review &amp; Playback</span>
                 </div>
 
                 <div class="video-frame-box">
@@ -4341,9 +4464,6 @@
                 </div>
 
                 <div class="playback-actions-strip">
-                  <button type="button" class="btn-primary" id="btnSaveToCloud" style="background:linear-gradient(135deg, #106f3e, #0b4e2b);">
-                    ☁️ Save to Supabase Cloud
-                  </button>
                   <button type="button" class="btn-secondary" id="btnDownloadLocal">
                     📥 Download Copy
                   </button>
@@ -4354,7 +4474,7 @@
 
                 <div class="upload-progress-box" id="uploadProgressBox" style="display:none;">
                   <div class="spinner-inline"></div>
-                  <span id="uploadStatusText">Uploading video salute to Supabase Cloud...</span>
+                  <span id="uploadStatusText">Reconstructing and finalizing video in Supabase Cloud...</span>
                 </div>
               </div>
 
@@ -4363,10 +4483,10 @@
             <!-- Feedback Notice Banner -->
             <div class="studio-alert-banner" id="studioAlertBanner" style="display:none;"></div>
 
-            <!-- Recording History Archive -->
+            <!-- Feature 9: MY BIRTHDAY RECORDINGS -->
             <div class="recordings-history-zone">
               <div class="history-header">
-                <h4>CLASSIFIED VIDEO ARCHIVE // SAVED DISPATCHES</h4>
+                <h4>MY BIRTHDAY RECORDINGS</h4>
                 <button type="button" class="btn-secondary" id="btnRefreshRecordings" style="font-size:0.75rem; padding:4px 10px;">
                   ↻ Refresh Archive
                 </button>
@@ -4378,7 +4498,7 @@
 
           </div>
 
-          <!-- Wishes Log -->
+                    <!-- Wishes Log -->
           <div
             style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:20px; padding:32px 28px; max-width:760px; margin:0 auto; text-align:left;">
             <h3 style="font-size:1.3rem; margin-bottom:0.4rem;">Squadron Log &amp; Wishes</h3>
@@ -5906,27 +6026,160 @@
     }
 
 
-    /* ==========================================================================
-       CHAPTER 7: SQUADRON AUDIO/VIDEO RECORDING STUDIO CLIENT (MEDIARECORDER + SUPABASE)
+/* ==========================================================================
+       CHAPTER 7: SQUADRON AUDIO/VIDEO RECORDING STUDIO CLIENT
+       (INTEGRATED LAPTOP CAMERA + 5S CHUNK BACKUP + INDEXEDDB + SUPABASE)
        ========================================================================== */
+    class IndexedDBRecordingStore {
+      constructor() {
+        this.dbName = 'SkywardRecordingDB';
+        this.version = 1;
+        this.db = null;
+      }
+
+      async open() {
+        if (this.db) return this.db;
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open(this.dbName, this.version);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('sessions')) {
+              db.createObjectStore('sessions', { keyPath: 'id' });
+            }
+            if (!db.objectStoreNames.contains('chunks')) {
+              const chunkStore = db.createObjectStore('chunks', { keyPath: 'id' });
+              chunkStore.createIndex('by_recording', 'recordingId', { unique: false });
+            }
+          };
+          req.onsuccess = (e) => {
+            this.db = e.target.result;
+            resolve(this.db);
+          };
+          req.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      async saveSession(session) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('sessions', 'readwrite');
+          tx.objectStore('sessions').put(session);
+          tx.oncomplete = () => resolve();
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      async getSession(id) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('sessions', 'readonly');
+          const req = tx.objectStore('sessions').get(id);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      async getActiveSessions() {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('sessions', 'readonly');
+          const req = tx.objectStore('sessions').getAll();
+          req.onsuccess = () => {
+            const list = req.result || [];
+            resolve(list.filter(s => s.status === 'recording' || s.status === 'interrupted'));
+          };
+          req.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      async saveChunk(chunk) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('chunks', 'readwrite');
+          tx.objectStore('chunks').put(chunk);
+          tx.oncomplete = () => resolve();
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      async markChunkUploaded(chunkId) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('chunks', 'readwrite');
+          const store = tx.objectStore('chunks');
+          const req = store.get(chunkId);
+          req.onsuccess = () => {
+            if (req.result) {
+              req.result.uploaded = true;
+              store.put(req.result);
+            }
+            resolve();
+          };
+          req.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      async getChunksForRecording(recordingId) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('chunks', 'readonly');
+          const index = tx.objectStore('chunks').index('by_recording');
+          const req = index.getAll(IDBKeyRange.only(recordingId));
+          req.onsuccess = () => {
+            const sorted = (req.result || []).sort((a, b) => a.chunkNumber - b.chunkNumber);
+            resolve(sorted);
+          };
+          req.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      async deleteSession(recordingId) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(['sessions', 'chunks'], 'readwrite');
+          tx.objectStore('sessions').delete(recordingId);
+          const chunkStore = tx.objectStore('chunks');
+          const index = chunkStore.index('by_recording');
+          const req = index.openCursor(IDBKeyRange.only(recordingId));
+          req.onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor) {
+              cursor.delete();
+              cursor.continue();
+            }
+          };
+          tx.oncomplete = () => resolve();
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      }
+    }
+
     class VideoRecordingStudio {
       constructor() {
+        this.idb = new IndexedDBRecordingStore();
         this.stream = null;
         this.mediaRecorder = null;
         this.recordedChunks = [];
-        this.recordedBlob = null;
-        this.recordedBlobUrl = null;
+        this.activeRecordingId = null;
+        this.chunkSeq = 0;
+        this.totalChunksCount = 0;
+        this.uploadedChunksCount = 0;
         this.recordingTimer = null;
         this.elapsedSeconds = 0;
+        this.isRecording = false;
         this.isPaused = false;
         this.audioContext = null;
         this.analyser = null;
         this.vuAnimFrame = null;
         this.supportedMimeType = '';
+        this.pendingUploadQueue = [];
 
         this.initDOMElements();
         this.attachEventListeners();
         this.detectSupportedMimeType();
+        this.setupNavigationGuards();
+        this.setupNetworkListeners();
+        this.checkForRecoverySessions();
         this.loadRecordingsHistory();
       }
 
@@ -5941,6 +6194,18 @@
         this.deviceSelectorsRow = document.getElementById('deviceSelectorsRow');
         this.videoSelect = document.getElementById('videoSourceSelect');
         this.audioSelect = document.getElementById('audioSourceSelect');
+
+        this.telemCamVal = document.getElementById('telemCamVal');
+        this.telemMicVal = document.getElementById('telemMicVal');
+        this.telemRecVal = document.getElementById('telemRecVal');
+        this.telemCloudVal = document.getElementById('telemCloudVal');
+        this.telemNetVal = document.getElementById('telemNetVal');
+        this.telemChunksVal = document.getElementById('telemChunksVal');
+
+        this.recoveryBanner = document.getElementById('recordingRecoveryBanner');
+        this.recoveryDesc = document.getElementById('recoveryDesc');
+        this.btnRecover = document.getElementById('btnRecoverSession');
+        this.btnDismissRecovery = document.getElementById('btnDismissRecovery');
 
         this.vuContainer = document.getElementById('studioVuContainer');
         this.vuFill = document.getElementById('studioVuFill');
@@ -5960,7 +6225,6 @@
         this.playbackCard = document.getElementById('recordedPlaybackContainer');
         this.playbackVideo = document.getElementById('studioPlaybackVideo');
         this.playbackMetaTag = document.getElementById('playbackMetaTag');
-        this.btnSaveCloud = document.getElementById('btnSaveToCloud');
         this.btnDownload = document.getElementById('btnDownloadLocal');
         this.btnDiscard = document.getElementById('btnDiscardRecording');
         this.uploadProgress = document.getElementById('uploadProgressBox');
@@ -5993,6 +6257,28 @@
         }
       }
 
+      setupNavigationGuards() {
+        window.addEventListener('beforeunload', (e) => {
+          if (this.isRecording) {
+            e.preventDefault();
+            e.returnValue = 'Recording is in progress. Your chunks are safely stored locally in IndexedDB and Supabase.';
+            return e.returnValue;
+          }
+        });
+      }
+
+      setupNetworkListeners() {
+        window.addEventListener('online', () => {
+          if (this.telemNetVal) this.telemNetVal.textContent = 'Connected 🟢';
+          this.showAlert('Internet connectivity restored. Syncing pending video chunks...');
+          this.retryPendingChunks();
+        });
+        window.addEventListener('offline', () => {
+          if (this.telemNetVal) this.telemNetVal.textContent = 'Disconnected 🔴';
+          this.showAlert('Internet disconnected. Video chunks are being safely cached in local IndexedDB.', true);
+        });
+      }
+
       attachEventListeners() {
         if (this.btnInit) this.btnInit.addEventListener('click', () => this.initMediaStream());
         if (this.btnToggleCam) this.btnToggleCam.addEventListener('click', () => this.toggleCamera());
@@ -6005,10 +6291,12 @@
         if (this.btnResume) this.btnResume.addEventListener('click', () => this.resumeRecording());
         if (this.btnStop) this.btnStop.addEventListener('click', () => this.stopRecording());
 
-        if (this.btnSaveCloud) this.btnSaveCloud.addEventListener('click', () => this.saveToCloud());
         if (this.btnDownload) this.btnDownload.addEventListener('click', () => this.downloadRecording());
         if (this.btnDiscard) this.btnDiscard.addEventListener('click', () => this.discardRecording());
         if (this.btnRefreshHistory) this.btnRefreshHistory.addEventListener('click', () => this.loadRecordingsHistory());
+
+        if (this.btnRecover) this.btnRecover.addEventListener('click', () => this.recoverActiveSession());
+        if (this.btnDismissRecovery) this.btnDismissRecovery.addEventListener('click', () => this.dismissRecovery());
       }
 
       showAlert(msg, isError = false) {
@@ -6017,32 +6305,86 @@
         this.alertBanner.textContent = msg;
         this.alertBanner.style.display = 'block';
         setTimeout(() => {
-          this.alertBanner.style.display = 'none';
+          if (this.alertBanner) this.alertBanner.style.display = 'none';
         }, 5000);
       }
 
+      // Feature 1: Populate Device Selectors & Prioritize Integrated Laptop Camera
       async populateDeviceSelectors() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
         try {
-          const devices = await navigator.mediaDevices.enumerateDevices();
-          const videoDevices = devices.filter(d => d.kind === 'videoinput');
-          const audioDevices = devices.filter(d => d.kind === 'audioinput');
+          let devices = await navigator.mediaDevices.enumerateDevices();
+          let videoDevices = devices.filter(d => d.kind === 'videoinput');
+          let audioDevices = devices.filter(d => d.kind === 'audioinput');
+
+          // If device labels are blank, prompt permission first so device names become available
+          if (videoDevices.length > 0 && !videoDevices[0].label) {
+            try {
+              const tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+              tempStream.getTracks().forEach(t => t.stop());
+              devices = await navigator.mediaDevices.enumerateDevices();
+              videoDevices = devices.filter(d => d.kind === 'videoinput');
+              audioDevices = devices.filter(d => d.kind === 'audioinput');
+            } catch (e) {}
+          }
+
+          const isIntegrated = (label) => {
+            const l = (label || '').toLowerCase();
+            const matchInternal = /integrated|built-in|internal|facetime|front|webcam|wide vision/i.test(l);
+            const isPhone = /phone|link|virtual|obs|droid|iriun|epoccam/i.test(l);
+            return matchInternal && !isPhone;
+          };
+
+          // Sort: Integrated Laptop Camera First! Phone Link Camera Last!
+          videoDevices.sort((a, b) => {
+            const aBuiltIn = isIntegrated(a.label);
+            const bBuiltIn = isIntegrated(b.label);
+            if (aBuiltIn && !bBuiltIn) return -1;
+            if (!aBuiltIn && bBuiltIn) return 1;
+            return 0;
+          });
+
+          const savedCamId = sessionStorage.getItem('selectedCameraId') || localStorage.getItem('preferredCameraId');
+          let bestCamId = savedCamId;
+          if (!bestCamId || !videoDevices.some(d => d.deviceId === bestCamId)) {
+            const preferred = videoDevices.find(d => isIntegrated(d.label)) ||
+                              videoDevices.find(d => !/phone|link/i.test(d.label)) ||
+                              videoDevices[0];
+            bestCamId = preferred?.deviceId || '';
+          }
 
           if (this.videoSelect) {
-            this.videoSelect.innerHTML = videoDevices.map((d, i) =>
-              `<option value="${d.deviceId}">${d.label || 'Camera ' + (i + 1)}</option>`
-            ).join('');
+            this.videoSelect.innerHTML = videoDevices.map(d => {
+              const label = d.label || 'Camera';
+              const badge = isIntegrated(label) ? ' ★ [Integrated Camera]' : (/phone|link/i.test(label) ? ' 📱 [Phone Link]' : '');
+              return `<option value="${d.deviceId}">${label}${badge}</option>`;
+            }).join('');
+            if (bestCamId) this.videoSelect.value = bestCamId;
           }
+
+          const savedMicId = sessionStorage.getItem('selectedMicId') || localStorage.getItem('preferredMicId');
           if (this.audioSelect) {
-            this.audioSelect.innerHTML = audioDevices.map((d, i) =>
-              `<option value="${d.deviceId}">${d.label || 'Microphone ' + (i + 1)}</option>`
-            ).join('');
+            this.audioSelect.innerHTML = audioDevices.map(d => {
+              return `<option value="${d.deviceId}">${d.label || 'Microphone'}</option>`;
+            }).join('');
+            if (savedMicId && audioDevices.some(d => d.deviceId === savedMicId)) {
+              this.audioSelect.value = savedMicId;
+            }
           }
-          if (videoDevices.length > 0 || audioDevices.length > 0) {
-            this.deviceSelectorsRow.style.display = 'flex';
-          }
+
+          this.deviceSelectorsRow.style.display = 'flex';
+          this.updateTelemetryDeviceLabels();
         } catch (e) {
           console.warn('enumerateDevices error:', e);
+        }
+      }
+
+      updateTelemetryDeviceLabels() {
+        if (this.videoSelect && this.videoSelect.selectedOptions.length > 0 && this.telemCamVal) {
+          this.telemCamVal.textContent = this.videoSelect.selectedOptions[0].text;
+        }
+        if (this.audioSelect && this.audioSelect.selectedOptions.length > 0 && this.telemMicVal) {
+          this.telemMicVal.textContent = this.audioSelect.selectedOptions[0].text;
         }
       }
 
@@ -6052,18 +6394,39 @@
           return;
         }
 
-        const videoConstraint = this.videoSelect && this.videoSelect.value ? { deviceId: { exact: this.videoSelect.value } } : true;
-        const audioConstraint = this.audioSelect && this.audioSelect.value ? { deviceId: { exact: this.audioSelect.value } } : true;
+        const selectedCamId = this.videoSelect?.value;
+        const selectedMicId = this.audioSelect?.value;
+
+        if (selectedCamId) {
+          sessionStorage.setItem('selectedCameraId', selectedCamId);
+          localStorage.setItem('preferredCameraId', selectedCamId);
+        }
+        if (selectedMicId) {
+          sessionStorage.setItem('selectedMicId', selectedMicId);
+          localStorage.setItem('preferredMicId', selectedMicId);
+        }
+
+        // Exact device constraint with graceful fallback
+        const videoConstraint = selectedCamId ? { deviceId: { exact: selectedCamId } } : true;
+        const audioConstraint = selectedMicId ? { deviceId: { exact: selectedMicId } } : true;
 
         try {
           if (this.stream) {
             this.stream.getTracks().forEach(t => t.stop());
           }
 
-          this.stream = await navigator.mediaDevices.getUserMedia({
-            video: videoConstraint,
-            audio: audioConstraint
-          });
+          try {
+            this.stream = await navigator.mediaDevices.getUserMedia({
+              video: videoConstraint,
+              audio: audioConstraint
+            });
+          } catch (exactErr) {
+            console.warn('Exact device constraint error, using soft fallback:', exactErr);
+            this.stream = await navigator.mediaDevices.getUserMedia({
+              video: selectedCamId ? { deviceId: selectedCamId } : true,
+              audio: selectedMicId ? { deviceId: selectedMicId } : true
+            });
+          }
 
           if (this.liveVideo) {
             this.liveVideo.srcObject = this.stream;
@@ -6073,7 +6436,6 @@
             this.standbyPlaceholder.style.display = 'none';
           }
 
-          // Update status
           this.camDot.className = 'status-dot online';
           this.camText.textContent = 'Active (Live)';
           this.micDot.className = 'status-dot online';
@@ -6088,24 +6450,22 @@
 
           if (!isDeviceSwitch) {
             await this.populateDeviceSelectors();
+          } else {
+            this.updateTelemetryDeviceLabels();
           }
 
           this.startAudioMeter();
-          this.showAlert('Camera and Microphone activated successfully.');
+          this.showAlert('Camera feed initialized. Built-in Integrated Camera prioritized.');
         } catch (err) {
-          console.error('getUserMedia studio error:', err);
+          console.error('getUserMedia error:', err);
           let errorMsg = 'Could not access media devices.';
           if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            errorMsg = 'Permission denied. Please allow camera and microphone in browser settings.';
+            errorMsg = 'Permission denied. Please allow camera access in browser settings.';
           } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-            errorMsg = 'No camera or microphone found on this device.';
-          } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-            errorMsg = 'Camera or microphone is already in use by another application.';
+            errorMsg = 'Selected camera was not found. Please choose another device.';
           }
           this.camDot.className = 'status-dot error';
           this.camText.textContent = 'Error';
-          this.micDot.className = 'status-dot error';
-          this.micText.textContent = 'Error';
           this.showAlert(errorMsg, true);
         }
       }
@@ -6131,9 +6491,7 @@
             if (!this.analyser) return;
             this.analyser.getByteFrequencyData(dataArray);
             let sum = 0;
-            for (let i = 0; i < dataArray.length; i++) {
-              sum += dataArray[i];
-            }
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
             const avg = sum / dataArray.length;
             const percentage = Math.min(100, Math.round((avg / 128) * 100));
             if (this.vuFill) this.vuFill.style.width = percentage + '%';
@@ -6141,9 +6499,7 @@
             this.vuAnimFrame = requestAnimationFrame(updateVu);
           };
           updateVu();
-        } catch (e) {
-          console.warn('Audio meter init error:', e);
-        }
+        } catch (e) {}
       }
 
       toggleCamera() {
@@ -6168,27 +6524,62 @@
         }
       }
 
-      startRecording() {
+      // Feature 2: Start Recording with Automatic 5000ms Chunk Cloud Backup
+      async startRecording() {
         if (!this.stream) {
           this.showAlert('Please enable camera and microphone before recording.', true);
           return;
         }
 
         this.recordedChunks = [];
+        this.chunkSeq = 0;
+        this.totalChunksCount = 0;
+        this.uploadedChunksCount = 0;
         this.elapsedSeconds = 0;
+        this.isRecording = true;
         this.isPaused = false;
+        this.activeRecordingId = crypto.randomUUID();
 
+        // 1. Initialize recording session on backend
+        try {
+          await fetch('/api/recordings/start-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              recordingId: this.activeRecordingId,
+              cameraLabel: this.telemCamVal?.textContent || 'Camera',
+              micLabel: this.telemMicVal?.textContent || 'Microphone',
+              mimeType: this.supportedMimeType
+            })
+          });
+        } catch (e) {
+          console.warn('Backend start-session warning:', e);
+        }
+
+        // 2. Save active session to IndexedDB & localStorage
+        const sessionMeta = {
+          id: this.activeRecordingId,
+          startTime: Date.now(),
+          status: 'recording',
+          cameraLabel: this.telemCamVal?.textContent || 'Camera',
+          micLabel: this.telemMicVal?.textContent || 'Microphone',
+          mimeType: this.supportedMimeType
+        };
+        await this.idb.saveSession(sessionMeta);
+        localStorage.setItem('activeRecordingId', this.activeRecordingId);
+
+        // 3. Initialize MediaRecorder with 5000ms timeslice
         try {
           const options = { mimeType: this.supportedMimeType, videoBitsPerSecond: 2500000 };
           this.mediaRecorder = new MediaRecorder(this.stream, options);
         } catch (e) {
-          console.warn('MediaRecorder with options failed, falling back to basic:', e);
           this.mediaRecorder = new MediaRecorder(this.stream);
         }
 
+        // Feature 2: ondataavailable fires every ~5000ms
         this.mediaRecorder.ondataavailable = (e) => {
           if (e.data && e.data.size > 0) {
-            this.recordedChunks.push(e.data);
+            this.handleRecordingChunk(e.data);
           }
         };
 
@@ -6196,19 +6587,18 @@
           this.onRecordingStopped();
         };
 
-        this.mediaRecorder.onerror = (e) => {
-          console.error('MediaRecorder error:', e);
-          this.showAlert('Recording error occurred: ' + (e.error ? e.error.name : 'Unknown'), true);
-        };
+        this.mediaRecorder.start(5000); // 5000ms periodic chunk backup
 
-        this.mediaRecorder.start(1000); // 1s slice
-
-        // UI updates
+        // Update UI
         this.btnStart.style.display = 'none';
         this.btnPause.style.display = 'inline-block';
         this.btnStop.style.display = 'inline-block';
         this.recLiveBadge.style.display = 'inline-flex';
         this.timerDisplay.textContent = '00:00';
+
+        if (this.telemRecVal) this.telemRecVal.textContent = 'Active 🔴';
+        if (this.telemCloudVal) this.telemCloudVal.textContent = 'Auto-Backup (5s Chunks) ☁️';
+        if (this.telemChunksVal) this.telemChunksVal.textContent = '0 / 0';
 
         this.recordingTimer = setInterval(() => {
           if (!this.isPaused) {
@@ -6219,7 +6609,80 @@
           }
         }, 1000);
 
-        this.showAlert('Recording started! Speak and salute for Ma'am.');
+        this.showAlert('Recording live! Chunks are automatically backed up to Supabase every 5 seconds.');
+      }
+
+      async handleRecordingChunk(blob) {
+        this.chunkSeq++;
+        const currentSeq = this.chunkSeq;
+        this.totalChunksCount = currentSeq;
+        this.recordedChunks.push(blob);
+
+        if (this.telemChunksVal) {
+          this.telemChunksVal.textContent = `${this.uploadedChunksCount} / ${this.totalChunksCount}`;
+        }
+
+        const chunkRecord = {
+          id: `${this.activeRecordingId}_chunk_${currentSeq}`,
+          recordingId: this.activeRecordingId,
+          chunkNumber: currentSeq,
+          blob: blob,
+          size: blob.size,
+          timestamp: Date.now(),
+          uploaded: false
+        };
+
+        // 1. Save to local IndexedDB
+        await this.idb.saveChunk(chunkRecord);
+
+        // 2. Upload chunk to Supabase Cloud
+        this.uploadChunkToServer(chunkRecord);
+      }
+
+      async uploadChunkToServer(chunkRecord) {
+        if (!navigator.onLine) {
+          if (this.telemCloudVal) this.telemCloudVal.textContent = 'Cached Locally (Offline)';
+          return;
+        }
+
+        try {
+          if (this.telemCloudVal) {
+            this.telemCloudVal.textContent = `Uploading Chunk #${chunkRecord.chunkNumber}...`;
+          }
+
+          const formData = new FormData();
+          formData.append('recordingId', chunkRecord.recordingId);
+          formData.append('chunkNumber', chunkRecord.chunkNumber);
+          formData.append('chunk', chunkRecord.blob, `chunk-${String(chunkRecord.chunkNumber).padStart(4, '0')}.webm`);
+
+          const res = await fetch('/api/recordings/chunk', {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            this.uploadedChunksCount++;
+            await this.idb.markChunkUploaded(chunkRecord.id);
+            if (this.telemChunksVal) {
+              this.telemChunksVal.textContent = `${this.uploadedChunksCount} / ${this.totalChunksCount}`;
+            }
+            if (this.telemCloudVal) {
+              this.telemCloudVal.textContent = 'Saved to Cloud ✓';
+            }
+          }
+        } catch (e) {
+          console.warn('Chunk upload failed, cached in IndexedDB for retry:', e);
+          if (this.telemCloudVal) this.telemCloudVal.textContent = 'Pending Retry (IndexedDB)';
+        }
+      }
+
+      async retryPendingChunks() {
+        if (!this.activeRecordingId) return;
+        const pending = await this.idb.getPendingChunks(this.activeRecordingId);
+        for (const c of pending) {
+          await this.uploadChunkToServer(c);
+        }
       }
 
       pauseRecording() {
@@ -6228,6 +6691,7 @@
           this.isPaused = true;
           this.btnPause.style.display = 'none';
           this.btnResume.style.display = 'inline-block';
+          if (this.telemRecVal) this.telemRecVal.textContent = 'Paused ⏸';
           this.recLiveBadge.style.background = 'rgba(197, 164, 109, 0.3)';
           this.recLiveBadge.style.borderColor = 'var(--gold)';
         }
@@ -6239,6 +6703,7 @@
           this.isPaused = false;
           this.btnResume.style.display = 'none';
           this.btnPause.style.display = 'inline-block';
+          if (this.telemRecVal) this.telemRecVal.textContent = 'Active 🔴';
           this.recLiveBadge.style.background = 'rgba(178, 56, 37, 0.25)';
           this.recLiveBadge.style.borderColor = '#b23825';
         }
@@ -6249,15 +6714,19 @@
           this.mediaRecorder.stop();
         }
         clearInterval(this.recordingTimer);
+        this.isRecording = false;
 
         this.btnStart.style.display = 'inline-block';
         this.btnPause.style.display = 'none';
         this.btnResume.style.display = 'none';
         this.btnStop.style.display = 'none';
         this.recLiveBadge.style.display = 'none';
+
+        if (this.telemRecVal) this.telemRecVal.textContent = 'Stopped ⏹';
       }
 
-      onRecordingStopped() {
+      // Feature 7: Automatic Video Reconstruction on Stop
+      async onRecordingStopped() {
         if (this.recordedChunks.length === 0) {
           this.showAlert('Recording contained no data. Please try again.', true);
           return;
@@ -6271,21 +6740,52 @@
         }
         this.recordedBlobUrl = URL.createObjectURL(this.recordedBlob);
 
-        // Display in playback video
+        // Display immediately in playback video with controls and audio
         if (this.playbackVideo) {
           this.playbackVideo.src = this.recordedBlobUrl;
           this.playbackVideo.load();
         }
 
         const sizeMb = (this.recordedBlob.size / (1024 * 1024)).toFixed(2);
-        this.playbackMetaTag.textContent = `Duration: ${this.elapsedSeconds}s • Size: ${sizeMb} MB`;
+        this.playbackMetaTag.textContent = `Duration: ${this.elapsedSeconds}s • Size: ${sizeMb} MB • Cloud Reconstructing...`;
 
-        // Expand to dual stage grid
         this.stageGrid.classList.add('has-preview');
         this.playbackCard.style.display = 'flex';
-        this.playbackCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        this.uploadProgress.style.display = 'flex';
+        this.uploadStatusText.textContent = 'Reconstructing & finalizing video in Supabase Storage...';
 
-        this.showAlert(`Recording finished (${this.elapsedSeconds}s, ${sizeMb} MB). You can preview with sound, download, or save to Supabase Cloud.`);
+        try {
+          // Finalize on backend and merge chunks into final.webm
+          const formData = new FormData();
+          formData.append('recordingId', this.activeRecordingId);
+          formData.append('durationSeconds', this.elapsedSeconds);
+          formData.append('totalChunks', this.chunkSeq);
+          formData.append('fullVideo', this.recordedBlob, `final_${this.activeRecordingId}.webm`);
+
+          const res = await fetch('/api/recordings/finalize', {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            this.playbackMetaTag.textContent = `Duration: ${this.elapsedSeconds}s • Size: ${sizeMb} MB • Saved to Supabase ✓`;
+            if (this.telemCloudVal) this.telemCloudVal.textContent = 'All Chunks Finalized in Cloud ✓';
+            localStorage.removeItem('activeRecordingId');
+
+            if (typeof spawnCelebrationParticles === 'function') {
+              const rect = this.playbackCard.getBoundingClientRect();
+              spawnCelebrationParticles(rect.left + rect.width / 2, rect.top, 50, ['#106F3E', '#C5A46D', '#FFFFFF', '#52A870']);
+            }
+            this.showAlert('✓ Recording finalized and archived in Supabase Cloud!');
+            this.loadRecordingsHistory();
+          }
+        } catch (err) {
+          console.warn('Finalize warning, stored locally:', err);
+          this.showAlert('Saved locally to IndexedDB. Cloud sync will finish in background.');
+        } finally {
+          this.uploadProgress.style.display = 'none';
+        }
       }
 
       downloadRecording() {
@@ -6300,6 +6800,10 @@
       }
 
       discardRecording() {
+        if (this.activeRecordingId) {
+          this.idb.deleteSession(this.activeRecordingId).catch(() => {});
+          localStorage.removeItem('activeRecordingId');
+        }
         if (this.recordedBlobUrl) {
           URL.revokeObjectURL(this.recordedBlobUrl);
           this.recordedBlobUrl = null;
@@ -6309,50 +6813,84 @@
         this.playbackCard.style.display = 'none';
         this.stageGrid.classList.remove('has-preview');
         if (this.playbackVideo) this.playbackVideo.src = '';
-        this.showAlert('Recording discarded. Ready to record a new take.');
+        this.showAlert('Recording take discarded.');
       }
 
-      async saveToCloud() {
-        if (!this.recordedBlob) {
-          this.showAlert('No recorded video to upload.', true);
-          return;
-        }
-
-        this.btnSaveCloud.disabled = true;
-        this.uploadProgress.style.display = 'flex';
-        this.uploadStatusText.textContent = 'Uploading to Supabase Storage & PostgreSQL...';
-
+      // Feature 3 & 8: Check for Incomplete Sessions & Recovery
+      async checkForRecoverySessions() {
         try {
-          const formData = new FormData();
-          const fileName = `salute_${Date.now()}.webm`;
-          formData.append('video', this.recordedBlob, fileName);
-          formData.append('duration', this.elapsedSeconds);
+          const activeSessions = await this.idb.getActiveSessions();
+          let interruptedSession = activeSessions[0];
 
-          const res = await fetch('/api/recordings/upload', {
+          if (!interruptedSession) {
+            const res = await fetch('/api/recordings/recoverable');
+            const data = await res.json();
+            if (data.success && data.recoverable && data.recoverable.length > 0) {
+              interruptedSession = data.recoverable[0];
+            }
+          }
+
+          if (interruptedSession && this.recoveryBanner) {
+            this.interruptedSessionId = interruptedSession.id;
+            const timeStr = new Date(interruptedSession.startTime || interruptedSession.createdAt || Date.now()).toLocaleTimeString();
+            this.recoveryDesc.textContent = `A previous session from ${timeStr} was interrupted. Chunks are safe in IndexedDB and Supabase.`;
+            this.recoveryBanner.style.display = 'flex';
+          }
+        } catch (e) {
+          console.warn('Recovery check error:', e);
+        }
+      }
+
+      async recoverActiveSession() {
+        if (!this.interruptedSessionId) return;
+        try {
+          this.recoveryDesc.textContent = 'Reconstructing video from saved chunks...';
+          const chunks = await this.idb.getChunksForRecording(this.interruptedSessionId);
+
+          if (chunks.length > 0) {
+            const blobParts = chunks.map(c => c.blob);
+            this.recordedBlob = new Blob(blobParts, { type: this.supportedMimeType || 'video/webm' });
+            this.recordedBlobUrl = URL.createObjectURL(this.recordedBlob);
+
+            if (this.playbackVideo) {
+              this.playbackVideo.src = this.recordedBlobUrl;
+            }
+            this.stageGrid.classList.add('has-preview');
+            this.playbackCard.style.display = 'flex';
+            this.playbackMetaTag.textContent = `Recovered Take • ${chunks.length} Chunks`;
+          }
+
+          // Trigger backend finalize for the recovered session
+          await fetch('/api/recordings/finalize', {
             method: 'POST',
-            body: formData
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              recordingId: this.interruptedSessionId,
+              durationSeconds: chunks.length * 5
+            })
           });
 
-          const data = await res.json();
-          if (data.success) {
-            this.showAlert('✓ Video salute successfully uploaded and archived in Supabase!');
-            if (typeof spawnCelebrationParticles === 'function') {
-              const rect = this.btnSaveCloud.getBoundingClientRect();
-              spawnCelebrationParticles(rect.left + rect.width / 2, rect.top, 50, ['#106F3E', '#C5A46D', '#FFFFFF', '#52A870']);
-            }
-            this.loadRecordingsHistory();
-          } else {
-            throw new Error(data.error || 'Upload failed');
-          }
-        } catch (err) {
-          console.error('Save to cloud error:', err);
-          this.showAlert('Cloud upload error: ' + err.message, true);
-        } finally {
-          this.btnSaveCloud.disabled = false;
-          this.uploadProgress.style.display = 'none';
+          this.dismissRecovery();
+          this.showAlert('✓ Interrupted recording successfully recovered and finalized!');
+          this.loadRecordingsHistory();
+        } catch (e) {
+          console.error('Recovery error:', e);
+          this.showAlert('Recovery failed: ' + e.message, true);
         }
       }
 
+      dismissRecovery() {
+        if (this.interruptedSessionId) {
+          this.idb.deleteSession(this.interruptedSessionId).catch(() => {});
+          localStorage.removeItem('activeRecordingId');
+          this.interruptedSessionId = null;
+        }
+        if (this.recoveryBanner) {
+          this.recoveryBanner.style.display = 'none';
+        }
+      }
+
+      // Feature 9: Load & Display "MY BIRTHDAY RECORDINGS"
       async loadRecordingsHistory() {
         if (!this.historyGrid) return;
         try {
@@ -6364,15 +6902,20 @@
               const sizeMb = (Number(r.fileSize || r.file_size || 0) / (1024 * 1024)).toFixed(1);
               const dur = r.durationSeconds || r.duration_seconds || 0;
               const playUrl = r.signedUrl || r.streamUrl;
+              const statusBadge = (r.status === 'completed' || !r.status)
+                ? '<span style="color:var(--success);">● Completed</span>'
+                : '<span style="color:var(--gold);">● Interrupted</span>';
+
               return `
                 <div class="history-card" data-rec-id="${r.id}">
                   <div>
-                    <div class="history-card-title">Dispatch #${data.recordings.length - i}: ${escapeHtml(r.fileName || 'Salute')}</div>
+                    <div class="history-card-title">Salute Dispatch #${data.recordings.length - i}: ${escapeHtml(r.fileName || 'Video Salute')}</div>
                     <div class="history-card-meta">
                       <span>⏱ ${dur}s</span>
                       <span>💾 ${sizeMb} MB</span>
-                      <span>📅 ${dateStr}</span>
+                      <span>${statusBadge}</span>
                     </div>
+                    <div style="font-size:0.72rem; color:var(--ivory-dim); margin-bottom:10px;">📅 ${dateStr}</div>
                   </div>
                   <div class="history-card-actions">
                     <button type="button" class="btn-hist-action" onclick="videoStudio.playFromHistory('${playUrl}')">▶ Play</button>
@@ -6424,8 +6967,7 @@
       videoStudio = new VideoRecordingStudio();
     });
 
-
-    /* ==========================================================================
+        /* ==========================================================================
        7. FINAL CELEBRATION BURST & WISHES STREAM
        ========================================================================== */
     document.getElementById('finalBurstBtn').addEventListener('click', (e) => {

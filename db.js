@@ -75,12 +75,31 @@ async function initDatabase() {
       CREATE TABLE IF NOT EXISTS birthday_recordings (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+        session_id TEXT,
         file_name TEXT NOT NULL,
         storage_path TEXT NOT NULL,
         mime_type TEXT,
+        duration_seconds INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'completed',
+        total_chunks INTEGER DEFAULT 1,
+        uploaded_chunks INTEGER DEFAULT 1,
+        file_size BIGINT DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        completed_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Ensure birthday_recording_chunks table exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS birthday_recording_chunks (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        recording_id UUID REFERENCES birthday_recordings(id) ON DELETE CASCADE,
+        chunk_number INTEGER NOT NULL,
+        storage_path TEXT NOT NULL,
         file_size BIGINT,
-        duration_seconds INTEGER,
-        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        mime_type TEXT,
+        uploaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT uq_recording_chunk UNIQUE (recording_id, chunk_number)
       );
     `);
 
@@ -192,12 +211,17 @@ async function getRecordingsFromDb() {
       SELECT 
         id, 
         user_id as "userId", 
+        session_id as "sessionId",
         file_name as "fileName", 
         storage_path as "storagePath", 
         mime_type as "mimeType", 
         file_size as "fileSize", 
         duration_seconds as "durationSeconds", 
-        created_at as "createdAt"
+        status,
+        total_chunks as "totalChunks",
+        uploaded_chunks as "uploadedChunks",
+        created_at as "createdAt",
+        completed_at as "completedAt"
       FROM birthday_recordings 
       ORDER BY created_at DESC
     `);
@@ -215,12 +239,17 @@ async function getRecordingById(id) {
       SELECT 
         id, 
         user_id as "userId", 
+        session_id as "sessionId",
         file_name as "fileName", 
         storage_path as "storagePath", 
         mime_type as "mimeType", 
         file_size as "fileSize", 
         duration_seconds as "durationSeconds", 
-        created_at as "createdAt"
+        status,
+        total_chunks as "totalChunks",
+        uploaded_chunks as "uploadedChunks",
+        created_at as "createdAt",
+        completed_at as "completedAt"
       FROM birthday_recordings 
       WHERE id = $1
     `, [id]);
@@ -231,18 +260,22 @@ async function getRecordingById(id) {
   }
 }
 
-async function insertRecordingToDb(rec) {
+async function startRecordingSession(data) {
   if (!pool || !isConnected) return null;
   try {
     const res = await pool.query(`
       INSERT INTO birthday_recordings (
         id, 
         user_id, 
+        session_id, 
         file_name, 
         storage_path, 
         mime_type, 
-        file_size, 
-        duration_seconds
+        duration_seconds, 
+        status, 
+        total_chunks, 
+        uploaded_chunks, 
+        file_size
       )
       VALUES (
         COALESCE($1, gen_random_uuid()), 
@@ -251,25 +284,215 @@ async function insertRecordingToDb(rec) {
         $4, 
         $5, 
         $6, 
-        $7
+        0, 
+        'recording', 
+        0, 
+        0, 
+        0
       )
       RETURNING 
         id, 
         user_id as "userId", 
+        session_id as "sessionId",
+        file_name as "fileName", 
+        storage_path as "storagePath", 
+        mime_type as "mimeType", 
+        status, 
+        created_at as "createdAt"
+    `, [
+      data.id || null,
+      data.userId || null,
+      data.sessionId || data.id,
+      data.fileName,
+      data.storagePath,
+      data.mimeType || 'video/webm'
+    ]);
+    return res.rows[0];
+  } catch (err) {
+    console.error('Error starting recording session in PostgreSQL:', err.message);
+    return null;
+  }
+}
+
+async function insertRecordingChunk(chunkData) {
+  if (!pool || !isConnected) return null;
+  try {
+    // 1. Insert or update chunk record
+    const chunkRes = await pool.query(`
+      INSERT INTO birthday_recording_chunks (
+        id, 
+        recording_id, 
+        chunk_number, 
+        storage_path, 
+        file_size, 
+        mime_type
+      )
+      VALUES (
+        COALESCE($1, gen_random_uuid()), 
+        $2, 
+        $3, 
+        $4, 
+        $5, 
+        $6
+      )
+      ON CONFLICT (recording_id, chunk_number) DO UPDATE SET
+        file_size = EXCLUDED.file_size,
+        storage_path = EXCLUDED.storage_path,
+        uploaded_at = CURRENT_TIMESTAMP
+      RETURNING *;
+    `, [
+      chunkData.id || null,
+      chunkData.recordingId,
+      chunkData.chunkNumber,
+      chunkData.storagePath,
+      chunkData.fileSize || 0,
+      chunkData.mimeType || 'video/webm'
+    ]);
+
+    // 2. Update uploaded_chunks and total_chunks in birthday_recordings
+    await pool.query(`
+      UPDATE birthday_recordings
+      SET 
+        uploaded_chunks = (SELECT COUNT(*) FROM birthday_recording_chunks WHERE recording_id = $1),
+        total_chunks = GREATEST(total_chunks, $2),
+        file_size = (SELECT COALESCE(SUM(file_size), 0) FROM birthday_recording_chunks WHERE recording_id = $1)
+      WHERE id = $1;
+    `, [chunkData.recordingId, chunkData.chunkNumber]);
+
+    return chunkRes.rows[0];
+  } catch (err) {
+    console.error('Error inserting chunk into PostgreSQL:', err.message);
+    return null;
+  }
+}
+
+async function getChunksForRecording(recordingId) {
+  if (!pool || !isConnected) return [];
+  try {
+    const res = await pool.query(`
+      SELECT 
+        id, 
+        recording_id as "recordingId", 
+        chunk_number as "chunkNumber", 
+        storage_path as "storagePath", 
+        file_size as "fileSize", 
+        mime_type as "mimeType", 
+        uploaded_at as "uploadedAt"
+      FROM birthday_recording_chunks 
+      WHERE recording_id = $1 
+      ORDER BY chunk_number ASC
+    `, [recordingId]);
+    return res.rows;
+  } catch (err) {
+    console.error('Error querying chunks from PostgreSQL:', err.message);
+    return [];
+  }
+}
+
+async function finalizeRecordingSession(recordingId, finalData) {
+  if (!pool || !isConnected) return null;
+  try {
+    const res = await pool.query(`
+      UPDATE birthday_recordings
+      SET 
+        status = 'completed',
+        duration_seconds = COALESCE($2, duration_seconds),
+        file_size = COALESCE($3, file_size),
+        storage_path = COALESCE($4, storage_path),
+        completed_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      RETURNING 
+        id, 
+        user_id as "userId", 
+        session_id as "sessionId",
         file_name as "fileName", 
         storage_path as "storagePath", 
         mime_type as "mimeType", 
         file_size as "fileSize", 
         duration_seconds as "durationSeconds", 
-        created_at as "createdAt"
+        status,
+        total_chunks as "totalChunks",
+        uploaded_chunks as "uploadedChunks",
+        created_at as "createdAt",
+        completed_at as "completedAt"
+    `, [
+      recordingId,
+      finalData.durationSeconds,
+      finalData.fileSize,
+      finalData.storagePath
+    ]);
+    return res.rows[0] || null;
+  } catch (err) {
+    console.error('Error finalizing recording session in PostgreSQL:', err.message);
+    return null;
+  }
+}
+
+async function updateRecordingStatus(recordingId, status) {
+  if (!pool || !isConnected) return false;
+  try {
+    await pool.query('UPDATE birthday_recordings SET status = $2 WHERE id = $1;', [recordingId, status]);
+    return true;
+  } catch (err) {
+    console.error('Error updating recording status:', err.message);
+    return false;
+  }
+}
+
+async function insertRecordingToDb(rec) {
+  if (!pool || !isConnected) return null;
+  try {
+    const res = await pool.query(`
+      INSERT INTO birthday_recordings (
+        id, 
+        user_id, 
+        session_id,
+        file_name, 
+        storage_path, 
+        mime_type, 
+        file_size, 
+        duration_seconds,
+        status,
+        total_chunks,
+        uploaded_chunks
+      )
+      VALUES (
+        COALESCE($1, gen_random_uuid()), 
+        $2, 
+        $3, 
+        $4, 
+        $5, 
+        $6, 
+        $7, 
+        $8,
+        COALESCE($9, 'completed'),
+        COALESCE($10, 1),
+        COALESCE($11, 1)
+      )
+      RETURNING 
+        id, 
+        user_id as "userId", 
+        session_id as "sessionId",
+        file_name as "fileName", 
+        storage_path as "storagePath", 
+        mime_type as "mimeType", 
+        file_size as "fileSize", 
+        duration_seconds as "durationSeconds", 
+        status,
+        created_at as "createdAt",
+        completed_at as "completedAt"
     `, [
       rec.id || null,
       rec.userId || null,
+      rec.sessionId || rec.id,
       rec.fileName,
       rec.storagePath,
       rec.mimeType || 'video/webm',
       rec.fileSize || 0,
-      rec.durationSeconds || 0
+      rec.durationSeconds || 0,
+      rec.status || 'completed',
+      rec.totalChunks || 1,
+      rec.uploadedChunks || 1
     ]);
     return res.rows[0];
   } catch (err) {
@@ -343,6 +566,11 @@ module.exports = {
   deletePhotoFromDb,
   getRecordingsFromDb,
   getRecordingById,
+  startRecordingSession,
+  insertRecordingChunk,
+  getChunksForRecording,
+  finalizeRecordingSession,
+  updateRecordingStatus,
   insertRecordingToDb,
   deleteRecordingFromDb,
   uploadToSupabaseStorage,

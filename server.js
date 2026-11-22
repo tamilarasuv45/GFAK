@@ -399,7 +399,7 @@ function loadLocalRecordings() {
 
 function saveLocalRecording(item) {
   try {
-    const list = loadLocalRecordings();
+    const list = loadLocalRecordings().filter(r => r.id !== item.id);
     list.unshift(item);
     fs.writeFileSync(RECORDINGS_META_FILE, JSON.stringify(list, null, 2), 'utf8');
   } catch (e) {
@@ -421,6 +421,198 @@ const recUpload = multer({
   limits: { fileSize: 150 * 1024 * 1024 }
 });
 
+// 1. Start a new recording session
+app.post('/api/recordings/start-session', async (req, res) => {
+  try {
+    const { recordingId, userId, fileName, mimeType, cameraLabel, micLabel } = req.body || {};
+    const id = recordingId || crypto.randomUUID();
+    const folderName = (userId && typeof userId === 'string' && userId.length === 36) ? userId : 'guest_salutes';
+    const storagePath = `${folderName}/${id}/final.webm`;
+
+    // Ensure session directory exists locally
+    const sessionDir = path.join(RECORDINGS_DIR, folderName, id);
+    if (!fs.existsSync(sessionDir)) {
+      fs.mkdirSync(sessionDir, { recursive: true });
+    }
+
+    const sessionData = {
+      id,
+      userId: folderName === 'guest_salutes' ? null : userId,
+      sessionId: id,
+      fileName: fileName || `salute_${Date.now()}.webm`,
+      storagePath,
+      mimeType: mimeType || 'video/webm',
+      cameraLabel: cameraLabel || '',
+      micLabel: micLabel || ''
+    };
+
+    let session = await db.startRecordingSession(sessionData);
+    if (!session) {
+      session = {
+        ...sessionData,
+        status: 'recording',
+        totalChunks: 0,
+        uploadedChunks: 0,
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    saveLocalRecording(session);
+    res.json({ success: true, session });
+  } catch (err) {
+    console.error('start-session error:', err);
+    res.status(500).json({ error: 'Failed to initialize recording session.' });
+  }
+});
+
+// 2. Automatic periodic chunk upload (~5000ms timeslice)
+app.post('/api/recordings/chunk', recUpload.single('chunk'), async (req, res) => {
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ error: 'No video chunk data provided.' });
+    }
+
+    const { recordingId, chunkNumber, userId } = req.body;
+    if (!recordingId || !chunkNumber) {
+      return res.status(400).json({ error: 'recordingId and chunkNumber are required.' });
+    }
+
+    const seq = parseInt(chunkNumber, 10);
+    const chunkFileName = `chunk-${String(seq).padStart(4, '0')}.webm`;
+    const folderName = (userId && typeof userId === 'string' && userId.length === 36) ? userId : 'guest_salutes';
+    const storagePath = `${folderName}/${recordingId}/${chunkFileName}`;
+    const mimeType = req.file.mimetype || 'video/webm';
+
+    // A. Save chunk locally
+    const sessionDir = path.join(RECORDINGS_DIR, folderName, recordingId);
+    if (!fs.existsSync(sessionDir)) {
+      fs.mkdirSync(sessionDir, { recursive: true });
+    }
+    const localChunkPath = path.join(sessionDir, chunkFileName);
+    fs.writeFileSync(localChunkPath, req.file.buffer);
+
+    // B. Upload chunk to Supabase Storage
+    await db.uploadToSupabaseStorage('birthday-recordings', storagePath, req.file.buffer, mimeType);
+
+    // C. Insert chunk into PostgreSQL database table birthday_recording_chunks
+    const chunkRow = await db.insertRecordingChunk({
+      recordingId,
+      chunkNumber: seq,
+      storagePath,
+      fileSize: req.file.size,
+      mimeType
+    });
+
+    res.json({
+      success: true,
+      chunkNumber: seq,
+      storagePath,
+      fileSize: req.file.size,
+      chunkId: chunkRow?.id || null
+    });
+  } catch (err) {
+    console.error('chunk upload error:', err);
+    res.status(500).json({ error: 'Failed to store video chunk.' });
+  }
+});
+
+// 3. Finalize recording and reconstruct unified video
+app.post('/api/recordings/finalize', recUpload.single('fullVideo'), async (req, res) => {
+  try {
+    const { recordingId, durationSeconds, userId, totalChunks } = req.body;
+    if (!recordingId) {
+      return res.status(400).json({ error: 'recordingId is required to finalize.' });
+    }
+
+    const duration = Math.round(Number(durationSeconds) || 0);
+    const folderName = (userId && typeof userId === 'string' && userId.length === 36) ? userId : 'guest_salutes';
+    const sessionDir = path.join(RECORDINGS_DIR, folderName, recordingId);
+    const finalLocalPath = path.join(sessionDir, 'final.webm');
+    const finalStoragePath = `${folderName}/${recordingId}/final.webm`;
+    const mimeType = 'video/webm';
+
+    let finalBuffer = null;
+
+    // A. If client provided the unified video buffer directly, use it
+    if (req.file && req.file.buffer && req.file.buffer.length > 0) {
+      finalBuffer = req.file.buffer;
+      if (!fs.existsSync(sessionDir)) {
+        fs.mkdirSync(sessionDir, { recursive: true });
+      }
+      fs.writeFileSync(finalLocalPath, finalBuffer);
+    } else if (fs.existsSync(sessionDir)) {
+      // B. Reconstruct from sequentially ordered local chunks
+      const files = fs.readdirSync(sessionDir)
+        .filter(f => f.startsWith('chunk-') && f.endsWith('.webm'))
+        .sort((a, b) => a.localeCompare(b));
+
+      if (files.length > 0) {
+        const chunkBuffers = files.map(f => fs.readFileSync(path.join(sessionDir, f)));
+        finalBuffer = Buffer.concat(chunkBuffers);
+        fs.writeFileSync(finalLocalPath, finalBuffer);
+      }
+    }
+
+    if (!finalBuffer) {
+      return res.status(400).json({ error: 'Unable to reconstruct video. No chunks available.' });
+    }
+
+    // C. Upload final reconstructed video to Supabase Storage
+    await db.uploadToSupabaseStorage('birthday-recordings', finalStoragePath, finalBuffer, mimeType);
+
+    // D. Update PostgreSQL database recording status to 'completed'
+    let finalized = await db.finalizeRecordingSession(recordingId, {
+      durationSeconds: duration,
+      fileSize: finalBuffer.length,
+      storagePath: finalStoragePath
+    });
+
+    if (!finalized) {
+      finalized = {
+        id: recordingId,
+        userId: folderName === 'guest_salutes' ? null : userId,
+        sessionId: recordingId,
+        fileName: `salute_${Date.now()}.webm`,
+        storagePath: finalStoragePath,
+        mimeType,
+        fileSize: finalBuffer.length,
+        durationSeconds: duration,
+        status: 'completed',
+        totalChunks: Number(totalChunks) || 1,
+        uploadedChunks: Number(totalChunks) || 1,
+        completedAt: new Date().toISOString()
+      };
+    }
+
+    saveLocalRecording(finalized);
+    const signedUrl = await db.createSupabaseSignedUrl('birthday-recordings', finalStoragePath, 3600);
+    finalized.streamUrl = `/api/recordings/stream/${recordingId}`;
+    finalized.signedUrl = signedUrl || finalized.streamUrl;
+
+    res.json({
+      success: true,
+      message: 'Recording finalized and reconstructed successfully in Supabase Cloud.',
+      recording: finalized
+    });
+  } catch (err) {
+    console.error('finalize error:', err);
+    res.status(500).json({ error: 'Failed to finalize video recording.' });
+  }
+});
+
+// 4. Recover incomplete / interrupted sessions
+app.get('/api/recordings/recoverable', async (req, res) => {
+  try {
+    const all = await db.getRecordingsFromDb() || loadLocalRecordings();
+    const recoverable = all.filter(r => r.status === 'recording' || r.status === 'interrupted');
+    res.json({ success: true, recoverable });
+  } catch (err) {
+    console.error('recoverable error:', err);
+    res.status(500).json({ error: 'Failed to retrieve recoverable sessions.' });
+  }
+});
+
+// 5. Complete single-shot upload fallback
 app.post('/api/recordings/upload', recUpload.single('video'), async (req, res) => {
   try {
     if (!req.file || !req.file.buffer) {
@@ -434,41 +626,49 @@ app.post('/api/recordings/upload', recUpload.single('video'), async (req, res) =
       : null;
     const folderName = userId || 'guest_salutes';
     const fileName = req.file.originalname || `salute_${Date.now()}.webm`;
-    const storagePath = `${folderName}/${recordingId}.webm`;
+    const storagePath = `${folderName}/${recordingId}/final.webm`;
     const mimeType = req.file.mimetype || 'video/webm';
     const fileSize = req.file.size;
 
-    // 1. Local backup
-    const targetFolder = path.join(RECORDINGS_DIR, folderName);
-    if (!fs.existsSync(targetFolder)) {
-      fs.mkdirSync(targetFolder, { recursive: true });
+    // Local backup
+    const sessionDir = path.join(RECORDINGS_DIR, folderName, recordingId);
+    if (!fs.existsSync(sessionDir)) {
+      fs.mkdirSync(sessionDir, { recursive: true });
     }
-    const localPath = path.join(targetFolder, `${recordingId}.webm`);
+    const localPath = path.join(sessionDir, 'final.webm');
     fs.writeFileSync(localPath, req.file.buffer);
 
-    // 2. Upload to Supabase Storage if configured
+    // Upload to Supabase Storage
     await db.uploadToSupabaseStorage('birthday-recordings', storagePath, req.file.buffer, mimeType);
 
-    // 3. Insert into Supabase PostgreSQL birthday_recordings table
+    // Insert into Supabase PostgreSQL birthday_recordings table
     let saved = await db.insertRecordingToDb({
       id: recordingId,
       userId,
+      sessionId: recordingId,
       fileName,
       storagePath,
       mimeType,
       fileSize,
-      durationSeconds
+      durationSeconds,
+      status: 'completed',
+      totalChunks: 1,
+      uploadedChunks: 1
     });
 
     if (!saved) {
       saved = {
         id: recordingId,
         userId,
+        sessionId: recordingId,
         fileName,
         storagePath,
         mimeType,
         fileSize,
         durationSeconds,
+        status: 'completed',
+        totalChunks: 1,
+        uploadedChunks: 1,
         createdAt: new Date().toISOString()
       };
     }
@@ -489,6 +689,7 @@ app.post('/api/recordings/upload', recUpload.single('video'), async (req, res) =
   }
 });
 
+// 6. List all recordings
 app.get('/api/recordings', async (req, res) => {
   try {
     let recs = await db.getRecordingsFromDb();
@@ -516,6 +717,7 @@ app.get('/api/recordings', async (req, res) => {
   }
 });
 
+// 7. Stream video with HTTP 206 Partial Content / Range support
 app.get('/api/recordings/stream/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -526,9 +728,19 @@ app.get('/api/recordings/stream/:id', async (req, res) => {
     if (!rec) return res.status(404).send('Recording not found.');
 
     const folderName = rec.userId || 'guest_salutes';
-    const directPath = path.join(RECORDINGS_DIR, folderName, `${id}.webm`);
-    const fallbackPath = path.join(RECORDINGS_DIR, rec.storagePath);
-    const finalFile = fs.existsSync(directPath) ? directPath : (fs.existsSync(fallbackPath) ? fallbackPath : null);
+    const possiblePaths = [
+      path.join(RECORDINGS_DIR, folderName, id, 'final.webm'),
+      path.join(RECORDINGS_DIR, folderName, `${id}.webm`),
+      path.join(RECORDINGS_DIR, rec.storagePath)
+    ];
+
+    let finalFile = null;
+    for (const p of possiblePaths) {
+      if (fs.existsSync(p)) {
+        finalFile = p;
+        break;
+      }
+    }
 
     if (!finalFile) {
       const signed = await db.createSupabaseSignedUrl('birthday-recordings', rec.storagePath, 600);
@@ -566,6 +778,7 @@ app.get('/api/recordings/stream/:id', async (req, res) => {
   }
 });
 
+// 8. Delete a recording
 app.delete('/api/recordings/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -573,17 +786,27 @@ app.delete('/api/recordings/:id', async (req, res) => {
     if (!rec) {
       rec = loadLocalRecordings().find(r => r.id === id);
     }
-    if (!rec) return res.status(404).json({ error: 'Recording record not found.' });
+    if (!rec) return res.status(404).json({ error: 'Recording not found.' });
 
     await db.deleteRecordingFromDb(id);
     if (rec.storagePath) {
       await db.deleteFromSupabaseStorage('birthday-recordings', rec.storagePath);
+      // Also delete chunks folder in Supabase
+      const folderName = rec.userId || 'guest_salutes';
+      for (let i = 1; i <= 50; i++) {
+        const chunkPath = `${folderName}/${id}/chunk-${String(i).padStart(4, '0')}.webm`;
+        db.deleteFromSupabaseStorage('birthday-recordings', chunkPath).catch(() => {});
+      }
     }
 
     const folderName = rec.userId || 'guest_salutes';
-    const localFile = path.join(RECORDINGS_DIR, folderName, `${id}.webm`);
-    if (fs.existsSync(localFile)) {
-      try { fs.unlinkSync(localFile); } catch (e) {}
+    const sessionDir = path.join(RECORDINGS_DIR, folderName, id);
+    if (fs.existsSync(sessionDir)) {
+      try { fs.rmSync(sessionDir, { recursive: true, force: true }); } catch (e) {}
+    }
+    const legacyFile = path.join(RECORDINGS_DIR, folderName, `${id}.webm`);
+    if (fs.existsSync(legacyFile)) {
+      try { fs.unlinkSync(legacyFile); } catch (e) {}
     }
     removeLocalRecording(id);
 
