@@ -10,8 +10,11 @@ node_modules/
 Thumbs.db
 *.log
 
-# Private uploads photos (keep metadata templates)
+# Private uploads photos & recordings
 private_uploads/*.jpg
 private_uploads/*.jpeg
 private_uploads/*.png
 private_uploads/*.webp
+private_uploads/*.webm
+private_uploads/recordings/
+

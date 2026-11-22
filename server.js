@@ -377,6 +377,224 @@ app.get('/api/gallery/photo/:id', authenticateGate2, (req, res) => {
 });
 
 // --------------------------------------------------------------------------
+// 6.3 SQUADRON AUDIO/VIDEO RECORDING STUDIO (SUPABASE STORAGE + DB)
+// --------------------------------------------------------------------------
+const RECORDINGS_DIR = path.join(PRIVATE_STORAGE_DIR, 'recordings');
+if (!fs.existsSync(RECORDINGS_DIR)) {
+  fs.mkdirSync(RECORDINGS_DIR, { recursive: true });
+}
+
+const RECORDINGS_META_FILE = path.join(PRIVATE_STORAGE_DIR, 'recordings_metadata.json');
+
+function loadLocalRecordings() {
+  try {
+    if (fs.existsSync(RECORDINGS_META_FILE)) {
+      return JSON.parse(fs.readFileSync(RECORDINGS_META_FILE, 'utf8'));
+    }
+  } catch (e) {
+    console.error('Error reading recordings metadata:', e);
+  }
+  return [];
+}
+
+function saveLocalRecording(item) {
+  try {
+    const list = loadLocalRecordings();
+    list.unshift(item);
+    fs.writeFileSync(RECORDINGS_META_FILE, JSON.stringify(list, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error saving local recording:', e);
+  }
+}
+
+function removeLocalRecording(id) {
+  try {
+    const list = loadLocalRecordings().filter(r => r.id !== id);
+    fs.writeFileSync(RECORDINGS_META_FILE, JSON.stringify(list, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error deleting local recording:', e);
+  }
+}
+
+const recUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 150 * 1024 * 1024 }
+});
+
+app.post('/api/recordings/upload', recUpload.single('video'), async (req, res) => {
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ error: 'No video recording payload provided.' });
+    }
+
+    const durationSeconds = Math.round(Number(req.body.duration) || 0);
+    const recordingId = crypto.randomUUID();
+    const userId = (req.body.userId && typeof req.body.userId === 'string' && req.body.userId.length === 36)
+      ? req.body.userId
+      : null;
+    const folderName = userId || 'guest_salutes';
+    const fileName = req.file.originalname || `salute_${Date.now()}.webm`;
+    const storagePath = `${folderName}/${recordingId}.webm`;
+    const mimeType = req.file.mimetype || 'video/webm';
+    const fileSize = req.file.size;
+
+    // 1. Local backup
+    const targetFolder = path.join(RECORDINGS_DIR, folderName);
+    if (!fs.existsSync(targetFolder)) {
+      fs.mkdirSync(targetFolder, { recursive: true });
+    }
+    const localPath = path.join(targetFolder, `${recordingId}.webm`);
+    fs.writeFileSync(localPath, req.file.buffer);
+
+    // 2. Upload to Supabase Storage if configured
+    await db.uploadToSupabaseStorage('birthday-recordings', storagePath, req.file.buffer, mimeType);
+
+    // 3. Insert into Supabase PostgreSQL birthday_recordings table
+    let saved = await db.insertRecordingToDb({
+      id: recordingId,
+      userId,
+      fileName,
+      storagePath,
+      mimeType,
+      fileSize,
+      durationSeconds
+    });
+
+    if (!saved) {
+      saved = {
+        id: recordingId,
+        userId,
+        fileName,
+        storagePath,
+        mimeType,
+        fileSize,
+        durationSeconds,
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    saveLocalRecording(saved);
+    const signedUrl = await db.createSupabaseSignedUrl('birthday-recordings', storagePath, 3600);
+    saved.streamUrl = `/api/recordings/stream/${recordingId}`;
+    saved.signedUrl = signedUrl || saved.streamUrl;
+
+    res.json({
+      success: true,
+      message: 'Recording stored successfully in Supabase archive.',
+      recording: saved
+    });
+  } catch (err) {
+    console.error('Upload recording endpoint error:', err);
+    res.status(500).json({ error: 'Failed to save recording.' });
+  }
+});
+
+app.get('/api/recordings', async (req, res) => {
+  try {
+    let recs = await db.getRecordingsFromDb();
+    if (!recs || recs.length === 0) {
+      recs = loadLocalRecordings();
+    }
+
+    const list = await Promise.all(recs.map(async (r) => {
+      const streamUrl = `/api/recordings/stream/${r.id}`;
+      let signedUrl = null;
+      if (r.storagePath) {
+        signedUrl = await db.createSupabaseSignedUrl('birthday-recordings', r.storagePath, 3600);
+      }
+      return {
+        ...r,
+        streamUrl,
+        signedUrl: signedUrl || streamUrl
+      };
+    }));
+
+    res.json({ success: true, recordings: list });
+  } catch (err) {
+    console.error('List recordings error:', err);
+    res.status(500).json({ error: 'Failed to retrieve recordings.' });
+  }
+});
+
+app.get('/api/recordings/stream/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let rec = await db.getRecordingById(id);
+    if (!rec) {
+      rec = loadLocalRecordings().find(r => r.id === id);
+    }
+    if (!rec) return res.status(404).send('Recording not found.');
+
+    const folderName = rec.userId || 'guest_salutes';
+    const directPath = path.join(RECORDINGS_DIR, folderName, `${id}.webm`);
+    const fallbackPath = path.join(RECORDINGS_DIR, rec.storagePath);
+    const finalFile = fs.existsSync(directPath) ? directPath : (fs.existsSync(fallbackPath) ? fallbackPath : null);
+
+    if (!finalFile) {
+      const signed = await db.createSupabaseSignedUrl('birthday-recordings', rec.storagePath, 600);
+      if (signed) return res.redirect(signed);
+      return res.status(404).send('Video stream unavailable.');
+    }
+
+    const stat = fs.statSync(finalFile);
+    const total = stat.size;
+    const range = req.headers.range;
+
+    if (range) {
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : total - 1;
+      const chunk = (end - start) + 1;
+      const stream = fs.createReadStream(finalFile, { start, end });
+      res.writeHead(206, {
+        'Content-Range': `bytes ${start}-${end}/${total}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunk,
+        'Content-Type': rec.mimeType || 'video/webm'
+      });
+      stream.pipe(res);
+    } else {
+      res.writeHead(200, {
+        'Content-Length': total,
+        'Content-Type': rec.mimeType || 'video/webm'
+      });
+      fs.createReadStream(finalFile).pipe(res);
+    }
+  } catch (err) {
+    console.error('Stream playback error:', err);
+    res.status(500).send('Stream error.');
+  }
+});
+
+app.delete('/api/recordings/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    let rec = await db.getRecordingById(id);
+    if (!rec) {
+      rec = loadLocalRecordings().find(r => r.id === id);
+    }
+    if (!rec) return res.status(404).json({ error: 'Recording record not found.' });
+
+    await db.deleteRecordingFromDb(id);
+    if (rec.storagePath) {
+      await db.deleteFromSupabaseStorage('birthday-recordings', rec.storagePath);
+    }
+
+    const folderName = rec.userId || 'guest_salutes';
+    const localFile = path.join(RECORDINGS_DIR, folderName, `${id}.webm`);
+    if (fs.existsSync(localFile)) {
+      try { fs.unlinkSync(localFile); } catch (e) {}
+    }
+    removeLocalRecording(id);
+
+    res.json({ success: true, message: 'Recording deleted from Supabase archive.' });
+  } catch (err) {
+    console.error('Delete recording error:', err);
+    res.status(500).json({ error: 'Failed to delete recording.' });
+  }
+});
+
+// --------------------------------------------------------------------------
 // 6.5 SQUADRON WISHES & EMAIL DISPATCH ENDPOINT (NO REDIRECT)
 // --------------------------------------------------------------------------
 const WISHES_LOG_FILE = path.join(PRIVATE_STORAGE_DIR, 'wishes_log.json');
