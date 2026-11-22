@@ -1243,6 +1243,605 @@
       margin-top: 4px;
     }
 
+    /* ==========================================================================
+       CHAPTER 7: ENVELOPE COVER & FOLDED LETTER SYSTEM
+       ========================================================================== */
+    .letter-envelope-container {
+      max-width: 820px;
+      margin: 2.5rem auto;
+      perspective: 1200px;
+      position: relative;
+    }
+
+    .envelope-scene {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem 0;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .envelope-card {
+      position: relative;
+      width: 100%;
+      max-width: 660px;
+      height: 390px;
+      background: linear-gradient(145deg, #fbf7ee 0%, #ede2ca 100%);
+      border-radius: 16px;
+      box-shadow: 0 25px 55px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(197, 164, 109, 0.45);
+      overflow: visible;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      transition: all 0.5s ease;
+    }
+
+    /* Airmail Borders */
+    .envelope-airmail-stripe {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: repeating-linear-gradient(135deg, #233b53 0px, #233b53 14px, #fbf8f2 14px, #fbf8f2 20px, #a65d3f 20px, #a65d3f 34px, #fbf8f2 34px, #fbf8f2 40px);
+      z-index: 5;
+    }
+    .envelope-airmail-stripe.top {
+      top: 0;
+      border-radius: 16px 16px 0 0;
+    }
+    .envelope-airmail-stripe.bottom {
+      bottom: 0;
+      border-radius: 0 0 16px 16px;
+    }
+
+    /* Interior Navy Lining and Pocket */
+    .envelope-interior-pocket {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      background: #121e2d;
+      border-radius: 10px;
+      overflow: hidden;
+      z-index: 1;
+      box-shadow: inset 0 10px 25px rgba(0, 0, 0, 0.7);
+    }
+    .envelope-interior-liner {
+      position: absolute;
+      inset: 0;
+      opacity: 0.15;
+      background: radial-gradient(#c5a46d 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    /* Folded Letter Peeking from inside */
+    .folded-letter-sheet {
+      position: absolute;
+      bottom: 10px;
+      left: 6%;
+      right: 6%;
+      height: 82%;
+      background: #fbf8f2;
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.45);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border: 1px solid #d9ceb9;
+      transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .folded-letter-sheet::before {
+      content: '';
+      position: absolute;
+      top: 33%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,0,0,0.15), transparent);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+    .folded-letter-sheet::after {
+      content: '';
+      position: absolute;
+      top: 66%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,0,0,0.15), transparent);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+    .folded-panel.top-panel {
+      border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+      padding-bottom: 6px;
+    }
+    .folded-meta-peek {
+      font-family: var(--font-military);
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      color: #7a7061;
+      margin-bottom: 4px;
+    }
+    .folded-title-peek {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1a1614;
+    }
+    .folded-text-line {
+      height: 4px;
+      background: rgba(0, 0, 0, 0.08);
+      border-radius: 2px;
+      margin: 8px 0;
+      width: 90%;
+    }
+    .folded-text-line.short {
+      width: 60%;
+    }
+    .folded-seal-ghost {
+      align-self: flex-end;
+      font-family: var(--font-military);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #8a1f11;
+      opacity: 0.7;
+    }
+
+    .envelope-card.is-open .folded-letter-sheet {
+      transform: translateY(-90px);
+    }
+
+    /* Envelope Front Cover Pocket */
+    .envelope-pocket-front {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65%;
+      clip-path: polygon(0 30%, 50% 0%, 100% 30%, 100% 100%, 0 100%);
+      background: linear-gradient(180deg, #f4ebda 0%, #e8d9be 100%);
+      z-index: 3;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
+      border-bottom: 1px solid rgba(197, 164, 109, 0.4);
+    }
+
+    /* Front Cover Details: Address, Stamps, For AK */
+    .envelope-cover-content {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 28px;
+      pointer-events: none;
+    }
+
+    .envelope-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 6px;
+    }
+
+    .envelope-airmail-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #233b53;
+      color: #f4efe6;
+      font-family: var(--font-military);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(197, 164, 109, 0.5);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .envelope-airmail-badge .badge-icon {
+      color: var(--gold);
+      font-size: 0.85rem;
+    }
+
+    .envelope-postage-stamp {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .stamp-inner {
+      background: #fff;
+      border: 2px dashed #a65d3f;
+      padding: 6px 10px;
+      border-radius: 4px;
+      text-align: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 65px;
+    }
+    .stamp-plane {
+      font-size: 1rem;
+      color: #a65d3f;
+      line-height: 1;
+    }
+    .stamp-date {
+      font-family: var(--font-military);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #1a1614;
+      letter-spacing: 0.08em;
+      margin: 2px 0;
+    }
+    .stamp-honor {
+      font-size: 0.55rem;
+      color: #6a6458;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .postmark-circle {
+      width: 52px;
+      height: 52px;
+      border: 1.5px dashed #4a4237;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-military);
+      font-size: 0.52rem;
+      color: #4a4237;
+      letter-spacing: 0.08em;
+      text-align: center;
+      transform: rotate(-14deg);
+      opacity: 0.85;
+    }
+
+    /* Prominent Recipient Section ("For AK") */
+    .envelope-address-zone {
+      margin-top: auto;
+      margin-bottom: 12px;
+      padding: 14px 20px;
+      background: rgba(251, 248, 242, 0.82);
+      border-radius: 12px;
+      border: 1px solid rgba(197, 164, 109, 0.35);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      max-width: 480px;
+    }
+    .address-to-label {
+      font-family: var(--font-military);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      color: #7a7061;
+      margin-bottom: 2px;
+    }
+    .address-recipient-title {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .addr-for {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.5rem;
+      color: #5a4f43;
+    }
+    .addr-name {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #1a1614;
+      letter-spacing: 0.04em;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    }
+    .addr-heart {
+      font-size: 1.6rem;
+      color: #c93825;
+      animation: heartPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes heartPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.18); }
+    }
+    .address-subline {
+      font-family: var(--font-letter);
+      font-style: italic;
+      font-size: 0.95rem;
+      color: #4a4237;
+      margin-top: 2px;
+    }
+
+    /* Top Flap (Triangular flap folding down, flips up when open) */
+    .envelope-top-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 52%;
+      transform-origin: top center;
+      transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 6;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
+      pointer-events: none;
+    }
+    .envelope-top-flap .flap-front {
+      width: 100%;
+      height: 100%;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      background: linear-gradient(180deg, #ede2cb 0%, #d8c6a5 100%);
+      border-top: 1px solid rgba(197, 164, 109, 0.4);
+    }
+    .envelope-card.is-open .envelope-top-flap {
+      transform: rotateX(180deg);
+      z-index: 2;
+      filter: drop-shadow(0 -8px 16px rgba(0, 0, 0, 0.15));
+    }
+
+    /* Clickable Wax Seal on Flap */
+    .envelope-seal-wrapper {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      outline: none;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .envelope-seal-wrapper:hover {
+      transform: translate(-50%, -52%) scale(1.08);
+    }
+    .envelope-seal-wrapper:active {
+      transform: translate(-50%, -48%) scale(0.96);
+    }
+    .seal-halo-pulse {
+      position: absolute;
+      top: 44px;
+      left: 50%;
+      width: 108px;
+      height: 108px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(197, 164, 109, 0.5) 0%, rgba(197, 164, 109, 0) 70%);
+      animation: sealHaloPulse 2.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes sealHaloPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.45; }
+      50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.9; }
+    }
+
+    .wax-seal-cover {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 33% 30%, #ce3825, #831c0e 65%, #591006 100%);
+      box-shadow: 0 0 0 3px rgba(224, 199, 155, 0.45), 0 10px 24px rgba(89, 16, 6, 0.55), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      user-select: none;
+    }
+    .wax-seal-cover::before {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(247, 222, 218, 0.4);
+    }
+    .wax-seal-face {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fcebe8;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+      line-height: 1.1;
+    }
+    .seal-sub {
+      font-family: var(--font-military);
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      opacity: 0.9;
+    }
+    .seal-hero {
+      font-family: var(--font-military);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #fff;
+    }
+    .seal-heart {
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .seal-prompt-bubble {
+      margin-top: 10px;
+      background: rgba(16, 28, 44, 0.92);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      font-family: var(--font-military);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      padding: 5px 14px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      white-space: nowrap;
+      animation: promptBob 2s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes promptBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* Breaking Seal Animation */
+    .envelope-seal-wrapper.breaking {
+      animation: sealBreakShatter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      pointer-events: none;
+    }
+    @keyframes sealBreakShatter {
+      0% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+      40% { transform: translate(-50%, -50%) scale(1.28); filter: brightness(1.8) drop-shadow(0 0 25px #ffd700); }
+      100% { transform: translate(-50%, -20%) scale(0.5) rotate(20deg); opacity: 0; filter: brightness(2); }
+    }
+
+    /* Floating Emoji Burst on Seal Break */
+    .floating-seal-emoji {
+      position: fixed;
+      pointer-events: none;
+      z-index: 99999;
+      font-size: 1.8rem;
+      user-select: none;
+      transition: transform 0.9s cubic-bezier(0.1, 0.8, 0.2, 1), opacity 0.9s ease-out;
+    }
+
+    /* Unfolded Letter Sheet Container */
+    .unfolded-letter-view {
+      transform-origin: top center;
+      animation: letterAccordionUnfold 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes letterAccordionUnfold {
+      0% {
+        opacity: 0;
+        transform: scaleY(0.2) scaleX(0.7) translateY(-30px);
+        filter: blur(6px);
+      }
+      60% {
+        opacity: 0.95;
+        transform: scaleY(0.95) scaleX(0.98);
+        filter: blur(0);
+      }
+      100% {
+        opacity: 1;
+        transform: scaleY(1) scaleX(1) translateY(0);
+      }
+    }
+
+    .unfolded-letter-view.refolding {
+      animation: letterAccordionFoldUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes letterAccordionFoldUp {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: scaleY(0.2) scaleX(0.7) translateY(-30px);
+        filter: blur(4px);
+      }
+    }
+
+    /* Toolbar above Unfolded Letter */
+    .letter-opened-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 18px;
+      margin-bottom: 1.2rem;
+      background: rgba(16, 28, 44, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+    .toolbar-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-military);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      color: var(--gold-light);
+    }
+    .toolbar-badge .badge-dot {
+      color: var(--gold);
+      font-size: 0.65rem;
+      animation: heartPulse 1.5s infinite;
+    }
+    .btn-refold-cover {
+      background: rgba(197, 164, 109, 0.15);
+      border: 1px solid var(--gold);
+      color: var(--ivory);
+      font-family: var(--font-military);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-refold-cover:hover {
+      background: var(--gold);
+      color: var(--navy-deep);
+      box-shadow: 0 4px 12px var(--gold-glow);
+    }
+
+    /* Responsive adjustments for envelope */
+    @media (max-width: 680px) {
+      .envelope-card {
+        height: 340px;
+      }
+      .envelope-cover-content {
+        padding: 18px 20px;
+      }
+      .addr-for {
+        font-size: 1.25rem;
+      }
+      .addr-name {
+        font-size: 1.75rem;
+      }
+      .addr-heart {
+        font-size: 1.3rem;
+      }
+      .envelope-address-zone {
+        padding: 10px 14px;
+      }
+      .wax-seal-cover {
+        width: 76px;
+        height: 76px;
+      }
+      .seal-hero {
+        font-size: 1.15rem;
+      }
+      .seal-prompt-bubble {
+        font-size: 0.68rem;
+        padding: 4px 10px;
+      }
+    }
+    @media (max-width: 480px) {
+      .envelope-card {
+        height: 310px;
+      }
+      .envelope-postage-stamp {
+        gap: 6px;
+      }
+      .postmark-circle {
+        display: none;
+      }
+      .address-subline {
+        font-size: 0.8rem;
+      }
+      .wax-seal-cover {
+        width: 70px;
+        height: 70px;
+      }
+      .seal-hero {
+        font-size: 1.05rem;
+      }
+    }
+
+
     /* Aerogramme Letter */
     .aerogramme-wrapper {
       max-width: 820px;
@@ -3081,7 +3680,108 @@
               worth keeping."</div>
           </div>
 
-          <!-- Handwritten Aerogramme Letter -->
+          <!-- Interactive Folded Letter in Envelope Cover -->
+          <div class="letter-envelope-container" id="letterEnvelopeContainer">
+            
+            <!-- Envelope Cover Scene -->
+            <div class="envelope-scene" id="envelopeScene">
+              <div class="envelope-card" id="envelopeCard">
+                
+                <!-- Airmail Border Trim -->
+                <div class="envelope-airmail-stripe top"></div>
+                <div class="envelope-airmail-stripe bottom"></div>
+
+                <!-- Interior pocket & folded letter peek -->
+                <div class="envelope-interior-pocket">
+                  <div class="envelope-interior-liner"></div>
+                  <!-- Folded Letter Sheet (peeks inside envelope before expanding) -->
+                  <div class="folded-letter-sheet" id="foldedLetterPeek">
+                    <div class="folded-panel top-panel">
+                      <div class="folded-meta-peek">AIR DISPATCH // CLASSIFIED PERSONAL</div>
+                      <div class="folded-title-peek">Happy Birthday, My Favourite Ma'am! ❤️</div>
+                    </div>
+                    <div class="folded-panel middle-panel">
+                      <div class="folded-text-line"></div>
+                      <div class="folded-text-line short"></div>
+                    </div>
+                    <div class="folded-panel bottom-panel">
+                      <div class="folded-seal-ghost">AK💗</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Envelope Front Pocket -->
+                <div class="envelope-pocket-front"></div>
+
+                <!-- Cover Front Details (Postage, Postmarks, Recipient "For AK") -->
+                <div class="envelope-cover-content">
+                  
+                  <div class="envelope-header-row">
+                    <div class="envelope-airmail-badge">
+                      <span class="badge-icon">✈</span> PAR AVION • AIR DISPATCH
+                    </div>
+                    <div class="envelope-postage-stamp">
+                      <div class="stamp-inner">
+                        <span class="stamp-plane">✈</span>
+                        <span class="stamp-date">NOV 26</span>
+                        <span class="stamp-honor">HONORARY VIP</span>
+                      </div>
+                      <div class="postmark-circle">
+                        <span>COMMAND</span>
+                        <span>NELLAI ➔ SKY</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Prominent Inscription: FOR AK -->
+                  <div class="envelope-address-zone">
+                    <div class="address-to-label">SPECIAL DISPATCH FOR</div>
+                    <div class="address-recipient-title">
+                      <span class="addr-for">For</span>
+                      <span class="addr-name">AK</span>
+                      <span class="addr-heart">💗</span>
+                    </div>
+                    <div class="address-subline">To My Favourite Ma'am — Station Honorary VIP</div>
+                  </div>
+
+                </div>
+
+                <!-- Envelope Top Flap (Flips open with 3D rotation) -->
+                <div class="envelope-top-flap" id="envelopeTopFlap">
+                  <div class="flap-front"></div>
+                </div>
+
+                <!-- Clickable 3D Wax Seal positioned on flap -->
+                <div class="envelope-seal-wrapper" id="envelopeSealWrapper" role="button" tabindex="0" title="Click wax seal to open letter" aria-label="Click wax seal to open letter">
+                  <div class="seal-halo-pulse"></div>
+                  <div class="wax-seal-cover" id="waxSealCover">
+                    <div class="wax-seal-face">
+                      <span class="seal-sub">FOR</span>
+                      <span class="seal-hero">AK</span>
+                      <span class="seal-heart">💗</span>
+                    </div>
+                  </div>
+                  <div class="seal-prompt-bubble" id="sealPromptBubble">
+                    <span class="bubble-arrow">▲</span> Click Seal to Open ✨
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Full Unfolded Letter View (Slides in / unfolds after seal is clicked) -->
+            <div class="unfolded-letter-view" id="unfoldedLetterView" style="display:none;">
+              
+              <div class="letter-opened-toolbar">
+                <div class="toolbar-badge">
+                  <span class="badge-dot">●</span> Letter Unsealed &amp; Unfolded
+                </div>
+                <button type="button" class="btn-refold-cover" id="btnRefoldCover" title="Fold back into envelope cover">
+                  ✉ Fold Back into Cover
+                </button>
+              </div>
+
+              <!-- Handwritten Aerogramme Letter -->
           <div class="aerogramme-wrapper">
             <div class="aerogramme-sheet">
               <div class="letter-header-meta">
@@ -3142,6 +3842,10 @@
 
               <div class="wax-seal-emblem" title="AK💗">AK💗</div>
             </div>
+          </div>
+
+            </div>
+
           </div>
 
           <!-- Celebratory Action Buttons -->
@@ -4502,6 +5206,185 @@
         document.getElementById('chocStatus').textContent = `Snapped ${snappedCount} of 6 pieces · 85% Cacao Depth 🍫`;
       });
     });
+
+    /* ==========================================================================
+       CHAPTER 7: ENVELOPE COVER & FOLDED LETTER INTERACTIVITY
+       ========================================================================== */
+    function playEnvelopeUnsealSound() {
+      if (!audioCtx) {
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch(e) {}
+      }
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const now = audioCtx.currentTime;
+      
+      // 1. Tactile wax-crack / paper rustle
+      try {
+        const bufferSize = audioCtx.sampleRate * 0.12;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = noiseBuffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1200, now);
+        filter.frequency.exponentialRampToValueAtTime(300, now + 0.12);
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.setValueAtTime(0.4, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+        noise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(audioCtx.destination);
+        noise.start(now);
+      } catch(e) {}
+
+      // 2. Rising magical chime chord
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + 0.08 + idx * 0.09);
+          gain.gain.setValueAtTime(0, now + 0.08 + idx * 0.09);
+          gain.gain.linearRampToValueAtTime(0.25, now + 0.10 + idx * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7 + idx * 0.09);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + 0.08 + idx * 0.09);
+          osc.stop(now + 0.8 + idx * 0.09);
+        } catch(e) {}
+      });
+    }
+
+    function spawnSealBurstEmojis(centerX, centerY) {
+      const emojis = ['💖', '✨', '💌', '🌸', '⭐', '❤️', '✨', '💗', '🎉', '🌟', '❤️', '✨'];
+      emojis.forEach((emoji, i) => {
+        const el = document.createElement('div');
+        el.className = 'floating-seal-emoji';
+        el.textContent = emoji;
+        el.style.left = centerX + 'px';
+        el.style.top = centerY + 'px';
+        document.body.appendChild(el);
+
+        const angle = (i / emojis.length) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
+        const dist = Math.random() * 95 + 75;
+        const targetX = Math.cos(angle) * dist;
+        const targetY = Math.sin(angle) * dist - 40;
+        const rot = Math.random() * 60 - 30;
+
+        requestAnimationFrame(() => {
+          el.style.transform = 'translate(' + targetX + 'px, ' + targetY + 'px) scale(1.3) rotate(' + rot + 'deg)';
+          el.style.opacity = '0';
+        });
+
+        setTimeout(() => {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }, 1000);
+      });
+    }
+
+    function openEnvelopeAndLetter() {
+      const sealWrapper = document.getElementById('envelopeSealWrapper');
+      const envelopeCard = document.getElementById('envelopeCard');
+      const envelopeScene = document.getElementById('envelopeScene');
+      const unfoldedLetterView = document.getElementById('unfoldedLetterView');
+      if (!sealWrapper || !envelopeCard || !unfoldedLetterView) return;
+
+      // 1. Play sound
+      playEnvelopeUnsealSound();
+
+      // 2. Coordinates & Celebration Particles
+      const rect = sealWrapper.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      if (typeof spawnCelebrationParticles === 'function') {
+        spawnCelebrationParticles(centerX, centerY, 70, ['#C5A46D', '#FFD700', '#B23825', '#FFFFFF', '#FF85A2']);
+      }
+      spawnSealBurstEmojis(centerX, centerY);
+
+      // 3. Seal break animation
+      sealWrapper.classList.add('breaking');
+
+      // 4. Open flap & slide out folded letter peek
+      setTimeout(() => {
+        envelopeCard.classList.add('is-open');
+      }, 200);
+
+      // 5. Expand & Unfold into full aerogramme letter view
+      setTimeout(() => {
+        envelopeScene.style.opacity = '0';
+        envelopeScene.style.transform = 'scale(0.92)';
+
+        setTimeout(() => {
+          envelopeScene.style.display = 'none';
+          unfoldedLetterView.style.display = 'block';
+          unfoldedLetterView.classList.remove('refolding');
+
+          // Another soft celebratory particle burst
+          if (typeof spawnCelebrationParticles === 'function') {
+            const letterRect = unfoldedLetterView.getBoundingClientRect();
+            spawnCelebrationParticles(letterRect.left + letterRect.width / 2, letterRect.top + 60, 45, ['#C5A46D', '#E0C79B', '#F4EFE6', '#A65D3F']);
+          }
+
+          // Smooth scroll to letter
+          unfoldedLetterView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+      }, 850);
+    }
+
+    function refoldLetterToEnvelope() {
+      const sealWrapper = document.getElementById('envelopeSealWrapper');
+      const envelopeCard = document.getElementById('envelopeCard');
+      const envelopeScene = document.getElementById('envelopeScene');
+      const unfoldedLetterView = document.getElementById('unfoldedLetterView');
+      if (!sealWrapper || !envelopeCard || !unfoldedLetterView || !envelopeScene) return;
+
+      if (isAudioActive && typeof playChime === 'function') {
+        playChime(392, 0.4);
+      }
+
+      unfoldedLetterView.classList.add('refolding');
+
+      setTimeout(() => {
+        unfoldedLetterView.style.display = 'none';
+        unfoldedLetterView.classList.remove('refolding');
+
+        envelopeScene.style.display = 'flex';
+        envelopeScene.style.opacity = '1';
+        envelopeScene.style.transform = 'scale(1)';
+
+        envelopeCard.classList.remove('is-open');
+        sealWrapper.classList.remove('breaking');
+
+        envelopeScene.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 450);
+    }
+
+    // Attach click and keyboard listeners to Seal and Refold button
+    const sealBtn = document.getElementById('envelopeSealWrapper');
+    if (sealBtn) {
+      sealBtn.addEventListener('click', openEnvelopeAndLetter);
+      sealBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openEnvelopeAndLetter();
+        }
+      });
+    }
+
+    const refoldBtn = document.getElementById('btnRefoldCover');
+    if (refoldBtn) {
+      refoldBtn.addEventListener('click', refoldLetterToEnvelope);
+    }
+
 
     /* ==========================================================================
        7. FINAL CELEBRATION BURST & WISHES STREAM
