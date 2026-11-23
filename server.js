@@ -20,10 +20,10 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // --------------------------------------------------------------------------
 // Sensitive PINs are NEVER stored in plaintext. Salted hashes only.
 const GATE1_SALT = 'skyward_gate1_salt_';
-const GATE1_HASH = '13c5bc005df9f6e82cdf3e6296ec8f96c5012475a19e29bc7a002218b85bc7ba';
+const GATE1_HASH = 'f3410752dc225b2cb16b8bc51f38f92d66764d5a4278970a0ab8a41586f65d98';
 
 const GATE2_SALT = 'skyward_gate2_salt_';
-const GATE2_HASH = '98c3cd446213b06ad87323fd61fde14356d24960bc3cf3d17aa991c92c0ff435';
+const GATE2_HASH = 'ad49c2d276bf9aab8351c2ca282c5eae6bcdbed0e9c2e6c9275a1b8cb5ea6ee4';
 
 function hashPin(salt, pin) {
   return crypto.createHash('sha256').update(salt + String(pin).trim()).digest('hex');
