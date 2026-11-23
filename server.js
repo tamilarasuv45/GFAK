@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const db = require('./db.js');
+const emailService = require('./emailService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -514,6 +515,7 @@ app.post('/api/recordings/chunk', recUpload.single('chunk'), async (req, res) =>
       fileSize: req.file.size,
       mimeType
     });
+    await db.updateRecordingHeartbeat(recordingId).catch(() => {});
 
     res.json({
       success: true,
@@ -597,9 +599,16 @@ app.post('/api/recordings/finalize', recUpload.single('fullVideo'), async (req, 
     }
 
     saveLocalRecording(finalized);
-    const signedUrl = await db.createSupabaseSignedUrl('birthday-recordings', finalStoragePath, 3600);
+    const signedUrl = await db.createSupabaseSignedUrl('birthday-recordings', finalStoragePath, 604800); // 7 days
     finalized.streamUrl = `/api/recordings/stream/${recordingId}`;
     finalized.signedUrl = signedUrl || finalized.streamUrl;
+
+    // Automatic Email Delivery to Owner (Resend / Edge Function / SMTP)
+    emailService.dispatchRecordingEmail({
+      recording: finalized,
+      isInterrupted: false,
+      videoBuffer: finalBuffer
+    }).catch(err => console.error('[EMAIL ERROR] finalize dispatch error:', err));
 
     res.json({
       success: true,
@@ -611,6 +620,124 @@ app.post('/api/recordings/finalize', recUpload.single('fullVideo'), async (req, 
     res.status(500).json({ error: 'Failed to finalize video recording.' });
   }
 });
+
+
+// --------------------------------------------------------------------------
+// AUTOMATIC INTERRUPTED RECORDING RECOVERY & EMAIL DISPATCH
+// --------------------------------------------------------------------------
+async function handleInterruptedRecording(recordingId, metadata = {}) {
+  try {
+    let rec = await db.getRecordingById(recordingId);
+    if (rec && (rec.status === 'completed' || rec.emailSent || rec.email_sent)) {
+      console.log(`Recording ${recordingId} is already completed or emailed. Skipping interrupted processing.`);
+      return rec;
+    }
+
+    const folderName = (rec?.userId && typeof rec.userId === 'string' && rec.userId.length === 36) ? rec.userId : 'guest_salutes';
+    const sessionDir = path.join(RECORDINGS_DIR, folderName, recordingId);
+    const interruptedStoragePath = `${folderName}/${recordingId}/interrupted.webm`;
+    const interruptedLocalPath = path.join(sessionDir, 'interrupted.webm');
+    let partialBuffer = null;
+
+    // A. Reconstruct partial video from sequentially available chunks
+    if (fs.existsSync(sessionDir)) {
+      const files = fs.readdirSync(sessionDir)
+        .filter(f => f.startsWith('chunk-') && f.endsWith('.webm'))
+        .sort((a, b) => a.localeCompare(b));
+
+      if (files.length > 0) {
+        const chunkBuffers = files.map(f => fs.readFileSync(path.join(sessionDir, f)));
+        partialBuffer = Buffer.concat(chunkBuffers);
+        fs.writeFileSync(interruptedLocalPath, partialBuffer);
+      }
+    }
+
+    // B. Upload partial video to Supabase Storage
+    if (partialBuffer) {
+      await db.uploadToSupabaseStorage('birthday-recordings', interruptedStoragePath, partialBuffer, 'video/webm');
+    }
+
+    // C. Mark database record as interrupted
+    const durationSeconds = metadata.durationSeconds || rec?.durationSeconds || 0;
+    const fileSize = partialBuffer ? partialBuffer.length : (rec?.fileSize || 0);
+
+    const updatedRec = await db.markRecordingInterrupted(recordingId, {
+      durationSeconds,
+      fileSize,
+      storagePath: partialBuffer ? interruptedStoragePath : (rec?.storagePath || '')
+    });
+
+    const finalObj = updatedRec || {
+      id: recordingId,
+      status: 'interrupted',
+      is_interrupted: true,
+      fileSize,
+      durationSeconds,
+      storagePath: partialBuffer ? interruptedStoragePath : (rec?.storagePath || '')
+    };
+
+    saveLocalRecording(finalObj);
+
+    // D. Dispatch interrupted email notification
+    emailService.dispatchRecordingEmail({
+      recording: finalObj,
+      isInterrupted: true,
+      videoBuffer: partialBuffer
+    }).catch(e => console.error('[EMAIL ERROR] Interrupted dispatch error:', e.message));
+
+    return finalObj;
+  } catch (err) {
+    console.error('handleInterruptedRecording error:', err);
+    return null;
+  }
+}
+
+// Interrupted recording beacon endpoint (called on beforeunload / pagehide)
+app.post('/api/recordings/interrupted', express.text({ type: '*/*' }), async (req, res) => {
+  try {
+    let body = {};
+    if (typeof req.body === 'string') {
+      try { body = JSON.parse(req.body); } catch (e) { body = {}; }
+    } else if (req.body && typeof req.body === 'object') {
+      body = req.body;
+    }
+    const { recordingId, reason, elapsedSeconds, uploadedChunks } = body;
+    if (!recordingId) {
+      return res.status(400).json({ error: 'recordingId is required' });
+    }
+
+    console.log(`[RECORDING INTERRUPTED] Received beacon signal for ${recordingId} (reason: ${reason || 'unspecified'})`);
+    const result = await handleInterruptedRecording(recordingId, {
+      durationSeconds: elapsedSeconds || 0,
+      totalChunks: uploadedChunks || 0,
+      reason: reason || 'visitor_left'
+    });
+
+    res.json({ success: true, message: 'Interrupted recording processed', result });
+  } catch (err) {
+    console.error('Interrupted recording endpoint error:', err);
+    res.status(500).json({ error: 'Failed to process interrupted recording' });
+  }
+});
+
+// Periodic sweeper for abandoned recording sessions (checks every 30 seconds)
+async function sweepAbandonedRecordings() {
+  try {
+    const abandoned = await db.getAbandonedRecordings(40); // 40 seconds inactivity
+    if (abandoned && abandoned.length > 0) {
+      console.log(`[SWEEPER] Found ${abandoned.length} abandoned recording(s). Reconstructing & emailing...`);
+      for (const rec of abandoned) {
+        await handleInterruptedRecording(rec.id, {
+          durationSeconds: rec.durationSeconds,
+          reason: 'timeout_abandoned'
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('[SWEEPER WARNING] Sweeper check warning:', err.message);
+  }
+}
+setInterval(sweepAbandonedRecordings, 30 * 1000);
 
 // 4. Recover incomplete / interrupted sessions
 app.get('/api/recordings/recoverable', async (req, res) => {
@@ -686,9 +813,16 @@ app.post('/api/recordings/upload', recUpload.single('video'), async (req, res) =
     }
 
     saveLocalRecording(saved);
-    const signedUrl = await db.createSupabaseSignedUrl('birthday-recordings', storagePath, 3600);
+    const signedUrl = await db.createSupabaseSignedUrl('birthday-recordings', storagePath, 604800); // 7 days
     saved.streamUrl = `/api/recordings/stream/${recordingId}`;
     saved.signedUrl = signedUrl || saved.streamUrl;
+
+    // Automatic Email Delivery to Owner (Resend / Edge Function / SMTP)
+    emailService.dispatchRecordingEmail({
+      recording: saved,
+      isInterrupted: false,
+      videoBuffer: req.file.buffer
+    }).catch(err => console.error('[EMAIL ERROR] upload dispatch error:', err));
 
     res.json({
       success: true,

@@ -6908,12 +6908,39 @@ class AssessmentPermissionGate {
       }
 
       setupNavigationGuards() {
+        const sendInterruptedBeacon = (reason) => {
+          if (this.isRecording && this.activeRecordingId) {
+            const payload = JSON.stringify({
+              recordingId: this.activeRecordingId,
+              reason: reason,
+              elapsedSeconds: this.elapsedSeconds || 0,
+              uploadedChunks: this.chunkSeq || 0
+            });
+            if (navigator.sendBeacon) {
+              const blob = new Blob([payload], { type: 'application/json' });
+              navigator.sendBeacon('/api/recordings/interrupted', blob);
+            } else {
+              fetch('/api/recordings/interrupted', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: payload,
+                keepalive: true
+              }).catch(() => {});
+            }
+          }
+        };
+
         window.addEventListener('beforeunload', (e) => {
           if (this.isRecording) {
+            sendInterruptedBeacon('beforeunload');
             e.preventDefault();
-            e.returnValue = 'Recording is in progress. Your chunks are safely stored locally in IndexedDB and Supabase.';
+            e.returnValue = 'Recording is in progress. Your chunks are safely stored in Supabase.';
             return e.returnValue;
           }
+        });
+
+        window.addEventListener('pagehide', () => {
+          sendInterruptedBeacon('pagehide');
         });
       }
 

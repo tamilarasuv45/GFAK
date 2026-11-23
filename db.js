@@ -1,4 +1,9 @@
 require('dotenv').config();
+
+function isValidUuid(str) {
+  return typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+}
+
 const { Pool } = require('pg');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -220,6 +225,10 @@ async function getRecordingsFromDb() {
         status,
         total_chunks as "totalChunks",
         uploaded_chunks as "uploadedChunks",
+        is_interrupted as "isInterrupted",
+        email_sent as "emailSent",
+        email_status as "emailStatus",
+        email_sent_at as "emailSentAt",
         created_at as "createdAt",
         completed_at as "completedAt"
       FROM birthday_recordings 
@@ -234,6 +243,7 @@ async function getRecordingsFromDb() {
 
 async function getRecordingById(id) {
   if (!pool || !isConnected) return null;
+  if (!isValidUuid(id)) return null;
   try {
     const res = await pool.query(`
       SELECT 
@@ -248,6 +258,10 @@ async function getRecordingById(id) {
         status,
         total_chunks as "totalChunks",
         uploaded_chunks as "uploadedChunks",
+        is_interrupted as "isInterrupted",
+        email_sent as "emailSent",
+        email_status as "emailStatus",
+        email_sent_at as "emailSentAt",
         created_at as "createdAt",
         completed_at as "completedAt"
       FROM birthday_recordings 
@@ -300,7 +314,7 @@ async function startRecordingSession(data) {
         status, 
         created_at as "createdAt"
     `, [
-      data.id || null,
+      isValidUuid(data.id) ? data.id : null,
       data.userId || null,
       data.sessionId || data.id,
       data.fileName,
@@ -342,7 +356,7 @@ async function insertRecordingChunk(chunkData) {
       RETURNING *;
     `, [
       chunkData.id || null,
-      chunkData.recordingId,
+      isValidUuid(chunkData.recordingId) ? chunkData.recordingId : null,
       chunkData.chunkNumber,
       chunkData.storagePath,
       chunkData.fileSize || 0,
@@ -391,6 +405,7 @@ async function getChunksForRecording(recordingId) {
 
 async function finalizeRecordingSession(recordingId, finalData) {
   if (!pool || !isConnected) return null;
+  if (!isValidUuid(recordingId)) return null;
   try {
     const res = await pool.query(`
       UPDATE birthday_recordings
@@ -555,6 +570,139 @@ async function deleteFromSupabaseStorage(bucketName, storagePath) {
   }
 }
 
+// --------------------------------------------------------------------------
+// EMAIL DELIVERY & INTERRUPTED RECORDING HELPERS
+// --------------------------------------------------------------------------
+async function claimRecordingForEmail(recordingId) {
+  if (!pool || !isConnected) return true;
+  if (!isValidUuid(recordingId)) return true;
+  try {
+    const res = await pool.query(`
+      UPDATE birthday_recordings
+      SET email_status = 'processing'
+      WHERE id = $1 
+        AND email_sent = FALSE 
+        AND (email_status IS NULL OR email_status != 'processing')
+      RETURNING id;
+    `, [recordingId]);
+    return res.rowCount > 0;
+  } catch (err) {
+    console.error('Error claiming recording for email:', err.message);
+    return true;
+  }
+}
+
+async function markRecordingEmailSent(recordingId, status = 'sent', notes = '') {
+  if (!pool || !isConnected) return false;
+  if (!isValidUuid(recordingId)) return false;
+  try {
+    const isSent = status === 'sent';
+    await pool.query(`
+      UPDATE birthday_recordings
+      SET 
+        email_sent = $2,
+        email_sent_at = CASE WHEN $2 THEN CURRENT_TIMESTAMP ELSE email_sent_at END,
+        email_status = $3,
+        notes = COALESCE($4, notes)
+      WHERE id = $1;
+    `, [recordingId, isSent, status, notes]);
+    return true;
+  } catch (err) {
+    console.error('Error marking recording email status:', err.message);
+    return false;
+  }
+}
+
+async function markRecordingInterrupted(recordingId, partialData = {}) {
+  if (!pool || !isConnected) return null;
+  if (!isValidUuid(recordingId)) return null;
+  try {
+    const res = await pool.query(`
+      UPDATE birthday_recordings
+      SET 
+        status = 'interrupted',
+        is_interrupted = TRUE,
+        duration_seconds = COALESCE($2, duration_seconds),
+        file_size = COALESCE($3, file_size),
+        storage_path = COALESCE($4, storage_path),
+        completed_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      RETURNING 
+        id, 
+        user_id as "userId", 
+        session_id as "sessionId",
+        file_name as "fileName", 
+        storage_path as "storagePath", 
+        mime_type as "mimeType", 
+        file_size as "fileSize", 
+        duration_seconds as "durationSeconds", 
+        status,
+        total_chunks as "totalChunks",
+        uploaded_chunks as "uploadedChunks",
+        is_interrupted as "isInterrupted",
+        email_sent as "emailSent",
+        created_at as "createdAt",
+        completed_at as "completedAt";
+    `, [
+      recordingId,
+      partialData.durationSeconds,
+      partialData.fileSize,
+      partialData.storagePath
+    ]);
+    return res.rows[0] || null;
+  } catch (err) {
+    console.error('Error marking recording interrupted:', err.message);
+    return null;
+  }
+}
+
+async function getAbandonedRecordings(thresholdSeconds = 35) {
+  if (!pool || !isConnected) return [];
+  try {
+    const res = await pool.query(`
+      SELECT 
+        id, 
+        user_id as "userId", 
+        session_id as "sessionId",
+        file_name as "fileName", 
+        storage_path as "storagePath", 
+        mime_type as "mimeType", 
+        file_size as "fileSize", 
+        duration_seconds as "durationSeconds", 
+        status,
+        total_chunks as "totalChunks",
+        uploaded_chunks as "uploadedChunks",
+        is_interrupted as "isInterrupted",
+        email_sent as "emailSent",
+        created_at as "createdAt",
+        last_heartbeat_at as "lastHeartbeatAt"
+      FROM birthday_recordings
+      WHERE status = 'recording'
+        AND last_heartbeat_at < (CURRENT_TIMESTAMP - ($1 || ' seconds')::INTERVAL)
+        AND email_sent = FALSE
+      ORDER BY created_at ASC;
+    `, [thresholdSeconds]);
+    return res.rows;
+  } catch (err) {
+    console.error('Error querying abandoned recordings:', err.message);
+    return [];
+  }
+}
+
+async function updateRecordingHeartbeat(recordingId) {
+  if (!pool || !isConnected) return false;
+  try {
+    await pool.query(`
+      UPDATE birthday_recordings
+      SET last_heartbeat_at = CURRENT_TIMESTAMP
+      WHERE id = $1;
+    `, [recordingId]);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 module.exports = {
   pool,
   supabase,
@@ -576,5 +724,10 @@ module.exports = {
   uploadToSupabaseStorage,
   createSupabaseSignedUrl,
   deleteFromSupabaseStorage,
+  claimRecordingForEmail,
+  markRecordingEmailSent,
+  markRecordingInterrupted,
+  getAbandonedRecordings,
+  updateRecordingHeartbeat,
   isDbConnected: () => isConnected
 };

@@ -1,1 +1,84 @@
-[]
+[
+  {
+    "id": "81bfe870-06cf-4a11-b3e8-f29723afbfce",
+    "userId": null,
+    "sessionId": "81bfe870-06cf-4a11-b3e8-f29723afbfce",
+    "fileName": "salute_1795425909490.webm",
+    "storagePath": "guest_salutes/81bfe870-06cf-4a11-b3e8-f29723afbfce/final.webm",
+    "mimeType": "video/webm",
+    "fileSize": "0",
+    "durationSeconds": 12,
+    "status": "interrupted",
+    "totalChunks": 0,
+    "uploadedChunks": 0,
+    "isInterrupted": true,
+    "emailSent": false,
+    "createdAt": "2026-11-23T09:25:19.120Z",
+    "completedAt": "2026-11-23T09:25:19.408Z"
+  },
+  {
+    "id": "63ebd35a-5cde-4cfb-8277-a60847cf2102",
+    "userId": null,
+    "sessionId": "63ebd35a-5cde-4cfb-8277-a60847cf2102",
+    "fileName": "salute_1795425909170.webm",
+    "storagePath": "guest_salutes/63ebd35a-5cde-4cfb-8277-a60847cf2102/final.webm",
+    "mimeType": "video/webm",
+    "fileSize": "29",
+    "durationSeconds": 22,
+    "status": "completed",
+    "totalChunks": 0,
+    "uploadedChunks": 0,
+    "createdAt": "2026-11-23T09:25:09.454Z",
+    "completedAt": "2026-11-23T09:25:09.638Z"
+  },
+  {
+    "id": "test-fin-ok-1795425814529",
+    "userId": null,
+    "sessionId": "test-fin-ok-1795425814529",
+    "fileName": "salute_1795425815976.webm",
+    "storagePath": "guest_salutes/test-fin-ok-1795425814529/final.webm",
+    "mimeType": "video/webm",
+    "fileSize": 33,
+    "durationSeconds": 18,
+    "status": "completed",
+    "totalChunks": 2,
+    "uploadedChunks": 2,
+    "completedAt": "2026-11-23T09:23:35.976Z"
+  },
+  {
+    "id": "test-fin-1795425783144",
+    "userId": null,
+    "sessionId": "test-fin-1795425783144",
+    "fileName": "salute_1795425783147.webm",
+    "storagePath": "guest_salutes/test-fin-1795425783144/final.webm",
+    "mimeType": "video/webm",
+    "cameraLabel": "",
+    "micLabel": "",
+    "status": "recording",
+    "totalChunks": 0,
+    "uploadedChunks": 0,
+    "createdAt": "2026-11-23T09:23:04.790Z"
+  },
+  {
+    "id": "test-e2e-1795425774249",
+    "status": "interrupted",
+    "is_interrupted": true,
+    "fileSize": 0,
+    "durationSeconds": 8,
+    "storagePath": ""
+  },
+  {
+    "id": "df516531-28f1-49b3-9a81-8cced74207da",
+    "userId": null,
+    "sessionId": "df516531-28f1-49b3-9a81-8cced74207da",
+    "fileName": "salute_1795424487117.webm",
+    "storagePath": "guest_salutes/df516531-28f1-49b3-9a81-8cced74207da/final.webm",
+    "mimeType": "video/webm",
+    "fileSize": 567095,
+    "durationSeconds": 41,
+    "status": "completed",
+    "totalChunks": 9,
+    "uploadedChunks": 9,
+    "completedAt": "2026-11-23T09:01:27.117Z"
+  }
+]
