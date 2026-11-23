@@ -316,6 +316,18 @@ app.post('/api/storybook/verify-chapter', authenticateGate1, (req, res) => {
   });
 });
 
+// Storybook Reset Progress to Chapter 1
+app.post('/api/storybook/reset', authenticateGate1, (req, res) => {
+  req.sessionGate1.unlockedChapter = 1;
+  req.sessionGate1.discoveredWords = [];
+  res.json({
+    success: true,
+    message: 'Storybook progress reset to Chapter 1. All subsequent chapters locked.',
+    unlockedChapter: 1,
+    discoveredWords: []
+  });
+});
+
 // --------------------------------------------------------------------------
 // 6. PRIVATE PHOTO GALLERY ENDPOINTS (AUTHENTICATED)
 // --------------------------------------------------------------------------

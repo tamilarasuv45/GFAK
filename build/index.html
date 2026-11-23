@@ -757,6 +757,149 @@
       display: block;
     }
 
+    /* ==========================================================================
+       CHAPTER LOCKED CURTAIN SHIELD & TACTICAL TOAST
+       ========================================================================== */
+    .chapter-locked-curtain {
+      position: absolute;
+      inset: 0;
+      background: rgba(21, 22, 26, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      text-align: center;
+      border-radius: 28px;
+    }
+
+    .curtain-content {
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .curtain-lock-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(74, 18, 34, 0.7);
+      border: 2px solid #E8A5AF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 0 25px rgba(232, 165, 175, 0.3);
+      animation: pulseLockIcon 2.5s infinite;
+    }
+
+    @keyframes pulseLockIcon {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(232, 165, 175, 0.25); }
+      50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(232, 165, 175, 0.5); }
+    }
+
+    .curtain-badge {
+      font-family: var(--font-military);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: #E8A5AF;
+      text-transform: uppercase;
+      background: rgba(74, 18, 34, 0.5);
+      border: 1px solid rgba(232, 165, 175, 0.3);
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    .curtain-content h3 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      color: #FDF9F2;
+      margin: 0;
+    }
+
+    .curtain-content p {
+      font-size: 0.92rem;
+      color: #e4d7c8;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .tactical-toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(21, 22, 26, 0.95);
+      border: 1px solid #E8A5AF;
+      box-shadow: 0 10px 30px rgba(74, 18, 34, 0.4), 0 0 15px rgba(232, 165, 175, 0.2);
+      color: #FDF9F2;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-family: var(--font-military);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(10px);
+    }
+    .tactical-toast.active {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .tactical-toast .toast-btn {
+      background: linear-gradient(135deg, #4A1222, #7E203E);
+      color: #FDF9F2;
+      border: 1px solid #E8A5AF;
+      border-radius: 16px;
+      padding: 5px 14px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      margin-left: 8px;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+    .tactical-toast .toast-btn:hover {
+      background: #7E203E;
+      box-shadow: 0 0 10px rgba(232, 165, 175, 0.4);
+    }
+
+    .btn-relock-all {
+      background: rgba(74, 18, 34, 0.5);
+      border: 1px solid rgba(232, 165, 175, 0.35);
+      color: #E8A5AF;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-family: var(--font-military);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-relock-all:hover {
+      background: rgba(232, 165, 175, 0.18);
+      border-color: #E8A5AF;
+      color: #FDF9F2;
+      box-shadow: 0 0 12px rgba(232, 165, 175, 0.3);
+    }
+    .tab-badge {
+      font-size: 0.75rem;
+      margin-left: 4px;
+    }
+
     @keyframes chapter-fade {
       from {
         opacity: 0;
@@ -3555,6 +3698,10 @@
             title="Scroll directly down to active chapter's puzzle">
             <span>🧩 Jump to Puzzle ↓</span>
           </button>
+          <button class="hud-jump-puzzle-btn" id="hudRelockHeaderBtn" style="border-color:rgba(232, 165, 175, 0.4); background:rgba(74, 18, 34, 0.4);"
+            title="Relock Chapters 2-7 and restart puzzles from Chapter 1">
+            <span>🔒 Relock All ↺</span>
+          </button>
           <button class="hud-memories-btn" id="hudOpenMemoriesBtn" title="Access classified memory gallery">
             <span>✦ Open Our Memories</span>
           </button>
@@ -3582,8 +3729,13 @@
     <!-- Discovered Secret Words Collection Vault -->
     <div class="secret-words-vault">
       <div class="vault-header-row">
-        <span>✦ Secret Word Collection // Progress</span>
-        <span id="wordsProgressCounter">0 / 6 Words Unlocked</span>
+        <span>✦ Secret Word Collection // Mission Progress</span>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button type="button" class="btn-relock-all" id="btnRelockAllPuzzles" title="Relock Chapters 2-7 and restart tactical puzzle solving from Chapter 1">
+            🔒 Relock All Puzzles ↺
+          </button>
+          <span id="wordsProgressCounter">0 / 6 Words Unlocked</span>
+        </div>
       </div>
       <div class="words-grid">
         <div class="word-slot" id="slot-word-1" title="Chapter 1 Secret Word">✦ ✦ ✦ ✦ ✦ ✦ ✦</div>
@@ -3687,6 +3839,18 @@
       <!-- ==================== CHAPTER 2 ==================== -->
       <div class="chapter-pane" id="chapter-pane-2">
         <div class="chapter-card-frame">
+          <!-- Chapter 2 Lock Shield Curtain -->
+          <div class="chapter-locked-curtain" id="curtain-chapter-2">
+            <div class="curtain-content">
+              <div class="curtain-lock-icon">🔒</div>
+              <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
+              <h3>Chapter 02 is Locked</h3>
+              <p>To unlock Tirunelveli and proceed, you must solve the <strong>Squadron Flight Grid</strong> puzzle in Chapter 01 to decode Secret Word 01 (COURAGE).</p>
+              <button type="button" class="btn-primary" onclick="router.switchChapter(1); scrollToPuzzleChamber(1);">
+                Go to Chapter 01 Mission 🎯
+              </button>
+            </div>
+          </div>
           <span class="editorial-tag">Chapter 02 · Heritage</span>
           <h2>Rooted in Tirunelveli: Unforgettable in Every Way</h2>
 
@@ -3787,6 +3951,18 @@
       <!-- ==================== CHAPTER 3 ==================== -->
       <div class="chapter-pane" id="chapter-pane-3">
         <div class="chapter-card-frame">
+          <!-- Chapter 3 Lock Shield Curtain -->
+          <div class="chapter-locked-curtain" id="curtain-chapter-3">
+            <div class="curtain-content">
+              <div class="curtain-lock-icon">🔒</div>
+              <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
+              <h3>Chapter 03 is Locked</h3>
+              <p>To unlock The Sky and proceed, you must solve the <strong>Nellai Seating Arrangement</strong> puzzle in Chapter 02 to decode Secret Word 02 (DREAM).</p>
+              <button type="button" class="btn-primary" onclick="router.switchChapter(2); scrollToPuzzleChamber(2);">
+                Go to Chapter 02 Mission 🎯
+              </button>
+            </div>
+          </div>
           <span class="editorial-tag">Chapter 03 · Ambition</span>
           <h2>The Sky Was Never the Limit</h2>
 
@@ -3866,6 +4042,18 @@
       <!-- ==================== CHAPTER 4 ==================== -->
       <div class="chapter-pane" id="chapter-pane-4">
         <div class="chapter-card-frame">
+          <!-- Chapter 4 Lock Shield Curtain -->
+          <div class="chapter-locked-curtain" id="curtain-chapter-4">
+            <div class="curtain-content">
+              <div class="curtain-lock-icon">🔒</div>
+              <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
+              <h3>Chapter 04 is Locked</h3>
+              <p>To unlock Possibilities and proceed, you must decode the <strong>IAF Caesar Cipher Transmission</strong> in Chapter 03 to reveal Secret Word 03 (FLIGHT).</p>
+              <button type="button" class="btn-primary" onclick="router.switchChapter(3); scrollToPuzzleChamber(3);">
+                Go to Chapter 03 Mission 🎯
+              </button>
+            </div>
+          </div>
           <span class="editorial-tag">Chapter 04 · Intellect</span>
           <h2>A Mind Full of Possibilities</h2>
 
@@ -3942,6 +4130,18 @@
       <!-- ==================== CHAPTER 5 ==================== -->
       <div class="chapter-pane" id="chapter-pane-5">
         <div class="chapter-card-frame">
+          <!-- Chapter 5 Lock Shield Curtain -->
+          <div class="chapter-locked-curtain" id="curtain-chapter-5">
+            <div class="curtain-content">
+              <div class="curtain-lock-icon">🔒</div>
+              <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
+              <h3>Chapter 05 is Locked</h3>
+              <p>To unlock Her World and proceed, you must solve the <strong>Mathematical Sequence</strong> puzzle in Chapter 04 to decode Secret Word 04 (STRENGTH).</p>
+              <button type="button" class="btn-primary" onclick="router.switchChapter(4); scrollToPuzzleChamber(4);">
+                Go to Chapter 04 Mission 🎯
+              </button>
+            </div>
+          </div>
           <span class="editorial-tag">Chapter 05 · The Connoisseur</span>
           <h2>A Taste of Her World: Dark, Deep &amp; Extraordinary</h2>
 
@@ -4044,6 +4244,18 @@
       <!-- ==================== CHAPTER 6 ==================== -->
       <div class="chapter-pane" id="chapter-pane-6">
         <div class="chapter-card-frame">
+          <!-- Chapter 6 Lock Shield Curtain -->
+          <div class="chapter-locked-curtain" id="curtain-chapter-6">
+            <div class="curtain-content">
+              <div class="curtain-lock-icon">🔒</div>
+              <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
+              <h3>Chapter 06 is Locked</h3>
+              <p>To unlock Memories and proceed, you must decode the <strong>Alphanumeric Coordinate Cipher</strong> in Chapter 05 to reveal Secret Word 05 (INSPIRE).</p>
+              <button type="button" class="btn-primary" onclick="router.switchChapter(5); scrollToPuzzleChamber(5);">
+                Go to Chapter 05 Mission 🎯
+              </button>
+            </div>
+          </div>
           <span class="editorial-tag">Chapter 06 · The Log</span>
           <h2>Memories &amp; High Standards</h2>
 
@@ -4124,6 +4336,18 @@
       <!-- ==================== CHAPTER 7 ==================== -->
       <div class="chapter-pane" id="chapter-pane-7">
         <div class="chapter-card-frame">
+          <!-- Chapter 7 Lock Shield Curtain -->
+          <div class="chapter-locked-curtain" id="curtain-chapter-7">
+            <div class="curtain-content">
+              <div class="curtain-lock-icon">🔒</div>
+              <div class="curtain-badge">FINAL SURPRISE · RESTRICTED VAULT</div>
+              <h3>Chapter 07 is Locked</h3>
+              <p>The sealed birthday aerogramme envelope and squadron studio will unlock once you solve the <strong>Weekly Flight Matrix</strong> puzzle in Chapter 06 to decode Secret Word 06 (ADMIRE).</p>
+              <button type="button" class="btn-primary" onclick="router.switchChapter(6); scrollToPuzzleChamber(6);">
+                Go to Chapter 06 Mission 🎯
+              </button>
+            </div>
+          </div>
           <span class="editorial-tag">Chapter 07 · The Heart</span>
           <h2>A Letter from the Heart: The Final Reveal</h2>
           <p class="story-text" style="font-size:1.15rem; color:var(--gold-light);">
@@ -4920,8 +5144,15 @@
         this.hasBackend = false;
         this.gate1Token = sessionStorage.getItem('gate1_token') || null;
         this.gate2Token = sessionStorage.getItem('gate2_token') || null;
-        this.unlockedChapter = parseInt(localStorage.getItem('storybook_unlocked_ch') || '1', 10);
-        this.discoveredWords = JSON.parse(localStorage.getItem('storybook_words') || '[]');
+        if (this.gate1Token) {
+          this.unlockedChapter = parseInt(localStorage.getItem('storybook_unlocked_ch') || '1', 10);
+          this.discoveredWords = JSON.parse(localStorage.getItem('storybook_words') || '[]');
+        } else {
+          this.unlockedChapter = 1;
+          this.discoveredWords = [];
+          localStorage.removeItem('storybook_unlocked_ch');
+          localStorage.removeItem('storybook_words');
+        }
       }
 
       async checkBackend() {
@@ -4935,20 +5166,56 @@
           if (res.ok) {
             this.hasBackend = true;
             const data = await res.json();
-            if (data.unlockedChapter) this.unlockedChapter = Math.max(this.unlockedChapter, data.unlockedChapter);
-            if (data.discoveredWords && data.discoveredWords.length > 0) {
-              this.discoveredWords = Array.from(new Set([...this.discoveredWords, ...data.discoveredWords]));
+            if (data.gate1Valid && typeof data.unlockedChapter === 'number') {
+              this.unlockedChapter = data.unlockedChapter;
+              if (Array.isArray(data.discoveredWords)) {
+                this.discoveredWords = data.discoveredWords;
+              }
+              this.persistProgress();
+            }
+          } else {
+            if (!this.gate1Token) {
+              this.unlockedChapter = 1;
+              this.discoveredWords = [];
             }
           }
         } catch (e) {
           this.hasBackend = false;
         }
-        this.persistProgress();
       }
 
       persistProgress() {
         localStorage.setItem('storybook_unlocked_ch', this.unlockedChapter);
         localStorage.setItem('storybook_words', JSON.stringify(this.discoveredWords));
+      }
+
+      async resetProgress() {
+        this.unlockedChapter = 1;
+        this.discoveredWords = [];
+        this.persistProgress();
+        if (this.hasBackend && this.gate1Token) {
+          try {
+            await fetch('/api/storybook/reset', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-gate1-token': this.gate1Token
+              }
+            });
+          } catch (e) {}
+        }
+        for (let i = 1; i <= 6; i++) {
+          const sol = document.getElementById('pSolution' + i);
+          if (sol) sol.classList.remove('revealed');
+          const input = document.getElementById('pInput' + i);
+          if (input) { input.disabled = false; input.value = ''; }
+          const feedback = document.getElementById('pFeedback' + i);
+          if (feedback) { feedback.textContent = ''; feedback.className = 'puzzle-status-feedback'; }
+        }
+        if (window.router) {
+          router.currentChapter = 1;
+          router.renderStorybook();
+        }
       }
 
       async verifyGate1(pin) {
@@ -4963,8 +5230,8 @@
             if (res.ok && data.success) {
               this.gate1Token = data.token;
               sessionStorage.setItem('gate1_token', data.token);
-              if (data.unlockedChapter) this.unlockedChapter = Math.max(this.unlockedChapter, data.unlockedChapter);
-              if (data.discoveredWords) this.discoveredWords = Array.from(new Set([...this.discoveredWords, ...data.discoveredWords]));
+              this.unlockedChapter = data.unlockedChapter || 1;
+              this.discoveredWords = data.discoveredWords || [];
               this.persistProgress();
               return { success: true };
             }
@@ -4977,6 +5244,9 @@
         if (candidateHash === GATE1_HASH) {
           this.gate1Token = 'local_token_' + Date.now();
           sessionStorage.setItem('gate1_token', this.gate1Token);
+          this.unlockedChapter = 1;
+          this.discoveredWords = [];
+          this.persistProgress();
           return { success: true };
         }
         return { success: false, error: 'Incorrect PIN. Please try again.' };
@@ -5011,6 +5281,10 @@
       }
 
       async verifyPuzzle(chapterNum, answer) {
+        if (chapterNum > this.unlockedChapter) {
+          return { success: false, error: 'This chapter is locked. Solve preceding chapters first.' };
+        }
+
         if (this.hasBackend) {
           try {
             const res = await fetch('/api/storybook/verify-chapter', {
@@ -5675,6 +5949,10 @@ class AssessmentPermissionGate {
         state.gate2Token = null;
         sessionStorage.removeItem('gate1_token');
         sessionStorage.removeItem('gate2_token');
+        localStorage.removeItem('storybook_unlocked_ch');
+        localStorage.removeItem('storybook_words');
+        state.unlockedChapter = 1;
+        state.discoveredWords = [];
 
         const fsOverlay = document.getElementById('overlay-fullscreen-guard');
         if (fsOverlay) fsOverlay.classList.remove('active');
@@ -5686,52 +5964,114 @@ class AssessmentPermissionGate {
       }
 
       renderStorybook() {
+        if (!state.unlockedChapter || state.unlockedChapter < 1) state.unlockedChapter = 1;
+        if (this.currentChapter > state.unlockedChapter) {
+          this.currentChapter = state.unlockedChapter;
+        }
+
         // Render Chapter Ribbon
         const ribbon = document.getElementById('chapterNavRibbon');
-        const tabs = ribbon.querySelectorAll('.chapter-nav-tab');
-        tabs.forEach(tab => {
-          const ch = parseInt(tab.dataset.chapter, 10);
-          tab.classList.toggle('active', ch === this.currentChapter);
-          tab.classList.toggle('locked', ch > state.unlockedChapter);
-          tab.classList.toggle('completed', ch < state.unlockedChapter);
-        });
+        if (ribbon) {
+          const tabs = ribbon.querySelectorAll('.chapter-nav-tab');
+          tabs.forEach(tab => {
+            const ch = parseInt(tab.dataset.chapter, 10);
+            const isLocked = ch > state.unlockedChapter;
+            const isCompleted = ch < state.unlockedChapter;
+            const isActive = ch === this.currentChapter;
+
+            tab.classList.toggle('active', isActive);
+            tab.classList.toggle('locked', isLocked);
+            tab.classList.toggle('completed', isCompleted);
+
+            let badge = tab.querySelector('.tab-badge');
+            if (!badge) {
+              badge = document.createElement('span');
+              badge.className = 'tab-badge';
+              tab.appendChild(badge);
+            }
+            if (isLocked) {
+              badge.textContent = ' 🔒';
+              tab.title = `Chapter ${ch} is locked. Solve Chapter ${ch - 1}'s puzzle to unlock.`;
+            } else if (isCompleted) {
+              badge.textContent = ' ✓';
+              tab.title = `Chapter ${ch} (Completed)`;
+            } else {
+              badge.textContent = ' ✦';
+              tab.title = `Chapter ${ch} (Current)`;
+            }
+          });
+        }
 
         // Render Active Chapter Pane
         document.querySelectorAll('.chapter-pane').forEach(pane => pane.classList.remove('active-chapter'));
         const activePane = document.getElementById('chapter-pane-' + this.currentChapter);
         if (activePane) activePane.classList.add('active-chapter');
 
-        // Render Discovered Secret Words
+        // Update Lock Curtains for Chapters 2 through 7
+        for (let c = 2; c <= 7; c++) {
+          const curtain = document.getElementById('curtain-chapter-' + c);
+          if (curtain) {
+            curtain.style.display = (c > state.unlockedChapter) ? 'flex' : 'none';
+          }
+        }
+
+        // Render Discovered Secret Words (Strict: only if word has actually been discovered)
         const wordSlots = document.querySelectorAll('.word-slot');
         const secretWordList = ['COURAGE', 'DREAM', 'FLIGHT', 'STRENGTH', 'INSPIRE', 'ADMIRE'];
         let unlockedCount = 0;
 
         secretWordList.forEach((word, idx) => {
           const slot = document.getElementById(`slot-word-${idx + 1}`);
-          if (state.discoveredWords.includes(word) || state.unlockedChapter > idx + 1) {
-            slot.textContent = word;
-            slot.classList.add('unlocked');
-            unlockedCount++;
-          } else {
-            slot.textContent = '✦ ✦ ✦ ✦ ✦';
-            slot.classList.remove('unlocked');
+          if (slot) {
+            if (state.discoveredWords && state.discoveredWords.includes(word)) {
+              slot.textContent = word;
+              slot.classList.add('unlocked');
+              unlockedCount++;
+            } else {
+              slot.textContent = '✦ ✦ ✦ ✦ ✦';
+              slot.classList.remove('unlocked');
+            }
           }
         });
 
-        document.getElementById('wordsProgressCounter').textContent = `${unlockedCount} / 6 Words Unlocked`;
+        const progressCounter = document.getElementById('wordsProgressCounter');
+        if (progressCounter) {
+          progressCounter.textContent = `${unlockedCount} / 6 Words Unlocked`;
+        }
 
-        // Pre-open solutions for already completed chapters
-        for (let i = 1; i < state.unlockedChapter; i++) {
+        // Pre-open solutions ONLY for already completed chapters; ensure locked solutions remain hidden
+        for (let i = 1; i <= 6; i++) {
           const sol = document.getElementById('pSolution' + i);
-          if (sol) sol.classList.add('revealed');
+          const input = document.getElementById('pInput' + i);
+          if (sol) {
+            if (i < state.unlockedChapter) {
+              sol.classList.add('revealed');
+              if (input) input.disabled = true;
+            } else {
+              sol.classList.remove('revealed');
+              if (input) input.disabled = false;
+            }
+          }
         }
       }
 
       switchChapter(chNum) {
-        if (chNum > state.unlockedChapter) return; // Locked!
+        if (chNum > state.unlockedChapter) {
+          playChime(220, 0.4);
+          this.showLockedChapterNotice(chNum);
+          return; // Strictly locked!
+        }
         this.currentChapter = chNum;
         this.renderStorybook();
         window.scrollTo({ top: 120, behavior: 'smooth' });
+      }
+
+      showLockedChapterNotice(chNum) {
+        const msg = `🔒 Chapter 0${chNum} is Classified & Locked! Solve Chapter 0${chNum - 1}'s puzzle to unlock clearance.`;
+        showTacticalToast(msg, 'Go to Puzzle 🎯', () => {
+          this.switchChapter(state.unlockedChapter);
+          scrollToPuzzleChamber(state.unlockedChapter);
+        });
       }
     }
 
@@ -5815,12 +6155,67 @@ class AssessmentPermissionGate {
       });
     }
 
-    // Chapter ribbon clicks
+    // Tactical Toast Notification Helper
+    let toastTimer = null;
+    function showTacticalToast(message, actionLabel, actionCallback) {
+      let toast = document.getElementById('tacticalToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'tacticalToast';
+        toast.className = 'tactical-toast';
+        document.body.appendChild(toast);
+      }
+      toast.innerHTML = `<span>${message}</span>`;
+      if (actionLabel && actionCallback) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'toast-btn';
+        btn.textContent = actionLabel;
+        btn.addEventListener('click', () => {
+          toast.classList.remove('active');
+          actionCallback();
+        });
+        toast.appendChild(btn);
+      }
+      toast.classList.add('active');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('active');
+      }, 4500);
+    }
+
+    // Chapter ribbon clicks (with locked notice & feedback)
     document.getElementById('chapterNavRibbon').addEventListener('click', (e) => {
       const tab = e.target.closest('.chapter-nav-tab');
-      if (!tab || tab.classList.contains('locked')) return;
-      router.switchChapter(parseInt(tab.dataset.chapter, 10));
+      if (!tab) return;
+      const targetCh = parseInt(tab.dataset.chapter, 10);
+      router.switchChapter(targetCh);
     });
+
+    // Relock All Puzzles Button
+    const hudRelockHeaderBtn = document.getElementById('hudRelockHeaderBtn');
+    if (hudRelockHeaderBtn) {
+      hudRelockHeaderBtn.addEventListener('click', async () => {
+        if (confirm('🔒 Relock all chapters from Chapter 02 and restart tactical puzzle solving from Chapter 01?')) {
+          await state.resetProgress();
+          showTacticalToast('✦ All chapters relocked! Starting at Chapter 01.', 'Jump to Puzzle 🎯', () => {
+            scrollToPuzzleChamber(1);
+          });
+        }
+      });
+    }
+
+    const btnRelockAll = document.getElementById('btnRelockAllPuzzles');
+    if (btnRelockAll) {
+      btnRelockAll.addEventListener('click', async () => {
+        if (confirm('🔒 Relock all chapters from Chapter 02 and restart tactical puzzle solving from Chapter 01?')) {
+          await state.resetProgress();
+          showTacticalToast('✦ All chapters relocked! Starting at Chapter 01.', 'Jump to Puzzle 🎯', () => {
+            scrollToPuzzleChamber(1);
+          });
+        }
+      });
+    }
 
     function proceedToChapter(nextNum) {
       router.switchChapter(nextNum);
@@ -6021,17 +6416,21 @@ class AssessmentPermissionGate {
 
       const res = await state.verifyPuzzle(chNum, answer);
       if (res.success) {
-        feedbackEl.textContent = '✦ Solution verified! Secret word revealed below.';
-        feedbackEl.style.color = 'var(--gold-light)';
+        feedbackEl.textContent = '✦ Solution verified! Secret word decoded and clearance granted.';
+        feedbackEl.style.color = '#E8A5AF';
         solutionEl.classList.add('revealed');
         inputEl.disabled = true;
 
         // Trigger celebration starburst
         const rect = inputEl.getBoundingClientRect();
-        spawnCelebrationParticles(rect.left + rect.width / 2, rect.top, 40, ['#E8A5AF', '#F6CAD1', '#FDF9F2', '#7E203E', '#52a870']);
+        spawnCelebrationParticles(rect.left + rect.width / 2, rect.top, 40, ['#E8A5AF', '#F6CAD1', '#FDF9F2', '#7E203E', '#4A1222']);
         playChime(659.25, 0.9);
 
         router.renderStorybook();
+
+        showTacticalToast(`✦ Clearance Granted! Chapter 0${chNum + 1} is now Unlocked!`, `Proceed to Chapter 0${chNum + 1} →`, () => {
+          proceedToChapter(chNum + 1);
+        });
       } else {
         feedbackEl.className = 'puzzle-status-feedback error';
         feedbackEl.textContent = res.error || 'Incorrect answer. Try again.';
@@ -7682,6 +8081,13 @@ class AssessmentPermissionGate {
        10. INITIALIZATION
        ========================================================================== */
     (async function initApp() {
+      // Purge stale storage on fresh arrivals without active session
+      if (!sessionStorage.getItem('gate1_token')) {
+        localStorage.removeItem('storybook_unlocked_ch');
+        localStorage.removeItem('storybook_words');
+        state.unlockedChapter = 1;
+        state.discoveredWords = [];
+      }
       await state.checkBackend();
       router.navigateTo('welcome');
     })();
