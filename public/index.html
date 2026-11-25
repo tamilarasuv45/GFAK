@@ -2834,6 +2834,42 @@
       transition: opacity 0.4s ease;
     }
 
+    @media (max-width: 680px) {
+      #view-gallery {
+        padding: 85px 12px 50px !important;
+      }
+      .gallery-top-nav {
+        padding: 10px 12px !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+      }
+      .gallery-ctrl-btn {
+        padding: 5px 10px !important;
+        font-size: 0.7rem !important;
+      }
+      .cinematic-photo-box {
+        min-height: 250px !important;
+        aspect-ratio: auto !important;
+        height: 54vh !important;
+        border-radius: 14px !important;
+      }
+      .stage-arrow-btn {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 1.1rem !important;
+      }
+      .stage-arrow-btn.prev { left: 8px !important; }
+      .stage-arrow-btn.next { right: 8px !important; }
+      .filmstrip-container {
+        gap: 8px !important;
+        margin: 1.2rem auto 2rem !important;
+      }
+      .thumb-card {
+        flex: 0 0 85px !important;
+        height: 62px !important;
+      }
+    }
+
     .stage-arrow-btn {
       position: absolute;
       top: 50%;
@@ -5507,8 +5543,8 @@
           <button class="stage-arrow-btn next" id="stageNextBtn" aria-label="Next memory">›</button>
 
           <div class="cinematic-photo-box" style="position:relative; min-height:360px; display:flex; align-items:center; justify-content:center; background:#0b0d10; border-radius:16px; overflow:hidden;">
-            <img class="main-stage-img" id="mainStageImg" src="" alt="Private Memory Photograph" style="max-width:100%; max-height:68vh; object-fit:contain; border-radius:12px; transition:opacity 0.25s ease;">
-            <video class="main-stage-video" id="mainStageVideo" controls playsinline preload="metadata" style="display:none; max-width:100%; max-height:68vh; border-radius:12px; background:#000; outline:none; box-shadow:0 8px 30px rgba(0,0,0,0.6);"></video>
+            <img class="main-stage-img" id="mainStageImg" src="" alt="Private Memory Photograph" style="max-width:100%; max-height:68vh; object-fit:contain; border-radius:12px; opacity:1; transition:opacity 0.25s ease;">
+            <video class="main-stage-video" id="mainStageVideo" controls playsinline webkit-playsinline preload="metadata" style="display:none; max-width:100%; max-height:68vh; border-radius:12px; background:#000; outline:none; box-shadow:0 8px 30px rgba(0,0,0,0.6);"></video>
           </div>
 
           <div class="stage-caption-card">
@@ -5571,7 +5607,7 @@
         style="position:absolute; top:24px; right:24px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.5rem; cursor:pointer; z-index:10;"
         id="fsCloseBtn">&times;</button>
       <img id="fsImg" src="" alt="Full-screen view" style="max-width:95vw; max-height:90vh; object-fit:contain; border-radius:8px;">
-      <video id="fsVideo" controls playsinline style="display:none; max-width:95vw; max-height:90vh; border-radius:8px; background:#000;"></video>
+      <video id="fsVideo" controls playsinline webkit-playsinline style="display:none; max-width:95vw; max-height:90vh; border-radius:8px; background:#000;"></video>
     </div>
     </div>
   </div>
@@ -8720,17 +8756,43 @@
         dropzone.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => this.handleFiles(e.target.files));
         document.getElementById('saveUploadBtn').addEventListener('click', () => this.saveUploads());
+
+        // Mobile touch swipe gestures for gallery stage
+        const stageBox = document.querySelector('.cinematic-photo-box');
+        if (stageBox) {
+          let touchStartX = 0;
+          stageBox.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].clientX;
+          }, { passive: true });
+          stageBox.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (diff > 45) {
+              this.pauseSlideshow();
+              this.next();
+            } else if (diff < -45) {
+              this.pauseSlideshow();
+              this.prev();
+            }
+          }, { passive: true });
+        }
       }
 
       async init() {
+        if (!state.hasBackend) {
+          await state.checkBackend();
+        }
         if (state.hasBackend) {
           try {
-            const res = await fetch('/api/gallery/photos', { headers: { 'x-gate2-token': state.gate2Token } });
+            const token = state.gate2Token || sessionStorage.getItem('gate2_token') || '';
+            const res = await fetch('/api/gallery/photos', { headers: { 'x-gate2-token': token } });
             if (res.ok) {
               const d = await res.json();
-              this.photos = d.photos || [];
-              this.render();
-              return;
+              if (d.photos && d.photos.length > 0) {
+                this.photos = d.photos;
+                this.render();
+                return;
+              }
             }
           } catch (e) { }
         }
@@ -8741,8 +8803,8 @@
       getPhotoUrl(p) {
         if (!p) return '';
         if (p.dataUrl) return p.dataUrl;
-        if (state.hasBackend) return `/api/gallery/photo/${p.id}?token=${encodeURIComponent(state.gate2Token)}`;
-        return '';
+        const token = state.gate2Token || sessionStorage.getItem('gate2_token') || '';
+        return `/api/gallery/photo/${p.id}?token=${encodeURIComponent(token)}`;
       }
 
       render() {
@@ -8762,7 +8824,10 @@
           if (this.mainStageImg) this.mainStageImg.style.display = 'none';
           if (this.mainStageVideo) {
             this.mainStageVideo.style.display = 'block';
-            this.mainStageVideo.src = this.getPhotoUrl(cur);
+            const vidUrl = this.getPhotoUrl(cur);
+            if (this.mainStageVideo.src !== vidUrl) {
+              this.mainStageVideo.src = vidUrl;
+            }
           }
           this.stageCaptionText.textContent = cur.caption ? `"${cur.caption}"` : (cur.originalName || 'Video Memory');
           this.stageCounter.textContent = `VIDEO ${String(this.currentIndex + 1).padStart(2, '0')} / ${String(this.photos.length).padStart(2, '0')}`;
@@ -8773,11 +8838,11 @@
           }
           if (this.mainStageImg) {
             this.mainStageImg.style.display = 'block';
-            this.mainStageImg.style.opacity = '0';
-            setTimeout(() => {
-              this.mainStageImg.src = this.getPhotoUrl(cur);
-              this.mainStageImg.onload = () => this.mainStageImg.style.opacity = '1';
-            }, 100);
+            this.mainStageImg.style.opacity = '1';
+            const imgUrl = this.getPhotoUrl(cur);
+            if (this.mainStageImg.src !== imgUrl) {
+              this.mainStageImg.src = imgUrl;
+            }
           }
           this.stageCaptionText.textContent = cur.caption ? `"${cur.caption}"` : 'Photograph Memory';
           this.stageCounter.textContent = `PHOTO ${String(this.currentIndex + 1).padStart(2, '0')} / ${String(this.photos.length).padStart(2, '0')}`;
@@ -8796,7 +8861,7 @@
               </div>
             `;
           } else {
-            th.innerHTML = `<img src="${this.getPhotoUrl(p)}" alt="Thumb">`;
+            th.innerHTML = `<img src="${this.getPhotoUrl(p)}" alt="Thumb" loading="lazy">`;
           }
           th.addEventListener('click', () => { this.pauseSlideshow(); this.currentIndex = idx; this.render(); });
           this.filmstrip.appendChild(th);

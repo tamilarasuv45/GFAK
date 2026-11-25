@@ -563,7 +563,8 @@ app.get(['/api/gallery/photo/:id', '/api/gallery/media/:id'], requireLaunchGate,
     const isVideo = (photo && photo.mediaType === 'video') || mimeType.startsWith('video/') || (localFileName && /\.(mp4|webm|mov|mkv|avi)$/i.test(localFileName));
 
     res.setHeader('Accept-Ranges', 'bytes');
-    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    // Mobile browsers (especially iOS Safari AVPlayer) require caching capability for byte-range buffering
+    res.setHeader('Cache-Control', 'private, max-age=86400');
 
     const range = req.headers.range;
 
@@ -601,10 +602,11 @@ app.get(['/api/gallery/photo/:id', '/api/gallery/media/:id'], requireLaunchGate,
       }
     } else {
       res.setHeader('Content-Type', mimeType || 'image/jpeg');
+      const imgLen = totalSize || (hasLocalFile ? fs.statSync(filePath).size : fileBuffer.length);
+      res.setHeader('Content-Length', imgLen);
       if (hasLocalFile) {
         fs.createReadStream(filePath).pipe(res);
       } else {
-        res.setHeader('Content-Length', fileBuffer.length);
         res.end(fileBuffer);
       }
     }
