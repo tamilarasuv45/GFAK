@@ -17,6 +17,72 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // --------------------------------------------------------------------------
+// 0. AUTHORITATIVE LAUNCH GATE (26 NOVEMBER 2026, 12:00:00 AM IST)
+// --------------------------------------------------------------------------
+// Exact UTC launch timestamp: 2026-11-25T18:30:00.000Z
+const LAUNCH_TIMESTAMP_UTC = '2026-11-25T18:30:00.000Z';
+const LAUNCH_TIMESTAMP_MS = new Date(LAUNCH_TIMESTAMP_UTC).getTime();
+
+function getLaunchStatus() {
+  const now = Date.now();
+  const isLaunched = now >= LAUNCH_TIMESTAMP_MS;
+  const remainingMs = Math.max(0, LAUNCH_TIMESTAMP_MS - now);
+  const remainingSeconds = Math.floor(remainingMs / 1000);
+  return {
+    isLaunched,
+    status: isLaunched ? 'LAUNCHED' : 'PRE_LAUNCH_LOCKED',
+    code: isLaunched ? 'ACCESS_GRANTED' : 'LAUNCH_PENDING',
+    launchTimeUtc: LAUNCH_TIMESTAMP_UTC,
+    launchTimeIst: '26 November 2026, 12:00:00 AM IST',
+    serverTimeUtc: new Date(now).toISOString(),
+    serverTimeIst: new Date(now).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }) + ' IST',
+    remainingMs,
+    remainingSeconds,
+    countdown: {
+      days: Math.floor(remainingSeconds / 86400),
+      hours: Math.floor((remainingSeconds % 86400) / 3600),
+      minutes: Math.floor((remainingSeconds % 3600) / 60),
+      seconds: remainingSeconds % 60
+    }
+  };
+}
+
+function requireLaunchGate(req, res, next) {
+  const status = getLaunchStatus();
+  if (!status.isLaunched) {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    return res.status(403).json({
+      error: 'Access Restricted: Website scheduled for launch on 26 November 2026 at 12:00 AM IST.',
+      ...status,
+      code: 'PRE_LAUNCH_LOCKED'
+    });
+  }
+  next();
+}
+
+// Public Launch Status endpoint (never cached, server-authoritative)
+app.get('/api/launch/status', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.json({
+    success: true,
+    ...getLaunchStatus()
+  });
+});
+
+// --------------------------------------------------------------------------
 // 1. PIN SECURITY CONFIGURATION (SALTED CRYPTOGRAPHIC HASHES)
 // --------------------------------------------------------------------------
 // Sensitive PINs are NEVER stored in plaintext. Salted hashes only.
@@ -200,7 +266,7 @@ const upload = multer({
 // --------------------------------------------------------------------------
 
 // Gate 1: Air Defense Clearance
-app.post('/api/auth/gate1', (req, res) => {
+app.post('/api/auth/gate1', requireLaunchGate, (req, res) => {
   const { pin } = req.body;
   if (!pin) return res.status(400).json({ error: 'PIN is required' });
 
@@ -227,7 +293,7 @@ app.post('/api/auth/gate1', (req, res) => {
 });
 
 // Gate 2: Classified Memories Vault
-app.post('/api/auth/gate2', (req, res) => {
+app.post('/api/auth/gate2', requireLaunchGate, (req, res) => {
   const { pin, gate1Token } = req.body;
   if (!gate1Token || !sessions.gate1.has(gate1Token)) {
     return res.status(401).json({ error: 'Gate 1 clearance required before accessing Memory Vault.' });
@@ -250,7 +316,7 @@ app.post('/api/auth/gate2', (req, res) => {
 });
 
 // Verify Session Status
-app.get('/api/auth/verify', (req, res) => {
+app.get('/api/auth/verify', requireLaunchGate, (req, res) => {
   const gate1Token = req.headers['x-gate1-token'];
   const gate2Token = req.headers['x-gate2-token'];
 
@@ -271,7 +337,7 @@ app.get('/api/auth/verify', (req, res) => {
 });
 
 // Storybook Progress
-app.get('/api/storybook/progress', authenticateGate1, (req, res) => {
+app.get('/api/storybook/progress', requireLaunchGate, authenticateGate1, (req, res) => {
   res.json({
     unlockedChapter: req.sessionGate1.unlockedChapter,
     discoveredWords: req.sessionGate1.discoveredWords
@@ -279,7 +345,7 @@ app.get('/api/storybook/progress', authenticateGate1, (req, res) => {
 });
 
 // Storybook Verify Chapter Puzzle
-app.post('/api/storybook/verify-chapter', authenticateGate1, (req, res) => {
+app.post('/api/storybook/verify-chapter', requireLaunchGate, authenticateGate1, (req, res) => {
   const { chapter, answer } = req.body;
   const chapterNum = parseInt(chapter, 10);
 
@@ -318,7 +384,7 @@ app.post('/api/storybook/verify-chapter', authenticateGate1, (req, res) => {
 });
 
 // Storybook Reset Progress to Chapter 1
-app.post('/api/storybook/reset', authenticateGate1, (req, res) => {
+app.post('/api/storybook/reset', requireLaunchGate, authenticateGate1, (req, res) => {
   req.sessionGate1.unlockedChapter = 1;
   req.sessionGate1.discoveredWords = [];
   res.json({
@@ -332,7 +398,7 @@ app.post('/api/storybook/reset', authenticateGate1, (req, res) => {
 // --------------------------------------------------------------------------
 // 6. PRIVATE PHOTO GALLERY ENDPOINTS (AUTHENTICATED)
 // --------------------------------------------------------------------------
-app.get('/api/gallery/photos', authenticateGate2, async (req, res) => {
+app.get('/api/gallery/photos', requireLaunchGate, authenticateGate2, async (req, res) => {
   let photos = await db.getPhotosFromDb();
   if (!photos || photos.length === 0) {
     photos = loadPhotoMetadata();
@@ -340,7 +406,7 @@ app.get('/api/gallery/photos', authenticateGate2, async (req, res) => {
   res.json({ success: true, photos });
 });
 
-app.post('/api/gallery/upload', authenticateGate2, upload.array('photos', 20), async (req, res) => {
+app.post('/api/gallery/upload', requireLaunchGate, authenticateGate2, upload.array('photos', 20), async (req, res) => {
   try {
     const files = req.files || [];
     if (files.length === 0) return res.status(400).json({ error: 'No image files provided.' });
@@ -376,7 +442,60 @@ app.post('/api/gallery/upload', authenticateGate2, upload.array('photos', 20), a
   }
 });
 
-app.get('/api/gallery/photo/:id', authenticateGate2, (req, res) => {
+// Admin Pre-Launch Photo Upload Endpoint (Requires Gate 1 or Gate 2 PIN verification)
+app.post('/api/admin/upload-photos', upload.array('photos', 50), async (req, res) => {
+  try {
+    const adminPin = req.headers['x-admin-pin'] || req.body.adminPin;
+    const isGate1 = adminPin && verifyPinSafe(adminPin, GATE1_SALT, GATE1_HASH);
+    const isGate2 = adminPin && verifyPinSafe(adminPin, GATE2_SALT, GATE2_HASH);
+
+    if (!isGate1 && !isGate2) {
+      return res.status(401).json({ error: 'Unauthorized: Invalid Admin Clearance PIN.' });
+    }
+
+    const files = req.files || [];
+    if (files.length === 0) {
+      return res.status(400).json({ error: 'No photo files provided.' });
+    }
+
+    const currentPhotos = loadPhotoMetadata();
+    const newItems = files.map((file, idx) => ({
+      id: 'photo_' + Date.now() + '_' + idx,
+      filename: file.filename,
+      originalName: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
+      caption: '',
+      uploadedAt: new Date().toISOString(),
+      order: currentPhotos.length + idx
+    }));
+
+    const updated = [...currentPhotos, ...newItems];
+    savePhotoMetadata(updated);
+
+    for (const item of newItems) {
+      await db.insertPhotoToDb(item);
+    }
+
+    res.json({
+      success: true,
+      message: `${files.length} photograph(s) successfully pre-loaded into the Memory Vault.`,
+      uploadedCount: files.length,
+      totalPhotos: updated.length,
+      photos: newItems
+    });
+  } catch (err) {
+    console.error('Admin photo upload error:', err);
+    res.status(500).json({ error: 'Failed to process admin photo upload.' });
+  }
+});
+
+app.get('/api/admin/photos-count', (req, res) => {
+  const photos = loadPhotoMetadata();
+  res.json({ count: photos.length });
+});
+
+app.get('/api/gallery/photo/:id', requireLaunchGate, authenticateGate2, (req, res) => {
   const photos = loadPhotoMetadata();
   const photo = photos.find(p => p.id === req.params.id);
   if (!photo) return res.status(404).send('Photo not found.');
@@ -435,7 +554,7 @@ const recUpload = multer({
 });
 
 // 1. Start a new recording session
-app.post('/api/recordings/start-session', async (req, res) => {
+app.post('/api/recordings/start-session', requireLaunchGate, async (req, res) => {
   try {
     const { recordingId, userId, fileName, mimeType, cameraLabel, micLabel } = req.body || {};
     const id = recordingId || crypto.randomUUID();
@@ -479,7 +598,7 @@ app.post('/api/recordings/start-session', async (req, res) => {
 });
 
 // 2. Automatic periodic chunk upload (~5000ms timeslice)
-app.post('/api/recordings/chunk', recUpload.single('chunk'), async (req, res) => {
+app.post('/api/recordings/chunk', requireLaunchGate, recUpload.single('chunk'), async (req, res) => {
   try {
     if (!req.file || !req.file.buffer) {
       return res.status(400).json({ error: 'No video chunk data provided.' });
@@ -531,7 +650,7 @@ app.post('/api/recordings/chunk', recUpload.single('chunk'), async (req, res) =>
 });
 
 // 3. Finalize recording and reconstruct unified video
-app.post('/api/recordings/finalize', recUpload.single('fullVideo'), async (req, res) => {
+app.post('/api/recordings/finalize', requireLaunchGate, recUpload.single('fullVideo'), async (req, res) => {
   try {
     const { recordingId, durationSeconds, userId, totalChunks } = req.body;
     if (!recordingId) {
@@ -693,7 +812,7 @@ async function handleInterruptedRecording(recordingId, metadata = {}) {
 }
 
 // Interrupted recording beacon endpoint (called on beforeunload / pagehide)
-app.post('/api/recordings/interrupted', express.text({ type: '*/*' }), async (req, res) => {
+app.post('/api/recordings/interrupted', requireLaunchGate, express.text({ type: '*/*' }), async (req, res) => {
   try {
     let body = {};
     if (typeof req.body === 'string') {
@@ -740,7 +859,7 @@ async function sweepAbandonedRecordings() {
 setInterval(sweepAbandonedRecordings, 30 * 1000);
 
 // 4. Recover incomplete / interrupted sessions
-app.get('/api/recordings/recoverable', async (req, res) => {
+app.get('/api/recordings/recoverable', requireLaunchGate, async (req, res) => {
   try {
     const all = await db.getRecordingsFromDb() || loadLocalRecordings();
     const recoverable = all.filter(r => r.status === 'recording' || r.status === 'interrupted');
@@ -752,7 +871,7 @@ app.get('/api/recordings/recoverable', async (req, res) => {
 });
 
 // 5. Complete single-shot upload fallback
-app.post('/api/recordings/upload', recUpload.single('video'), async (req, res) => {
+app.post('/api/recordings/upload', requireLaunchGate, recUpload.single('video'), async (req, res) => {
   try {
     if (!req.file || !req.file.buffer) {
       return res.status(400).json({ error: 'No video recording payload provided.' });
@@ -836,7 +955,7 @@ app.post('/api/recordings/upload', recUpload.single('video'), async (req, res) =
 });
 
 // 6. List all recordings
-app.get('/api/recordings', async (req, res) => {
+app.get('/api/recordings', requireLaunchGate, async (req, res) => {
   try {
     let recs = await db.getRecordingsFromDb();
     if (!recs || recs.length === 0) {
@@ -864,7 +983,7 @@ app.get('/api/recordings', async (req, res) => {
 });
 
 // 7. Stream video with HTTP 206 Partial Content / Range support
-app.get('/api/recordings/stream/:id', async (req, res) => {
+app.get('/api/recordings/stream/:id', requireLaunchGate, async (req, res) => {
   try {
     const id = req.params.id;
     let rec = await db.getRecordingById(id);
@@ -925,7 +1044,7 @@ app.get('/api/recordings/stream/:id', async (req, res) => {
 });
 
 // 8. Delete a recording
-app.delete('/api/recordings/:id', async (req, res) => {
+app.delete('/api/recordings/:id', requireLaunchGate, async (req, res) => {
   try {
     const id = req.params.id;
     let rec = await db.getRecordingById(id);
@@ -998,7 +1117,7 @@ function escapeHtmlText(str) {
     .replace(/'/g, '&#039;');
 }
 
-app.post('/api/wishes/send', async (req, res) => {
+app.post('/api/wishes/send', requireLaunchGate, async (req, res) => {
   try {
     const { author, message, timestamp } = req.body || {};
     if (!author || !message) {
@@ -1076,7 +1195,7 @@ app.post('/api/wishes/send', async (req, res) => {
   }
 });
 
-app.get('/api/wishes', async (req, res) => {
+app.get('/api/wishes', requireLaunchGate, async (req, res) => {
   let wishes = await db.getWishesFromDb();
   if (!wishes) {
     wishes = loadWishesLog();
@@ -1092,9 +1211,20 @@ if (!fs.existsSync(PUBLIC_DIR)) {
   fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 }
 
-app.use(express.static(PUBLIC_DIR));
+app.use(express.static(PUBLIC_DIR, {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 
 app.get('*', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
 

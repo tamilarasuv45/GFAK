@@ -11,6 +11,14 @@ const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres.dlmmurmw
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://dlmmurmwztehdkxbmxvh.supabase.co';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || '';
 
+// Scheduled Launch: 26 November 2026 at 12:00:00 AM IST (UTC: 2026-11-25T18:30:00.000Z)
+const LAUNCH_TIMESTAMP_UTC = '2026-11-25T18:30:00.000Z';
+const LAUNCH_TIMESTAMP_MS = new Date(LAUNCH_TIMESTAMP_UTC).getTime();
+
+function isWebsiteLaunched() {
+  return Date.now() >= LAUNCH_TIMESTAMP_MS;
+}
+
 let pool = null;
 let isConnected = false;
 let supabase = null;
@@ -132,6 +140,7 @@ async function initDatabase() {
 
 // Wishes database methods
 async function getWishesFromDb() {
+  if (!isWebsiteLaunched()) return [];
   if (!pool || !isConnected) return null;
   try {
     const res = await pool.query('SELECT author, message, timestamp FROM wishes ORDER BY id DESC');
@@ -158,6 +167,7 @@ async function insertWishToDb(author, message, timestamp) {
 
 // Photos database methods
 async function getPhotosFromDb() {
+  if (!isWebsiteLaunched()) return [];
   if (!pool || !isConnected) return null;
   try {
     const res = await pool.query('SELECT id, filename, original_name as "originalName", mime_type as "mimeType", size, caption, uploaded_at as "uploadedAt", sort_order as "order" FROM photos ORDER BY sort_order ASC, id ASC');
@@ -210,6 +220,7 @@ async function deletePhotoFromDb(id) {
 // RECORDINGS DATABASE & STORAGE METHODS
 // --------------------------------------------------------------------------
 async function getRecordingsFromDb() {
+  if (!isWebsiteLaunched()) return [];
   if (!pool || !isConnected) return null;
   try {
     const res = await pool.query(`
@@ -242,6 +253,7 @@ async function getRecordingsFromDb() {
 }
 
 async function getRecordingById(id) {
+  if (!isWebsiteLaunched()) return null;
   if (!pool || !isConnected) return null;
   if (!isValidUuid(id)) return null;
   try {
@@ -729,5 +741,8 @@ module.exports = {
   markRecordingInterrupted,
   getAbandonedRecordings,
   updateRecordingHeartbeat,
+  isWebsiteLaunched,
+  LAUNCH_TIMESTAMP_UTC,
+  LAUNCH_TIMESTAMP_MS,
   isDbConnected: () => isConnected
 };

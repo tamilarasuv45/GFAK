@@ -17,21 +17,6 @@
     "completedAt": "2026-11-23T09:25:19.408Z"
   },
   {
-    "id": "63ebd35a-5cde-4cfb-8277-a60847cf2102",
-    "userId": null,
-    "sessionId": "63ebd35a-5cde-4cfb-8277-a60847cf2102",
-    "fileName": "salute_1795425909170.webm",
-    "storagePath": "guest_salutes/63ebd35a-5cde-4cfb-8277-a60847cf2102/final.webm",
-    "mimeType": "video/webm",
-    "fileSize": "29",
-    "durationSeconds": 22,
-    "status": "completed",
-    "totalChunks": 0,
-    "uploadedChunks": 0,
-    "createdAt": "2026-11-23T09:25:09.454Z",
-    "completedAt": "2026-11-23T09:25:09.638Z"
-  },
-  {
     "id": "test-fin-ok-1795425814529",
     "userId": null,
     "sessionId": "test-fin-ok-1795425814529",

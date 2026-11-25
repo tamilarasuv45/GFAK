@@ -3313,6 +3313,122 @@
         width: 150px;
       }
     }
+
+    /* ==========================================================================
+       SCHEDULED LAUNCH COUNTDOWN STYLES (26 NOV 2026 12:00:00 AM IST)
+       ========================================================================== */
+    .countdown-card {
+      background: linear-gradient(145deg, rgba(21, 22, 26, 0.94), rgba(74, 18, 34, 0.55));
+      border: 1px solid rgba(232, 165, 175, 0.35);
+      border-radius: 20px;
+      padding: 40px 32px;
+      max-width: 640px;
+      width: 100%;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 32px rgba(232, 165, 175, 0.15);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+    .countdown-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, #E8A5AF, #7E203E, #E8A5AF, transparent);
+      animation: radar-sweep-line 4s ease-in-out infinite alternate;
+    }
+    @keyframes radar-sweep-line {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+    .countdown-timer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 26px 0 22px;
+    }
+    .countdown-tile {
+      background: rgba(14, 15, 18, 0.85);
+      border: 1px solid rgba(232, 165, 175, 0.25);
+      border-radius: 14px;
+      padding: 16px 8px;
+      position: relative;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.5), 0 4px 12px rgba(74, 18, 34, 0.2);
+      transition: border-color 0.3s ease, transform 0.2s ease;
+    }
+    .countdown-tile:hover {
+      border-color: rgba(232, 165, 175, 0.6);
+      transform: translateY(-2px);
+    }
+    .countdown-val {
+      font-family: var(--font-military, 'Courier New', monospace);
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--gold-light, #F6CAD1);
+      line-height: 1;
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 16px rgba(232, 165, 175, 0.45);
+    }
+    .countdown-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ivory-dim, rgba(253, 249, 242, 0.7));
+      margin-top: 8px;
+    }
+    .launch-target-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: rgba(74, 18, 34, 0.65);
+      border: 1px solid rgba(232, 165, 175, 0.4);
+      color: var(--gold-light, #F6CAD1);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 18px;
+    }
+    .launch-pulse-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #E8A5AF;
+      box-shadow: 0 0 10px #E8A5AF;
+      animation: launch-pulse 1.6s infinite ease-in-out;
+    }
+    @keyframes launch-pulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.25); }
+    }
+    .unlocked-reveal {
+      animation: pulseUnlock 1.2s ease-in-out infinite alternate;
+      border: 1px solid #E8A5AF;
+      background: rgba(74, 18, 34, 0.9);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+    @keyframes pulseUnlock {
+      0% { box-shadow: 0 0 20px rgba(232, 165, 175, 0.3); }
+      100% { box-shadow: 0 0 45px rgba(232, 165, 175, 0.8); }
+    }
+    @media (max-width: 520px) {
+      .countdown-timer-grid {
+        gap: 8px;
+      }
+      .countdown-val {
+        font-size: 1.85rem;
+      }
+      .countdown-card {
+        padding: 28px 16px;
+      }
+      .hide-mobile {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 
@@ -3323,9 +3439,137 @@
   <div class="telemetry-overlay"></div>
 
   <!-- ==========================================================================
+     GLOBAL GATE 0: AUTHORITATIVE SCHEDULED LAUNCH COUNTDOWN (26 NOV 2026)
+     ========================================================================== -->
+  <div id="view-countdown" class="app-view active-view" style="display:block;">
+    <div class="gate-wrapper">
+      <div class="countdown-card">
+        <div class="gate-hero-insignia">
+          <div class="gate-hero-radar"></div>
+          <svg viewBox="0 0 48 48" width="56" height="56" fill="none">
+            <path d="M24 6 L28 18 L40 22 L28 26 L24 42 L20 26 L8 22 L20 18 Z" fill="#4A1222" stroke="#E8A5AF" stroke-width="2"/>
+            <circle cx="24" cy="22" r="5" fill="#7E203E" stroke="#F6CAD1" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <div class="launch-target-badge">
+          <span class="launch-pulse-dot"></span>
+          <span>SCHEDULED LAUNCH PROTOCOL // RESTRICTED ACCESS</span>
+        </div>
+
+        <h1 style="font-family:var(--font-military); font-size:1.95rem; letter-spacing:0.09em; color:var(--ivory); margin-bottom:0.5rem;">
+          SKYWARD AMBITION
+        </h1>
+        <p style="font-family:var(--font-display); font-style:italic; font-size:1.15rem; color:var(--gold-light); margin-bottom:1.2rem;">
+          "Not every dream needs a runway to take flight. Some inspire simply by the way they live."
+        </p>
+
+        <p style="color:var(--ivory-dim); font-size:0.92rem; line-height:1.6; max-width:520px; margin:0 auto 1.5rem;">
+          This interactive birthday experience and classified memory vault honoring Ma'am is scheduled for exact synchronized release. All encrypted media, puzzles, and surprises remain protected until midnight.
+        </p>
+
+        <!-- Official Launch Window Display -->
+        <div style="background:rgba(14, 15, 18, 0.7); border:1px solid rgba(232, 165, 175, 0.25); border-radius:14px; padding:12px 18px; margin-bottom:1.5rem; display:flex; justify-content:space-around; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="text-align:left;">
+            <div style="font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ivory-dim); font-weight:700;">LAUNCH TARGET</div>
+            <div style="font-family:var(--font-military); color:var(--ivory); font-weight:700; font-size:0.95rem;">26 NOVEMBER 2026 · 12:00:00 AM IST</div>
+          </div>
+          <div style="height:30px; width:1px; background:rgba(232, 165, 175, 0.2);" class="hide-mobile"></div>
+          <div style="text-align:left;">
+            <div style="font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ivory-dim); font-weight:700;">SERVER AUTHORITY</div>
+            <div style="font-family:var(--font-military); color:var(--gold-light); font-weight:700; font-size:0.95rem;">SUPABASE CLOUD UTC TIME</div>
+          </div>
+        </div>
+
+        <!-- 4-Tile Live Countdown Grid -->
+        <div class="countdown-timer-grid">
+          <div class="countdown-tile">
+            <div id="cd-days" class="countdown-val">00</div>
+            <div class="countdown-label">Days</div>
+          </div>
+          <div class="countdown-tile">
+            <div id="cd-hours" class="countdown-val">00</div>
+            <div class="countdown-label">Hours</div>
+          </div>
+          <div class="countdown-tile">
+            <div id="cd-mins" class="countdown-val">00</div>
+            <div class="countdown-label">Minutes</div>
+          </div>
+          <div class="countdown-tile">
+            <div id="cd-secs" class="countdown-val">00</div>
+            <div class="countdown-label">Seconds</div>
+          </div>
+        </div>
+
+        <!-- Telemetry Details Strip -->
+        <div style="background:rgba(21, 22, 26, 0.6); border:1px dashed rgba(232, 165, 175, 0.25); border-radius:12px; padding:12px 16px; margin-top:1.2rem; text-align:left; font-size:0.8rem; color:var(--ivory-dim); line-height:1.7;">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <span>🔒 <strong>Content Security:</strong> Encrypted &amp; Locked in Supabase Storage</span>
+            <span>⏱️ <strong>Server Time (IST):</strong> <span id="cd-server-time" style="color:var(--gold-light); font-family:var(--font-military); font-weight:700;">Synchronizing...</span></span>
+          </div>
+          <div style="margin-top:6px; opacity:0.8; font-size:0.75rem;">
+            ✦ The website will automatically unlock and reveal the birthday celebration at exactly 12:00:00 AM IST without requiring a page refresh.
+          </div>
+        </div>
+
+        <!-- Container for launch transition message -->
+        <div id="cd-launch-banner"></div>
+
+        <!-- Discreet Owner Photo Pre-Loader Button -->
+        <div style="margin-top:1.6rem; text-align:center;">
+          <button id="btnOpenAdminUploader" type="button" style="background:rgba(14, 15, 18, 0.45); border:1px dashed rgba(232, 165, 175, 0.35); color:var(--ivory-dim); font-size:0.75rem; letter-spacing:0.08em; padding:7px 16px; border-radius:8px; cursor:pointer; opacity:0.8; transition:all 0.25s ease;">
+            🔒 Owner Photo Pre-Loader (PIN Required)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+     ADMIN PRE-LAUNCH PHOTO UPLOAD MODAL (OWNER DIRECT ACCESS)
+     ========================================================================== -->
+  <div id="adminUploadModal" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:linear-gradient(145deg, #15161A, #4A1222); border:1px solid rgba(232, 165, 175, 0.45); border-radius:18px; max-width:540px; width:100%; padding:28px 24px; box-shadow:0 20px 60px rgba(0,0,0,0.8); text-align:left; color:var(--ivory);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(232, 165, 175, 0.2); padding-bottom:12px; margin-bottom:18px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.4rem;">📷</span>
+          <h3 style="margin:0; font-family:var(--font-military); color:var(--gold-light); font-size:1.15rem; letter-spacing:0.06em;">PRE-LOAD MEMORY VAULT PHOTOS</h3>
+        </div>
+        <button id="btnCloseAdminModal" type="button" style="background:none; border:none; color:var(--ivory-dim); font-size:1.5rem; cursor:pointer; padding:0 4px;">&times;</button>
+      </div>
+
+      <p style="font-size:0.85rem; color:var(--ivory-dim); margin-bottom:14px; line-height:1.5;">
+        As the site creator, you can pre-load private photos right now before launch. These will appear in the Memory Vault immediately when the website unlocks at midnight.
+      </p>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-light); font-weight:700; margin-bottom:6px;">
+          ADMIN / GATE PIN:
+        </label>
+        <input id="adminPinInput" type="password" placeholder="Enter PIN (e.g. 19062026 or 26112002)" style="width:100%; box-sizing:border-box; background:rgba(14, 15, 18, 0.8); border:1px solid rgba(232, 165, 175, 0.4); border-radius:8px; padding:10px 14px; color:var(--ivory); font-family:var(--font-military); font-size:1rem; letter-spacing:0.1em;">
+      </div>
+
+      <div class="dropzone-area" id="adminDropzone" style="border:2px dashed rgba(232, 165, 175, 0.4); border-radius:12px; padding:24px 16px; text-align:center; background:rgba(14, 15, 18, 0.5); cursor:pointer; margin-bottom:14px; transition:border-color 0.2s ease;">
+        <div style="font-size:2rem; margin-bottom:6px;">☁️</div>
+        <div style="font-weight:600; font-size:0.92rem;">Click or Drag &amp; Drop Photos Here</div>
+        <div style="font-size:0.78rem; color:var(--ivory-dim); margin-top:4px;">JPG, PNG, or WEBP images (up to 25MB each)</div>
+        <input type="file" id="adminFileInput" multiple accept="image/jpeg,image/png,image/webp,image/jpg" style="display:none;">
+      </div>
+
+      <div id="adminSelectedFilesList" style="max-height:140px; overflow-y:auto; font-size:0.82rem; color:var(--gold-light); margin-bottom:14px; display:none; padding:8px 12px; background:rgba(0,0,0,0.3); border-radius:8px;"></div>
+      <div id="adminUploadStatus" style="font-size:0.85rem; margin-bottom:12px; min-height:20px;"></div>
+
+      <div style="display:flex; justify-content:flex-end; gap:12px;">
+        <button id="btnCancelAdminUpload" class="btn-secondary" type="button" style="padding:8px 18px; font-size:0.85rem;">Cancel</button>
+        <button id="btnSubmitAdminUpload" class="btn-primary" type="button" style="padding:8px 22px; font-size:0.88rem;">Save to Memory Vault ✦</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
      GLOBAL ENTRY STEP 1: WELCOME & ENTRY SCREEN
      ========================================================================== -->
-  <div id="view-welcome" class="app-view active-view">
+  <div id="view-welcome" class="app-view" style="display:none;">
     <div class="gate-wrapper">
       <div class="gate-card" style="max-width:540px;">
         <div class="gate-hero-insignia">
@@ -5035,6 +5279,139 @@
      ========================================================================== -->
   <script>
     /* ==========================================================================
+       0. AUTHORITATIVE LAUNCH GATE (26 NOVEMBER 2026 12:00:00 AM IST)
+       ========================================================================== */
+    // Exact UTC timestamp: 2026-11-25T18:30:00.000Z
+    const LAUNCH_TARGET_UTC = "2026-11-25T18:30:00.000Z";
+    const LAUNCH_TARGET_MS = new Date(LAUNCH_TARGET_UTC).getTime();
+
+    class LaunchLockManager {
+      constructor() {
+        // STRICT MANDATORY REQUIREMENT: ZERO BROWSER STORAGE (No localStorage, sessionStorage, IndexedDB, cookies)
+        this.isLaunched = false;
+        this.serverClockOffset = 0; // authoritative server UTC - client Date.now()
+        this.timerInterval = null;
+        this.hasCelebrated = false;
+        this.lastKnownRemainingSec = null;
+      }
+
+      async checkServerStatus() {
+        try {
+          const res = await fetch('/api/launch/status', {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.serverTimeUtc) {
+              const serverUtcMs = new Date(data.serverTimeUtc).getTime();
+              this.serverClockOffset = serverUtcMs - Date.now();
+            }
+            this.isLaunched = Boolean(data.isLaunched);
+            return data;
+          }
+        } catch (err) {
+          console.warn('[LAUNCH CHECK] Server fetch warning:', err);
+        }
+        // Fallback: evaluate using authoritative server offset
+        const effectiveNow = Date.now() + this.serverClockOffset;
+        this.isLaunched = effectiveNow >= LAUNCH_TARGET_MS;
+        return { isLaunched: this.isLaunched };
+      }
+
+      getAuthoritativeNow() {
+        return Date.now() + this.serverClockOffset;
+      }
+
+      getRemainingSeconds() {
+        const now = this.getAuthoritativeNow();
+        return Math.max(0, Math.floor((LAUNCH_TARGET_MS - now) / 1000));
+      }
+
+      startCountdownUI() {
+        this.updateCountdownDOM();
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+          const remaining = this.getRemainingSeconds();
+          this.updateCountdownDOM();
+          if (remaining <= 0) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+            this.handleLaunchTransition();
+          }
+        }, 1000);
+      }
+
+      updateCountdownDOM() {
+        const totalSec = this.getRemainingSeconds();
+        this.lastKnownRemainingSec = totalSec;
+        const days = Math.floor(totalSec / 86400);
+        const hours = Math.floor((totalSec % 86400) / 3600);
+        const minutes = Math.floor((totalSec % 3600) / 60);
+        const seconds = totalSec % 60;
+
+        const elDays = document.getElementById('cd-days');
+        const elHours = document.getElementById('cd-hours');
+        const elMins = document.getElementById('cd-mins');
+        const elSecs = document.getElementById('cd-secs');
+
+        if (elDays) elDays.textContent = String(days).padStart(2, '0');
+        if (elHours) elHours.textContent = String(hours).padStart(2, '0');
+        if (elMins) elMins.textContent = String(minutes).padStart(2, '0');
+        if (elSecs) elSecs.textContent = String(seconds).padStart(2, '0');
+
+        const elServerClock = document.getElementById('cd-server-time');
+        if (elServerClock) {
+          const authDate = new Date(this.getAuthoritativeNow());
+          elServerClock.textContent = authDate.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true }) + ' IST';
+        }
+      }
+
+      async handleLaunchTransition() {
+        const status = await this.checkServerStatus();
+        if (status && status.isLaunched) {
+          this.triggerAutomaticUnlock();
+        } else {
+          setTimeout(() => this.handleLaunchTransition(), 500);
+        }
+      }
+
+      triggerAutomaticUnlock() {
+        if (this.hasCelebrated) return;
+        this.hasCelebrated = true;
+        this.isLaunched = true;
+
+        if (typeof playChime === 'function') {
+          playChime(523.25, 0.4);
+          setTimeout(() => playChime(659.25, 0.4), 200);
+          setTimeout(() => playChime(783.99, 0.7), 400);
+        }
+
+        const banner = document.getElementById('cd-launch-banner');
+        if (banner) {
+          banner.classList.add('unlocked-reveal');
+          banner.innerHTML = `
+            <div style="color:var(--gold-light); font-size:1.4rem; font-weight:800; font-family:var(--font-military); letter-spacing:0.12em; text-transform:uppercase;">
+              ✦ LAUNCH WINDOW OPEN · ACCESS GRANTED ✦
+            </div>
+            <p style="color:var(--ivory); font-size:0.95rem; margin-top:8px;">
+              Mission clearance active. Proceeding to Welcome Protocol...
+            </p>
+          `;
+        }
+
+        setTimeout(() => {
+          if (window.router) {
+            window.router.navigateTo('welcome');
+          }
+        }, 2000);
+      }
+    }
+
+    const launchLock = new LaunchLockManager();
+    window.launchLock = launchLock;
+
+    /* ==========================================================================
        1. CRYPTOGRAPHIC DATA & HASHES
        ========================================================================== */
     const GATE1_SALT = 'skyward_gate1_salt_';
@@ -5881,12 +6258,22 @@ class AssessmentPermissionGate {
        ========================================================================== */
     class StorybookRouter {
       constructor() {
-        this.currentView = 'welcome';
+        this.currentView = 'countdown';
         this.currentChapter = 1;
       }
 
       navigateTo(viewId) {
         const gate = permissionGate;
+
+        // 0. Launch lock protection (server-authoritative, zero storage)
+        if (!window.launchLock.isLaunched && viewId !== 'countdown') {
+          viewId = 'countdown';
+        }
+
+        if (viewId === 'countdown') {
+          window.launchLock.startCountdownUI();
+          if (gate && gate.stopMediaStreams) gate.stopMediaStreams();
+        }
 
         // Strict 10-step sequence protection:
         if (viewId === 'instructions' && !gate.welcomeEntered) {
@@ -8108,7 +8495,7 @@ class AssessmentPermissionGate {
     });
 
     /* ==========================================================================
-       10. INITIALIZATION
+       10. INITIALIZATION (AUTHORITATIVE SERVER LAUNCH CHECK)
        ========================================================================== */
     (async function initApp() {
       // Purge stale storage on fresh arrivals without active session
@@ -8118,8 +8505,147 @@ class AssessmentPermissionGate {
         state.unlockedChapter = 1;
         state.discoveredWords = [];
       }
-      await state.checkBackend();
-      router.navigateTo('welcome');
+
+      // 1. Authoritative server-side launch check (zero browser storage)
+      const launchStatus = await window.launchLock.checkServerStatus();
+
+      if (!launchStatus.isLaunched) {
+        router.navigateTo('countdown');
+      } else {
+        await state.checkBackend();
+        router.navigateTo('welcome');
+      }
+
+      // 2. Authoritative sync when user returns to tab (zero clock drift)
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          window.launchLock.checkServerStatus().then(st => {
+            if (st.isLaunched && router.currentView === 'countdown') {
+              window.launchLock.triggerAutomaticUnlock();
+            }
+          });
+        }
+      });
+    })();
+
+    /* ==========================================================================
+       11. ADMIN PRE-LAUNCH PHOTO UPLOADER (OWNER PRE-LOAD PORTAL)
+       ========================================================================== */
+    (function initAdminPhotoUploader() {
+      const adminModal = document.getElementById('adminUploadModal');
+      const btnOpenAdmin = document.getElementById('btnOpenAdminUploader');
+      const btnCloseAdmin = document.getElementById('btnCloseAdminModal');
+      const btnCancelAdmin = document.getElementById('btnCancelAdminUpload');
+      const adminDropzone = document.getElementById('adminDropzone');
+      const adminFileInput = document.getElementById('adminFileInput');
+      const adminSelectedList = document.getElementById('adminSelectedFilesList');
+      const adminPinInput = document.getElementById('adminPinInput');
+      const adminStatus = document.getElementById('adminUploadStatus');
+      const btnSubmitAdmin = document.getElementById('btnSubmitAdminUpload');
+
+      let adminSelectedFiles = [];
+
+      function openAdminModal() {
+        if (adminModal) {
+          adminModal.style.display = 'flex';
+          if (adminPinInput) { adminPinInput.value = ''; adminPinInput.focus(); }
+          if (adminStatus) adminStatus.innerHTML = '';
+          adminSelectedFiles = [];
+          if (adminSelectedList) { adminSelectedList.style.display = 'none'; adminSelectedList.innerHTML = ''; }
+        }
+      }
+
+      function closeAdminModal() {
+        if (adminModal) adminModal.style.display = 'none';
+      }
+
+      if (btnOpenAdmin) btnOpenAdmin.addEventListener('click', openAdminModal);
+      if (btnCloseAdmin) btnCloseAdmin.addEventListener('click', closeAdminModal);
+      if (btnCancelAdmin) btnCancelAdmin.addEventListener('click', closeAdminModal);
+
+      // Keyboard shortcut: Ctrl + Shift + U or Alt + P
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'u') || (e.altKey && e.key.toLowerCase() === 'p')) {
+          e.preventDefault();
+          openAdminModal();
+        }
+      });
+
+      function handleAdminFiles(files) {
+        const valid = files.filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
+        adminSelectedFiles = [...adminSelectedFiles, ...valid];
+        if (adminSelectedList && adminSelectedFiles.length > 0) {
+          adminSelectedList.style.display = 'block';
+          adminSelectedList.innerHTML = `<strong>Selected ${adminSelectedFiles.length} photo(s):</strong><br>` +
+            adminSelectedFiles.map(f => `• ${f.name} (${(f.size/1024).toFixed(1)} KB)`).join('<br>');
+        }
+      }
+
+      if (adminDropzone && adminFileInput) {
+        adminDropzone.addEventListener('click', () => adminFileInput.click());
+        adminFileInput.addEventListener('change', (e) => {
+          handleAdminFiles(Array.from(e.target.files));
+        });
+        ['dragenter', 'dragover'].forEach(n => {
+          adminDropzone.addEventListener(n, (e) => { e.preventDefault(); adminDropzone.style.borderColor = '#F6CAD1'; });
+        });
+        ['dragleave', 'drop'].forEach(n => {
+          adminDropzone.addEventListener(n, (e) => { e.preventDefault(); adminDropzone.style.borderColor = 'rgba(232, 165, 175, 0.4)'; });
+        });
+        adminDropzone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          adminDropzone.style.borderColor = 'rgba(232, 165, 175, 0.4)';
+          handleAdminFiles(Array.from(e.dataTransfer.files));
+        });
+      }
+
+      if (btnSubmitAdmin) {
+        btnSubmitAdmin.addEventListener('click', async () => {
+          const pin = adminPinInput ? adminPinInput.value.trim() : '';
+          if (!pin) {
+            if (adminStatus) adminStatus.innerHTML = '<span style="color:#ff8b73;">⚠️ Please enter your Gate PIN (19062026 or 26112002).</span>';
+            return;
+          }
+          if (adminSelectedFiles.length === 0) {
+            if (adminStatus) adminStatus.innerHTML = '<span style="color:#ff8b73;">⚠️ Please select or drop at least one photograph.</span>';
+            return;
+          }
+
+          btnSubmitAdmin.disabled = true;
+          btnSubmitAdmin.textContent = 'Uploading to Vault...';
+          if (adminStatus) adminStatus.innerHTML = '<span style="color:var(--gold-light);">⏳ Encrypting & storing photographs in Supabase Cloud...</span>';
+
+          const formData = new FormData();
+          formData.append('adminPin', pin);
+          adminSelectedFiles.forEach(f => formData.append('photos', f));
+
+          try {
+            const res = await fetch('/api/admin/upload-photos', {
+              method: 'POST',
+              headers: { 'x-admin-pin': pin },
+              body: formData
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+              if (adminStatus) {
+                adminStatus.innerHTML = `<span style="color:#76cf96;">✓ ${data.message}</span>`;
+              }
+              adminSelectedFiles = [];
+              if (adminSelectedList) adminSelectedList.style.display = 'none';
+              setTimeout(() => {
+                closeAdminModal();
+              }, 2200);
+            } else {
+              if (adminStatus) adminStatus.innerHTML = `<span style="color:#ff8b73;">✗ ${data.error || 'Upload failed.'}</span>`;
+            }
+          } catch (err) {
+            if (adminStatus) adminStatus.innerHTML = `<span style="color:#ff8b73;">✗ Network error: ${err.message}</span>`;
+          } finally {
+            btnSubmitAdmin.disabled = false;
+            btnSubmitAdmin.textContent = 'Save to Memory Vault ✦';
+          }
+        });
+      }
     })();
   </script>
 

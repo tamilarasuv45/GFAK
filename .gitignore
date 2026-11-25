@@ -18,3 +18,8 @@ private_uploads/*.webp
 private_uploads/*.webm
 private_uploads/recordings/
 
+# Drop folder for photos
+photos_to_upload/*
+!photos_to_upload/.gitkeep
+
+
