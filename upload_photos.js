@@ -30,9 +30,11 @@ function savePhotoMetadata(data) {
   fs.writeFileSync(METADATA_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
-async function uploadPhotos() {
+const MEDIA_REGEX = /\.(jpe?g|png|webp|gif|mp4|webm|mov|quicktime|mkv|avi|m4v)$/i;
+
+async function uploadMemories() {
   console.log('================================================================');
-  console.log('✈️  SKYWARD AMBITION - ADMIN PHOTO PRE-LOADER');
+  console.log('✈️  SKYWARD AMBITION - ADMIN PHOTO & VIDEO PRE-LOADER');
   console.log('================================================================\n');
 
   // Connect to Supabase DB
@@ -49,10 +51,10 @@ async function uploadPhotos() {
         const stat = fs.statSync(fullPath);
         if (stat.isDirectory()) {
           const innerFiles = fs.readdirSync(fullPath)
-            .filter(f => /\.(jpe?g|png|webp)$/i.test(f))
+            .filter(f => MEDIA_REGEX.test(f))
             .map(f => path.join(fullPath, f));
           filesToProcess.push(...innerFiles);
-        } else if (/\.(jpe?g|png|webp)$/i.test(fullPath)) {
+        } else if (MEDIA_REGEX.test(fullPath)) {
           filesToProcess.push(fullPath);
         }
       } else {
@@ -62,32 +64,40 @@ async function uploadPhotos() {
   } else {
     // Scan photos_to_upload directory
     const dropFiles = fs.readdirSync(DROP_FOLDER)
-      .filter(f => /\.(jpe?g|png|webp)$/i.test(f))
+      .filter(f => MEDIA_REGEX.test(f))
       .map(f => path.join(DROP_FOLDER, f));
     filesToProcess.push(...dropFiles);
   }
 
   if (filesToProcess.length === 0) {
-    console.log(`ℹ️  No photos found to upload.`);
+    console.log(`ℹ️  No photos or videos found to upload.`);
     console.log(`\n👉 HOW TO USE THIS SCRIPT:`);
-    console.log(`   1. Drop your photo files (.jpg, .jpeg, .png, .webp) into:`);
+    console.log(`   1. Drop your photo OR video files into:`);
     console.log(`      ${DROP_FOLDER}`);
-    console.log(`   2. Run: node upload_photos.js`);
+    console.log(`      Supported: .jpg, .jpeg, .png, .webp, .mp4, .webm, .mov, .mkv, .avi`);
+    console.log(`   2. Run: node upload_photos.js  (or node upload_memories.js)`);
     console.log(`\n   OR specify paths directly:`);
-    console.log(`      node upload_photos.js "C:\\path\\to\\my_photo.jpg"`);
-    console.log(`      node upload_photos.js "C:\\Users\\ADMIN\\Pictures\\Birthday"`);
+    console.log(`      node upload_photos.js "C:\\path\\to\\birthday_video.mp4"`);
+    console.log(`      node upload_photos.js "C:\\Users\\ADMIN\\Pictures\\BirthdayMemories"`);
     console.log('================================================================');
     return;
   }
 
-  console.log(`Found ${filesToProcess.length} photograph(s) to pre-load into Memory Vault.\n`);
+  console.log(`Found ${filesToProcess.length} media item(s) to pre-load into Memory Vault.\n`);
 
   const currentPhotos = loadPhotoMetadata();
   const mimeMap = {
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
     '.png': 'image/png',
-    '.webp': 'image/webp'
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+    '.mp4': 'video/mp4',
+    '.webm': 'video/webm',
+    '.mov': 'video/quicktime',
+    '.mkv': 'video/x-matroska',
+    '.avi': 'video/x-msvideo',
+    '.m4v': 'video/mp4'
   };
 
   const newItems = [];
@@ -96,7 +106,8 @@ async function uploadPhotos() {
     const srcPath = filesToProcess[idx];
     const originalName = path.basename(srcPath);
     const ext = path.extname(srcPath).toLowerCase();
-    const mimeType = mimeMap[ext] || 'image/jpeg';
+    const mimeType = mimeMap[ext] || (ext.includes('mp4') || ext.includes('webm') || ext.includes('mov') ? 'video/mp4' : 'image/jpeg');
+    const isVideo = mimeType.startsWith('video/') || /\.(mp4|webm|mov|mkv|avi)$/i.test(ext);
     const stat = fs.statSync(srcPath);
     const uniqueName = 'mem_' + Date.now() + '_' + crypto.randomBytes(6).toString('hex') + ext;
     const destPath = path.join(PRIVATE_STORAGE_DIR, uniqueName);
@@ -104,36 +115,39 @@ async function uploadPhotos() {
     // Copy to private_uploads
     fs.copyFileSync(srcPath, destPath);
 
-    const photoItem = {
-      id: 'photo_' + Date.now() + '_' + idx,
+    const mediaItem = {
+      id: (isVideo ? 'video_' : 'photo_') + Date.now() + '_' + idx,
       filename: uniqueName,
       originalName,
       mimeType,
+      mediaType: isVideo ? 'video' : 'photo',
+      isVideo,
       size: stat.size,
       caption: '',
       uploadedAt: new Date().toISOString(),
       order: currentPhotos.length + idx
     };
 
-    newItems.push(photoItem);
+    newItems.push(mediaItem);
 
     // Insert into PostgreSQL database
-    const dbSuccess = await db.insertPhotoToDb(photoItem);
+    const dbSuccess = await db.insertPhotoToDb(mediaItem);
     const dbTag = dbSuccess ? '✓ DB Synced' : '⚠ DB Fallback';
-    console.log(`   + [${idx + 1}/${filesToProcess.length}] ${originalName} -> ${uniqueName} (${(stat.size / 1024).toFixed(1)} KB) [${dbTag}]`);
+    const typeTag = isVideo ? '📹 VIDEO' : '📷 PHOTO';
+    console.log(`   + [${idx + 1}/${filesToProcess.length}] [${typeTag}] ${originalName} -> ${uniqueName} (${(stat.size / 1024 / 1024).toFixed(2)} MB) [${dbTag}]`);
   }
 
   const updatedMetadata = [...currentPhotos, ...newItems];
   savePhotoMetadata(updatedMetadata);
 
-  console.log(`\n✓ Successfully pre-loaded ${newItems.length} photograph(s).`);
-  console.log(`📸 Total photos in Memory Vault: ${updatedMetadata.length}`);
-  console.log(`🔒 Photos are stored in: ${PRIVATE_STORAGE_DIR}`);
-  console.log(`🚀 These photos will be revealed in the Memory Vault immediately when the website launches at midnight on 26 November 2026.`);
+  console.log(`\n✓ Successfully pre-loaded ${newItems.length} media item(s).`);
+  console.log(`📸 Total items in Memory Vault: ${updatedMetadata.length}`);
+  console.log(`🔒 Media is stored in: ${PRIVATE_STORAGE_DIR}`);
+  console.log(`🚀 These photos & videos will be revealed in the Memory Vault immediately when accessed.`);
   console.log('================================================================');
 }
 
-uploadPhotos().then(() => process.exit(0)).catch(err => {
+uploadMemories().then(() => process.exit(0)).catch(err => {
   console.error('Upload script error:', err);
   process.exit(1);
 });

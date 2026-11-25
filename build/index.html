@@ -14,7 +14,7 @@
     /* ==========================================================================
    DESIGN SYSTEM & COLOR PALETTE
    ========================================================================== */
-:root {
+    :root {
       /* Primary 4-Color Palette: Blush Pink, Deep Burgundy, Soft Cream, Charcoal */
       --charcoal: #15161A;
       --charcoal-deep: #0E0F12;
@@ -67,7 +67,7 @@
       --font-letter: 'Newsreader', Georgia, serif;
     }
 
-        *,
+    *,
     *::before,
     *::after {
       box-sizing: border-box;
@@ -799,8 +799,17 @@
     }
 
     @keyframes pulseLockIcon {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(232, 165, 175, 0.25); }
-      50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(232, 165, 175, 0.5); }
+
+      0%,
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(232, 165, 175, 0.25);
+      }
+
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 35px rgba(232, 165, 175, 0.5);
+      }
     }
 
     .curtain-badge {
@@ -852,11 +861,13 @@
       transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       backdrop-filter: blur(10px);
     }
+
     .tactical-toast.active {
       transform: translateX(-50%) translateY(0);
       opacity: 1;
       pointer-events: auto;
     }
+
     .tactical-toast .toast-btn {
       background: linear-gradient(135deg, #4A1222, #7E203E);
       color: #FDF9F2;
@@ -869,6 +880,7 @@
       font-weight: 700;
       transition: all 0.2s ease;
     }
+
     .tactical-toast .toast-btn:hover {
       background: #7E203E;
       box-shadow: 0 0 10px rgba(232, 165, 175, 0.4);
@@ -889,12 +901,14 @@
       align-items: center;
       gap: 6px;
     }
+
     .btn-relock-all:hover {
       background: rgba(232, 165, 175, 0.18);
       border-color: #E8A5AF;
       color: #FDF9F2;
       box-shadow: 0 0 12px rgba(232, 165, 175, 0.3);
     }
+
     .tab-badge {
       font-size: 0.75rem;
       margin-left: 4px;
@@ -1469,13 +1483,16 @@
     .status-dot {
       font-size: 0.8rem;
     }
+
     .status-dot.online {
       color: var(--success);
       text-shadow: 0 0 8px rgba(82, 168, 112, 0.8);
     }
+
     .status-dot.offline {
       color: #7a7061;
     }
+
     .status-dot.error {
       color: var(--danger);
     }
@@ -1526,22 +1543,26 @@
       margin-bottom: 1.2rem;
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
     }
+
     .telemetry-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 12px;
     }
+
     .telemetry-item {
       display: flex;
       flex-direction: column;
       gap: 3px;
     }
+
     .telemetry-label {
       font-family: var(--font-military);
       font-size: 0.65rem;
       letter-spacing: 0.15em;
       color: var(--gold-light);
     }
+
     .telemetry-value {
       font-size: 0.82rem;
       font-weight: 600;
@@ -1564,14 +1585,17 @@
       gap: 14px;
       flex-wrap: wrap;
     }
+
     .recovery-content {
       display: flex;
       align-items: center;
       gap: 12px;
     }
+
     .recovery-icon {
       font-size: 1.5rem;
     }
+
     .recovery-text strong {
       font-family: var(--font-military);
       font-size: 0.85rem;
@@ -1579,11 +1603,13 @@
       color: var(--gold-light);
       display: block;
     }
+
     .recovery-text p {
       font-size: 0.8rem;
       color: var(--ivory-dim);
       margin: 2px 0 0 0;
     }
+
     .recovery-actions {
       display: flex;
       gap: 8px;
@@ -1598,6 +1624,7 @@
       border-radius: 8px;
       border: 1px solid rgba(232, 165, 175, 0.15);
     }
+
     .vu-meta {
       display: flex;
       justify-content: space-between;
@@ -1607,6 +1634,7 @@
       color: var(--gold-light);
       margin-bottom: 6px;
     }
+
     .vu-bar-track {
       height: 8px;
       background: rgba(255, 255, 255, 0.08);
@@ -1614,6 +1642,7 @@
       overflow: hidden;
       position: relative;
     }
+
     .vu-bar-fill {
       height: 100%;
       width: 0%;
@@ -1629,6 +1658,7 @@
       gap: 24px;
       margin-bottom: 2rem;
     }
+
     @media (min-width: 768px) {
       .studio-stage-grid.has-preview {
         grid-template-columns: 1fr 1fr;
@@ -1668,6 +1698,7 @@
       font-weight: 700;
       letter-spacing: 0.08em;
     }
+
     .rec-red-pulsar {
       width: 8px;
       height: 8px;
@@ -1748,8 +1779,11 @@
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
+
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .studio-alert-banner {
@@ -1759,11 +1793,13 @@
       margin-bottom: 1.5rem;
       font-family: var(--font-sans);
     }
+
     .studio-alert-banner.success {
       background: rgba(82, 168, 112, 0.15);
       border: 1px solid var(--success);
       color: #9fe2b5;
     }
+
     .studio-alert-banner.error {
       background: rgba(207, 79, 54, 0.15);
       border: 1px solid var(--danger);
@@ -1776,12 +1812,14 @@
       padding-top: 1.5rem;
       margin-top: 1rem;
     }
+
     .history-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1rem;
     }
+
     .history-header h4 {
       font-family: var(--font-military);
       font-size: 0.85rem;
@@ -1806,10 +1844,12 @@
       justify-content: space-between;
       transition: transform 0.2s ease, border-color 0.2s ease;
     }
+
     .history-card:hover {
       transform: translateY(-2px);
       border-color: var(--gold);
     }
+
     .history-card-title {
       font-family: var(--font-display);
       font-weight: 700;
@@ -1820,6 +1860,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .history-card-meta {
       font-size: 0.75rem;
       color: var(--ivory-dim);
@@ -1828,11 +1869,13 @@
       margin-bottom: 12px;
       font-family: var(--font-military);
     }
+
     .history-card-actions {
       display: flex;
       gap: 8px;
       align-items: center;
     }
+
     .btn-hist-action {
       background: rgba(232, 165, 175, 0.15);
       border: 1px solid var(--card-border);
@@ -1843,15 +1886,18 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
+
     .btn-hist-action:hover {
       background: var(--gold);
       color: var(--navy-deep);
     }
+
     .btn-hist-delete {
       background: rgba(207, 79, 54, 0.12);
       border: 1px solid rgba(207, 79, 54, 0.4);
       color: #ff9b87;
     }
+
     .btn-hist-delete:hover {
       background: var(--danger);
       color: #fff;
@@ -1899,10 +1945,12 @@
       background: repeating-linear-gradient(135deg, #4A1222 0px, #4A1222 14px, #FFFDF8 14px, #FFFDF8 20px, #E8A5AF 20px, #E8A5AF 34px, #FFFDF8 34px, #FFFDF8 40px);
       z-index: 5;
     }
+
     .envelope-airmail-stripe.top {
       top: 0;
       border-radius: 16px 16px 0 0;
     }
+
     .envelope-airmail-stripe.bottom {
       bottom: 0;
       border-radius: 0 0 16px 16px;
@@ -1921,6 +1969,7 @@
       z-index: 1;
       box-shadow: inset 0 10px 25px rgba(0, 0, 0, 0.7);
     }
+
     .envelope-interior-liner {
       position: absolute;
       inset: 0;
@@ -1947,6 +1996,7 @@
       border: 1px solid #d9ceb9;
       transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
+
     .folded-letter-sheet::before {
       content: '';
       position: absolute;
@@ -1954,9 +2004,10 @@
       left: 0;
       right: 0;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,0,0,0.15), transparent);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+      background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.15), transparent);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     }
+
     .folded-letter-sheet::after {
       content: '';
       position: absolute;
@@ -1964,13 +2015,15 @@
       left: 0;
       right: 0;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,0,0,0.15), transparent);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+      background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.15), transparent);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     }
+
     .folded-panel.top-panel {
       border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
       padding-bottom: 6px;
     }
+
     .folded-meta-peek {
       font-family: var(--font-military);
       font-size: 0.68rem;
@@ -1978,12 +2031,14 @@
       color: #7a7061;
       margin-bottom: 4px;
     }
+
     .folded-title-peek {
       font-family: var(--font-display);
       font-size: 0.95rem;
       font-weight: 700;
       color: #1a1614;
     }
+
     .folded-text-line {
       height: 4px;
       background: rgba(0, 0, 0, 0.08);
@@ -1991,9 +2046,11 @@
       margin: 8px 0;
       width: 90%;
     }
+
     .folded-text-line.short {
       width: 60%;
     }
+
     .folded-seal-ghost {
       align-self: flex-end;
       font-family: var(--font-military);
@@ -2054,6 +2111,7 @@
       border: 1px solid rgba(232, 165, 175, 0.5);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
+
     .envelope-airmail-badge .badge-icon {
       color: var(--gold);
       font-size: 0.85rem;
@@ -2064,23 +2122,26 @@
       align-items: center;
       gap: 12px;
     }
+
     .stamp-inner {
       background: #fff;
       border: 2px dashed #a65d3f;
       padding: 6px 10px;
       border-radius: 4px;
       text-align: center;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
       display: flex;
       flex-direction: column;
       align-items: center;
       min-width: 65px;
     }
+
     .stamp-plane {
       font-size: 1rem;
       color: #a65d3f;
       line-height: 1;
     }
+
     .stamp-date {
       font-family: var(--font-military);
       font-size: 0.75rem;
@@ -2089,12 +2150,14 @@
       letter-spacing: 0.08em;
       margin: 2px 0;
     }
+
     .stamp-honor {
       font-size: 0.55rem;
       color: #6a6458;
       font-weight: 600;
       letter-spacing: 0.05em;
     }
+
     .postmark-circle {
       width: 52px;
       height: 52px;
@@ -2125,6 +2188,7 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       max-width: 480px;
     }
+
     .address-to-label {
       font-family: var(--font-military);
       font-size: 0.68rem;
@@ -2132,34 +2196,47 @@
       color: #7a7061;
       margin-bottom: 2px;
     }
+
     .address-recipient-title {
       display: flex;
       align-items: baseline;
       gap: 10px;
     }
+
     .addr-for {
       font-family: var(--font-display);
       font-style: italic;
       font-size: 1.5rem;
       color: #5a4f43;
     }
+
     .addr-name {
       font-family: var(--font-display);
       font-size: 2.2rem;
       font-weight: 800;
       color: #1a1614;
       letter-spacing: 0.04em;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
     }
+
     .addr-heart {
       font-size: 1.6rem;
       color: #c93825;
       animation: heartPulse 1.8s ease-in-out infinite;
     }
+
     @keyframes heartPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.18); }
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.18);
+      }
     }
+
     .address-subline {
       font-family: var(--font-letter);
       font-style: italic;
@@ -2181,6 +2258,7 @@
       filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
       pointer-events: none;
     }
+
     .envelope-top-flap .flap-front {
       width: 100%;
       height: 100%;
@@ -2188,6 +2266,7 @@
       background: linear-gradient(180deg, #ede2cb 0%, #d8c6a5 100%);
       border-top: 1px solid rgba(232, 165, 175, 0.4);
     }
+
     .envelope-card.is-open .envelope-top-flap {
       transform: rotateX(180deg);
       z-index: 2;
@@ -2208,12 +2287,15 @@
       outline: none;
       transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
     .envelope-seal-wrapper:hover {
       transform: translate(-50%, -52%) scale(1.08);
     }
+
     .envelope-seal-wrapper:active {
       transform: translate(-50%, -48%) scale(0.96);
     }
+
     .seal-halo-pulse {
       position: absolute;
       top: 44px;
@@ -2226,9 +2308,19 @@
       animation: sealHaloPulse 2.2s ease-in-out infinite;
       pointer-events: none;
     }
+
     @keyframes sealHaloPulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.45; }
-      50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.9; }
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.45;
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.4);
+        opacity: 0.9;
+      }
     }
 
     .wax-seal-cover {
@@ -2243,6 +2335,7 @@
       position: relative;
       user-select: none;
     }
+
     .wax-seal-cover::before {
       content: '';
       position: absolute;
@@ -2250,6 +2343,7 @@
       border-radius: 50%;
       border: 1.5px dashed rgba(246, 202, 209, 0.5);
     }
+
     .wax-seal-face {
       display: flex;
       flex-direction: column;
@@ -2259,12 +2353,14 @@
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
       line-height: 1.1;
     }
+
     .seal-sub {
       font-family: var(--font-military);
       font-size: 0.65rem;
       letter-spacing: 0.18em;
       opacity: 0.9;
     }
+
     .seal-hero {
       font-family: var(--font-military);
       font-size: 1.35rem;
@@ -2272,6 +2368,7 @@
       letter-spacing: 0.08em;
       color: #fff;
     }
+
     .seal-heart {
       font-size: 0.85rem;
       line-height: 1;
@@ -2292,9 +2389,17 @@
       animation: promptBob 2s ease-in-out infinite;
       pointer-events: none;
     }
+
     @keyframes promptBob {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-4px);
+      }
     }
 
     /* Breaking Seal Animation */
@@ -2302,10 +2407,23 @@
       animation: sealBreakShatter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       pointer-events: none;
     }
+
     @keyframes sealBreakShatter {
-      0% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
-      40% { transform: translate(-50%, -50%) scale(1.28); filter: brightness(1.8) drop-shadow(0 0 25px #ffd700); }
-      100% { transform: translate(-50%, -20%) scale(0.5) rotate(20deg); opacity: 0; filter: brightness(2); }
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+      }
+
+      40% {
+        transform: translate(-50%, -50%) scale(1.28);
+        filter: brightness(1.8) drop-shadow(0 0 25px #ffd700);
+      }
+
+      100% {
+        transform: translate(-50%, -20%) scale(0.5) rotate(20deg);
+        opacity: 0;
+        filter: brightness(2);
+      }
     }
 
     /* Floating Emoji Burst on Seal Break */
@@ -2323,17 +2441,20 @@
       transform-origin: top center;
       animation: letterAccordionUnfold 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+
     @keyframes letterAccordionUnfold {
       0% {
         opacity: 0;
         transform: scaleY(0.2) scaleX(0.7) translateY(-30px);
         filter: blur(6px);
       }
+
       60% {
         opacity: 0.95;
         transform: scaleY(0.95) scaleX(0.98);
         filter: blur(0);
       }
+
       100% {
         opacity: 1;
         transform: scaleY(1) scaleX(1) translateY(0);
@@ -2343,11 +2464,13 @@
     .unfolded-letter-view.refolding {
       animation: letterAccordionFoldUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
+
     @keyframes letterAccordionFoldUp {
       0% {
         opacity: 1;
         transform: scale(1) translateY(0);
       }
+
       100% {
         opacity: 0;
         transform: scaleY(0.2) scaleX(0.7) translateY(-30px);
@@ -2367,6 +2490,7 @@
       border-radius: 12px;
       backdrop-filter: blur(10px);
     }
+
     .toolbar-badge {
       display: inline-flex;
       align-items: center;
@@ -2376,11 +2500,13 @@
       letter-spacing: 0.08em;
       color: var(--gold-light);
     }
+
     .toolbar-badge .badge-dot {
       color: var(--gold);
       font-size: 0.65rem;
       animation: heartPulse 1.5s infinite;
     }
+
     .btn-refold-cover {
       background: rgba(232, 165, 175, 0.15);
       border: 1px solid var(--gold);
@@ -2396,6 +2522,7 @@
       align-items: center;
       gap: 6px;
     }
+
     .btn-refold-cover:hover {
       background: var(--gold);
       color: var(--navy-deep);
@@ -2407,50 +2534,64 @@
       .envelope-card {
         height: 340px;
       }
+
       .envelope-cover-content {
         padding: 18px 20px;
       }
+
       .addr-for {
         font-size: 1.25rem;
       }
+
       .addr-name {
         font-size: 1.75rem;
       }
+
       .addr-heart {
         font-size: 1.3rem;
       }
+
       .envelope-address-zone {
         padding: 10px 14px;
       }
+
       .wax-seal-cover {
         width: 76px;
         height: 76px;
       }
+
       .seal-hero {
         font-size: 1.15rem;
       }
+
       .seal-prompt-bubble {
         font-size: 0.68rem;
         padding: 4px 10px;
       }
     }
+
     @media (max-width: 480px) {
       .envelope-card {
         height: 310px;
       }
+
       .envelope-postage-stamp {
         gap: 6px;
       }
+
       .postmark-circle {
         display: none;
       }
+
       .address-subline {
         font-size: 0.8rem;
       }
+
       .wax-seal-cover {
         width: 70px;
         height: 70px;
       }
+
       .seal-hero {
         font-size: 1.05rem;
       }
@@ -2553,7 +2694,8 @@
       padding: 0 10px;
       background: radial-gradient(circle at 35% 35%, #7E203E, #4A1222);
       border-radius: 50%;
-      box-shadow: 0 8px 20px rgba(74, 18, 34, 0.45); border: 2px solid rgba(232, 165, 175, 0.5);
+      box-shadow: 0 8px 20px rgba(74, 18, 34, 0.45);
+      border: 2px solid rgba(232, 165, 175, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2917,6 +3059,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .gate-hero-radar {
       position: absolute;
       inset: -12px;
@@ -2924,6 +3067,7 @@
       border: 1px dashed rgba(232, 165, 175, 0.35);
       animation: radar-spin 25s linear infinite;
     }
+
     .gate-badge-tag {
       display: inline-block;
       font-family: var(--font-military);
@@ -2950,6 +3094,7 @@
       backdrop-filter: blur(16px);
       text-align: left;
     }
+
     .instruction-rules-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -2959,6 +3104,7 @@
       overflow-y: auto;
       padding-right: 8px;
     }
+
     .instruction-rule-item {
       display: flex;
       align-items: flex-start;
@@ -2969,10 +3115,12 @@
       padding: 12px 16px;
       transition: all 0.2s ease;
     }
+
     .instruction-rule-item:hover {
       border-color: rgba(232, 165, 175, 0.4);
       background: rgba(26, 42, 61, 0.75);
     }
+
     .rule-number-pill {
       flex: 0 0 28px;
       height: 28px;
@@ -2987,11 +3135,13 @@
       font-size: 0.8rem;
       border: 1px solid rgba(232, 165, 175, 0.4);
     }
+
     .rule-text-content {
       font-size: 0.92rem;
       color: var(--ivory);
       line-height: 1.5;
     }
+
     .privacy-notice-box {
       background: rgba(74, 18, 34, 0.45);
       border-left: 3px solid var(--gold);
@@ -3002,6 +3152,7 @@
       color: var(--ivory-dim);
       line-height: 1.6;
     }
+
     .ack-checkbox-wrap {
       display: flex;
       align-items: center;
@@ -3010,12 +3161,14 @@
       cursor: pointer;
       user-select: none;
     }
+
     .ack-checkbox-wrap input[type="checkbox"] {
       width: 20px;
       height: 20px;
       cursor: pointer;
       accent-color: var(--gold);
     }
+
     .ack-checkbox-label {
       font-size: 0.95rem;
       font-weight: 600;
@@ -3029,6 +3182,7 @@
       gap: 16px;
       margin: 2rem 0;
     }
+
     .perm-card {
       background: rgba(14, 15, 18, 0.7);
       border: 1px solid var(--card-border);
@@ -3042,10 +3196,12 @@
       min-height: 170px;
       transition: all 0.3s ease;
     }
+
     .perm-card-icon {
       font-size: 2rem;
       margin-bottom: 8px;
     }
+
     .perm-card-title {
       font-family: var(--font-military);
       font-size: 0.88rem;
@@ -3053,12 +3209,14 @@
       color: var(--gold-light);
       margin-bottom: 4px;
     }
+
     .perm-card-desc {
       font-size: 0.78rem;
       color: var(--ivory-dim);
       opacity: 0.8;
       margin-bottom: 12px;
     }
+
     .perm-status-pill {
       font-family: var(--font-military);
       font-size: 0.72rem;
@@ -3068,16 +3226,19 @@
       text-transform: uppercase;
       font-weight: 600;
     }
+
     .perm-status-pill.status-pending {
       background: rgba(255, 255, 255, 0.1);
       color: var(--ivory-dim);
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
+
     .perm-status-pill.status-granted {
       background: rgba(82, 168, 112, 0.2);
       color: #76cf96;
       border: 1px solid #52a870;
     }
+
     .perm-status-pill.status-denied {
       background: rgba(207, 79, 54, 0.2);
       color: #ff8b73;
@@ -3097,12 +3258,14 @@
       border: 2px solid rgba(232, 165, 175, 0.4);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 0, 0, 0.8);
     }
+
     .device-hud-video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transform: scaleX(-1);
     }
+
     .hud-corner-bracket {
       position: absolute;
       width: 24px;
@@ -3112,10 +3275,31 @@
       pointer-events: none;
       z-index: 2;
     }
-    .hud-corner-tl { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
-    .hud-corner-tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
-    .hud-corner-bl { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
-    .hud-corner-br { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+
+    .hud-corner-tl {
+      top: 12px;
+      left: 12px;
+      border-width: 2px 0 0 2px;
+    }
+
+    .hud-corner-tr {
+      top: 12px;
+      right: 12px;
+      border-width: 2px 2px 0 0;
+    }
+
+    .hud-corner-bl {
+      bottom: 12px;
+      left: 12px;
+      border-width: 0 0 2px 2px;
+    }
+
+    .hud-corner-br {
+      bottom: 12px;
+      right: 12px;
+      border-width: 0 2px 2px 0;
+    }
+
     .hud-rec-badge {
       position: absolute;
       top: 14px;
@@ -3133,6 +3317,7 @@
       letter-spacing: 0.1em;
       color: var(--gold-light);
     }
+
     .hud-rec-dot {
       width: 8px;
       height: 8px;
@@ -3140,9 +3325,19 @@
       background: #cf4f36;
       animation: pulse-dot 1.2s infinite ease-in-out;
     }
+
     @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.3; transform: scale(0.8); }
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.3;
+        transform: scale(0.8);
+      }
     }
 
     /* VU Meter */
@@ -3155,6 +3350,7 @@
       border-radius: 12px;
       padding: 12px 16px;
     }
+
     .vu-meter-bar-track {
       width: 100%;
       height: 10px;
@@ -3164,6 +3360,7 @@
       margin-top: 6px;
       position: relative;
     }
+
     .vu-meter-bar-fill {
       height: 100%;
       width: 0%;
@@ -3182,6 +3379,7 @@
       border-radius: 14px;
       padding: 16px 20px;
     }
+
     .checklist-row {
       display: flex;
       align-items: center;
@@ -3190,9 +3388,11 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       font-size: 0.88rem;
     }
+
     .checklist-row:last-child {
       border-bottom: none;
     }
+
     .check-icon-badge {
       width: 22px;
       height: 22px;
@@ -3203,11 +3403,13 @@
       font-size: 0.75rem;
       font-weight: 700;
     }
+
     .check-icon-badge.passed {
       background: rgba(82, 168, 112, 0.25);
       color: #76cf96;
       border: 1px solid #52a870;
     }
+
     .check-icon-badge.pending {
       background: rgba(255, 255, 255, 0.1);
       color: var(--ivory-dim);
@@ -3224,10 +3426,12 @@
       text-align: left;
       display: none;
     }
+
     .chrome-help-card.active {
       display: block;
       animation: fadeIn 0.4s ease;
     }
+
     .help-step-list {
       margin: 10px 0 0 20px;
       font-size: 0.85rem;
@@ -3249,6 +3453,7 @@
       padding: 24px;
       text-align: center;
     }
+
     #overlay-fullscreen-guard.active {
       display: flex;
       animation: fadeIn 0.3s ease;
@@ -3271,6 +3476,7 @@
       display: none;
       text-align: left;
     }
+
     #overlay-tabswitch-guard.active {
       display: block;
       animation: slideDown 0.3s ease;
@@ -3292,10 +3498,12 @@
       display: none;
       width: 190px;
     }
+
     #floating-proctor-hud.minimized {
       width: auto;
       padding: 8px 12px;
     }
+
     #floating-proctor-hud.minimized .hud-expandable-content {
       display: none;
     }
@@ -3304,9 +3512,11 @@
       .perms-grid {
         grid-template-columns: 1fr;
       }
+
       .instructions-card-wrap {
         padding: 28px 20px;
       }
+
       #floating-proctor-hud {
         bottom: 12px;
         right: 12px;
@@ -3330,36 +3540,50 @@
       overflow: hidden;
       backdrop-filter: blur(12px);
     }
+
     .countdown-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0; height: 3px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
       background: linear-gradient(90deg, transparent, #E8A5AF, #7E203E, #E8A5AF, transparent);
       animation: radar-sweep-line 4s ease-in-out infinite alternate;
     }
+
     @keyframes radar-sweep-line {
-      0% { opacity: 0.4; }
-      100% { opacity: 1; }
+      0% {
+        opacity: 0.4;
+      }
+
+      100% {
+        opacity: 1;
+      }
     }
+
     .countdown-timer-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 14px;
       margin: 26px 0 22px;
     }
+
     .countdown-tile {
       background: rgba(14, 15, 18, 0.85);
       border: 1px solid rgba(232, 165, 175, 0.25);
       border-radius: 14px;
       padding: 16px 8px;
       position: relative;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.5), 0 4px 12px rgba(74, 18, 34, 0.2);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(74, 18, 34, 0.2);
       transition: border-color 0.3s ease, transform 0.2s ease;
     }
+
     .countdown-tile:hover {
       border-color: rgba(232, 165, 175, 0.6);
       transform: translateY(-2px);
     }
+
     .countdown-val {
       font-family: var(--font-military, 'Courier New', monospace);
       font-size: 2.5rem;
@@ -3369,6 +3593,7 @@
       letter-spacing: 0.05em;
       text-shadow: 0 0 16px rgba(232, 165, 175, 0.45);
     }
+
     .countdown-label {
       font-size: 0.72rem;
       font-weight: 700;
@@ -3377,6 +3602,7 @@
       color: var(--ivory-dim, rgba(253, 249, 242, 0.7));
       margin-top: 8px;
     }
+
     .launch-target-badge {
       display: inline-flex;
       align-items: center;
@@ -3391,6 +3617,7 @@
       letter-spacing: 0.08em;
       margin-bottom: 18px;
     }
+
     .launch-pulse-dot {
       width: 9px;
       height: 9px;
@@ -3399,10 +3626,21 @@
       box-shadow: 0 0 10px #E8A5AF;
       animation: launch-pulse 1.6s infinite ease-in-out;
     }
+
     @keyframes launch-pulse {
-      0%, 100% { opacity: 0.4; transform: scale(0.85); }
-      50% { opacity: 1; transform: scale(1.25); }
+
+      0%,
+      100% {
+        opacity: 0.4;
+        transform: scale(0.85);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.25);
+      }
     }
+
     .unlocked-reveal {
       animation: pulseUnlock 1.2s ease-in-out infinite alternate;
       border: 1px solid #E8A5AF;
@@ -3411,20 +3649,30 @@
       border-radius: 12px;
       margin-top: 20px;
     }
+
     @keyframes pulseUnlock {
-      0% { box-shadow: 0 0 20px rgba(232, 165, 175, 0.3); }
-      100% { box-shadow: 0 0 45px rgba(232, 165, 175, 0.8); }
+      0% {
+        box-shadow: 0 0 20px rgba(232, 165, 175, 0.3);
+      }
+
+      100% {
+        box-shadow: 0 0 45px rgba(232, 165, 175, 0.8);
+      }
     }
+
     @media (max-width: 520px) {
       .countdown-timer-grid {
         gap: 8px;
       }
+
       .countdown-val {
         font-size: 1.85rem;
       }
+
       .countdown-card {
         padding: 28px 16px;
       }
+
       .hide-mobile {
         display: none !important;
       }
@@ -3447,8 +3695,9 @@
         <div class="gate-hero-insignia">
           <div class="gate-hero-radar"></div>
           <svg viewBox="0 0 48 48" width="56" height="56" fill="none">
-            <path d="M24 6 L28 18 L40 22 L28 26 L24 42 L20 26 L8 22 L20 18 Z" fill="#4A1222" stroke="#E8A5AF" stroke-width="2"/>
-            <circle cx="24" cy="22" r="5" fill="#7E203E" stroke="#F6CAD1" stroke-width="1.5"/>
+            <path d="M24 6 L28 18 L40 22 L28 26 L24 42 L20 26 L8 22 L20 18 Z" fill="#4A1222" stroke="#E8A5AF"
+              stroke-width="2" />
+            <circle cx="24" cy="22" r="5" fill="#7E203E" stroke="#F6CAD1" stroke-width="1.5" />
           </svg>
         </div>
 
@@ -3457,27 +3706,37 @@
           <span>SCHEDULED LAUNCH PROTOCOL // RESTRICTED ACCESS</span>
         </div>
 
-        <h1 style="font-family:var(--font-military); font-size:1.95rem; letter-spacing:0.09em; color:var(--ivory); margin-bottom:0.5rem;">
+        <h1
+          style="font-family:var(--font-military); font-size:1.95rem; letter-spacing:0.09em; color:var(--ivory); margin-bottom:0.5rem;">
           SKYWARD AMBITION
         </h1>
-        <p style="font-family:var(--font-display); font-style:italic; font-size:1.15rem; color:var(--gold-light); margin-bottom:1.2rem;">
+        <p
+          style="font-family:var(--font-display); font-style:italic; font-size:1.15rem; color:var(--gold-light); margin-bottom:1.2rem;">
           "Not every dream needs a runway to take flight. Some inspire simply by the way they live."
         </p>
 
         <p style="color:var(--ivory-dim); font-size:0.92rem; line-height:1.6; max-width:520px; margin:0 auto 1.5rem;">
-          This interactive birthday experience and classified memory vault honoring Ma'am is scheduled for exact synchronized release. All encrypted media, puzzles, and surprises remain protected until midnight.
+          This interactive birthday experience and classified memory vault honoring Ma'am is scheduled for exact
+          synchronized release. All encrypted media, puzzles, and surprises remain protected until midnight.
         </p>
 
         <!-- Official Launch Window Display -->
-        <div style="background:rgba(14, 15, 18, 0.7); border:1px solid rgba(232, 165, 175, 0.25); border-radius:14px; padding:12px 18px; margin-bottom:1.5rem; display:flex; justify-content:space-around; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div
+          style="background:rgba(14, 15, 18, 0.7); border:1px solid rgba(232, 165, 175, 0.25); border-radius:14px; padding:12px 18px; margin-bottom:1.5rem; display:flex; justify-content:space-around; align-items:center; flex-wrap:wrap; gap:10px;">
           <div style="text-align:left;">
-            <div style="font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ivory-dim); font-weight:700;">LAUNCH TARGET</div>
-            <div style="font-family:var(--font-military); color:var(--ivory); font-weight:700; font-size:0.95rem;">26 NOVEMBER 2026 · 12:00:00 AM IST</div>
+            <div
+              style="font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ivory-dim); font-weight:700;">
+              LAUNCH TARGET</div>
+            <div style="font-family:var(--font-military); color:var(--ivory); font-weight:700; font-size:0.95rem;">26
+              NOVEMBER 2026 · 12:00:00 AM IST</div>
           </div>
           <div style="height:30px; width:1px; background:rgba(232, 165, 175, 0.2);" class="hide-mobile"></div>
           <div style="text-align:left;">
-            <div style="font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ivory-dim); font-weight:700;">SERVER AUTHORITY</div>
-            <div style="font-family:var(--font-military); color:var(--gold-light); font-weight:700; font-size:0.95rem;">SUPABASE CLOUD UTC TIME</div>
+            <div
+              style="font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ivory-dim); font-weight:700;">
+              SERVER AUTHORITY</div>
+            <div style="font-family:var(--font-military); color:var(--gold-light); font-weight:700; font-size:0.95rem;">
+              SUPABASE CLOUD UTC TIME</div>
           </div>
         </div>
 
@@ -3502,13 +3761,16 @@
         </div>
 
         <!-- Telemetry Details Strip -->
-        <div style="background:rgba(21, 22, 26, 0.6); border:1px dashed rgba(232, 165, 175, 0.25); border-radius:12px; padding:12px 16px; margin-top:1.2rem; text-align:left; font-size:0.8rem; color:var(--ivory-dim); line-height:1.7;">
+        <div
+          style="background:rgba(21, 22, 26, 0.6); border:1px dashed rgba(232, 165, 175, 0.25); border-radius:12px; padding:12px 16px; margin-top:1.2rem; text-align:left; font-size:0.8rem; color:var(--ivory-dim); line-height:1.7;">
           <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
             <span>🔒 <strong>Content Security:</strong> Encrypted &amp; Locked in Supabase Storage</span>
-            <span>⏱️ <strong>Server Time (IST):</strong> <span id="cd-server-time" style="color:var(--gold-light); font-family:var(--font-military); font-weight:700;">Synchronizing...</span></span>
+            <span>⏱️ <strong>Server Time (IST):</strong> <span id="cd-server-time"
+                style="color:var(--gold-light); font-family:var(--font-military); font-weight:700;">Synchronizing...</span></span>
           </div>
           <div style="margin-top:6px; opacity:0.8; font-size:0.75rem;">
-            ✦ The website will automatically unlock and reveal the birthday celebration at exactly 12:00:00 AM IST without requiring a page refresh.
+            ✦ The website will automatically unlock and reveal the birthday celebration at exactly 12:00:00 AM IST
+            without requiring a page refresh.
           </div>
         </div>
 
@@ -3517,7 +3779,8 @@
 
         <!-- Discreet Owner Photo Pre-Loader Button -->
         <div style="margin-top:1.6rem; text-align:center;">
-          <button id="btnOpenAdminUploader" type="button" style="background:rgba(14, 15, 18, 0.45); border:1px dashed rgba(232, 165, 175, 0.35); color:var(--ivory-dim); font-size:0.75rem; letter-spacing:0.08em; padding:7px 16px; border-radius:8px; cursor:pointer; opacity:0.8; transition:all 0.25s ease;">
+          <button id="btnOpenAdminUploader" type="button"
+            style="background:rgba(14, 15, 18, 0.45); border:1px dashed rgba(232, 165, 175, 0.35); color:var(--ivory-dim); font-size:0.75rem; letter-spacing:0.08em; padding:7px 16px; border-radius:8px; cursor:pointer; opacity:0.8; transition:all 0.25s ease;">
             🔒 Owner Photo Pre-Loader (PIN Required)
           </button>
         </div>
@@ -3528,40 +3791,55 @@
   <!-- ==========================================================================
      ADMIN PRE-LAUNCH PHOTO UPLOAD MODAL (OWNER DIRECT ACCESS)
      ========================================================================== -->
-  <div id="adminUploadModal" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:20px;">
-    <div style="background:linear-gradient(145deg, #15161A, #4A1222); border:1px solid rgba(232, 165, 175, 0.45); border-radius:18px; max-width:540px; width:100%; padding:28px 24px; box-shadow:0 20px 60px rgba(0,0,0,0.8); text-align:left; color:var(--ivory);">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(232, 165, 175, 0.2); padding-bottom:12px; margin-bottom:18px;">
+  <div id="adminUploadModal"
+    style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:20px;">
+    <div
+      style="background:linear-gradient(145deg, #15161A, #4A1222); border:1px solid rgba(232, 165, 175, 0.45); border-radius:18px; max-width:540px; width:100%; padding:28px 24px; box-shadow:0 20px 60px rgba(0,0,0,0.8); text-align:left; color:var(--ivory);">
+      <div
+        style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(232, 165, 175, 0.2); padding-bottom:12px; margin-bottom:18px;">
         <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:1.4rem;">📷</span>
-          <h3 style="margin:0; font-family:var(--font-military); color:var(--gold-light); font-size:1.15rem; letter-spacing:0.06em;">PRE-LOAD MEMORY VAULT PHOTOS</h3>
+          <span style="font-size:1.4rem;">📷📹</span>
+          <h3
+            style="margin:0; font-family:var(--font-military); color:var(--gold-light); font-size:1.15rem; letter-spacing:0.06em;">
+            PRE-LOAD MEMORY VAULT PHOTOS &amp; VIDEOS</h3>
         </div>
-        <button id="btnCloseAdminModal" type="button" style="background:none; border:none; color:var(--ivory-dim); font-size:1.5rem; cursor:pointer; padding:0 4px;">&times;</button>
+        <button id="btnCloseAdminModal" type="button"
+          style="background:none; border:none; color:var(--ivory-dim); font-size:1.5rem; cursor:pointer; padding:0 4px;">&times;</button>
       </div>
 
       <p style="font-size:0.85rem; color:var(--ivory-dim); margin-bottom:14px; line-height:1.5;">
-        As the site creator, you can pre-load private photos right now before launch. These will appear in the Memory Vault immediately when the website unlocks at midnight.
+        As the site creator, you can pre-load private photos and videos right now before launch. These will appear in the Memory
+        Vault immediately when the website unlocks at midnight.
       </p>
 
       <div style="margin-bottom:16px;">
-        <label style="display:block; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-light); font-weight:700; margin-bottom:6px;">
+        <label
+          style="display:block; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-light); font-weight:700; margin-bottom:6px;">
           ADMIN / GATE PIN:
         </label>
-        <input id="adminPinInput" type="password" placeholder="Enter PIN (e.g. 19062026 or 26112002)" style="width:100%; box-sizing:border-box; background:rgba(14, 15, 18, 0.8); border:1px solid rgba(232, 165, 175, 0.4); border-radius:8px; padding:10px 14px; color:var(--ivory); font-family:var(--font-military); font-size:1rem; letter-spacing:0.1em;">
+        <input id="adminPinInput" type="password" placeholder="Enter PIN (e.g. 19XXXX20)"
+          style="width:100%; box-sizing:border-box; background:rgba(14, 15, 18, 0.8); border:1px solid rgba(232, 165, 175, 0.4); border-radius:8px; padding:10px 14px; color:var(--ivory); font-family:var(--font-military); font-size:1rem; letter-spacing:0.1em;">
       </div>
 
-      <div class="dropzone-area" id="adminDropzone" style="border:2px dashed rgba(232, 165, 175, 0.4); border-radius:12px; padding:24px 16px; text-align:center; background:rgba(14, 15, 18, 0.5); cursor:pointer; margin-bottom:14px; transition:border-color 0.2s ease;">
+      <div class="dropzone-area" id="adminDropzone"
+        style="border:2px dashed rgba(232, 165, 175, 0.4); border-radius:12px; padding:24px 16px; text-align:center; background:rgba(14, 15, 18, 0.5); cursor:pointer; margin-bottom:14px; transition:border-color 0.2s ease;">
         <div style="font-size:2rem; margin-bottom:6px;">☁️</div>
-        <div style="font-weight:600; font-size:0.92rem;">Click or Drag &amp; Drop Photos Here</div>
-        <div style="font-size:0.78rem; color:var(--ivory-dim); margin-top:4px;">JPG, PNG, or WEBP images (up to 25MB each)</div>
-        <input type="file" id="adminFileInput" multiple accept="image/jpeg,image/png,image/webp,image/jpg" style="display:none;">
+        <div style="font-weight:600; font-size:0.92rem;">Click or Drag &amp; Drop Photos &amp; Videos Here</div>
+        <div style="font-size:0.78rem; color:var(--ivory-dim); margin-top:4px;">JPG, PNG, WEBP images or MP4, WebM, MOV videos (up to 250MB each)</div>
+        <input type="file" id="adminFileInput" multiple accept="image/jpeg,image/png,image/webp,image/jpg,image/gif,video/mp4,video/webm,video/quicktime,video/x-matroska,video/*"
+          style="display:none;">
       </div>
 
-      <div id="adminSelectedFilesList" style="max-height:140px; overflow-y:auto; font-size:0.82rem; color:var(--gold-light); margin-bottom:14px; display:none; padding:8px 12px; background:rgba(0,0,0,0.3); border-radius:8px;"></div>
+      <div id="adminSelectedFilesList"
+        style="max-height:140px; overflow-y:auto; font-size:0.82rem; color:var(--gold-light); margin-bottom:14px; display:none; padding:8px 12px; background:rgba(0,0,0,0.3); border-radius:8px;">
+      </div>
       <div id="adminUploadStatus" style="font-size:0.85rem; margin-bottom:12px; min-height:20px;"></div>
 
       <div style="display:flex; justify-content:flex-end; gap:12px;">
-        <button id="btnCancelAdminUpload" class="btn-secondary" type="button" style="padding:8px 18px; font-size:0.85rem;">Cancel</button>
-        <button id="btnSubmitAdminUpload" class="btn-primary" type="button" style="padding:8px 22px; font-size:0.88rem;">Save to Memory Vault ✦</button>
+        <button id="btnCancelAdminUpload" class="btn-secondary" type="button"
+          style="padding:8px 18px; font-size:0.85rem;">Cancel</button>
+        <button id="btnSubmitAdminUpload" class="btn-primary" type="button"
+          style="padding:8px 22px; font-size:0.88rem;">Save to Memory Vault ✦</button>
       </div>
     </div>
   </div>
@@ -3575,21 +3853,29 @@
         <div class="gate-hero-insignia">
           <div class="gate-hero-radar"></div>
           <svg viewBox="0 0 48 48" width="56" height="56" fill="none">
-            <path d="M24 6 L28 18 L40 22 L28 26 L24 42 L20 26 L8 22 L20 18 Z" fill="#4A1222" stroke="#E8A5AF" stroke-width="2"/>
-            <circle cx="24" cy="22" r="5" fill="#7E203E" stroke="#F6CAD1" stroke-width="1.5"/>
+            <path d="M24 6 L28 18 L40 22 L28 26 L24 42 L20 26 L8 22 L20 18 Z" fill="#4A1222" stroke="#E8A5AF"
+              stroke-width="2" />
+            <circle cx="24" cy="22" r="5" fill="#7E203E" stroke="#F6CAD1" stroke-width="1.5" />
           </svg>
         </div>
 
         <span class="gate-badge-tag">CLASSIFIED SQUADRON PROTOCOL // FLIGHT EVALUATION</span>
-        <h1 style="font-family:var(--font-military); font-size:1.85rem; letter-spacing:0.08em; color:var(--ivory); margin-bottom:0.6rem;">SKYWARD AMBITION</h1>
-        <p style="font-family:var(--font-display); font-style:italic; font-size:1.15rem; color:var(--gold-light); margin-bottom:1.5rem;">"Not every dream needs a runway to take flight. Some inspire simply by the way they live."</p>
+        <h1
+          style="font-family:var(--font-military); font-size:1.85rem; letter-spacing:0.08em; color:var(--ivory); margin-bottom:0.6rem;">
+          SKYWARD AMBITION</h1>
+        <p
+          style="font-family:var(--font-display); font-style:italic; font-size:1.15rem; color:var(--gold-light); margin-bottom:1.5rem;">
+          "Not every dream needs a runway to take flight. Some inspire simply by the way they live."</p>
 
         <p style="color:var(--ivory-dim); font-size:0.92rem; line-height:1.6; margin-bottom:1.8rem;">
-          Welcome to the private interactive birthday storybook and flight evaluation honoring Ma'am. To preserve assessment integrity, this experience operates in strict full-screen mode with media presence verification.
+          Welcome to the private interactive birthday storybook and flight evaluation honoring Ma'am. To preserve
+          assessment integrity, this experience operates in strict full-screen mode with media presence verification.
         </p>
 
-        <div style="background:rgba(14, 15, 18,0.6); border:1px solid rgba(232, 165, 175,0.2); border-radius:14px; padding:16px 20px; margin-bottom:2rem; text-align:left; font-size:0.85rem; color:var(--ivory-dim);">
-          <div style="font-family:var(--font-military); color:var(--gold-light); font-weight:700; margin-bottom:6px; font-size:0.8rem; letter-spacing:0.1em;">
+        <div
+          style="background:rgba(14, 15, 18,0.6); border:1px solid rgba(232, 165, 175,0.2); border-radius:14px; padding:16px 20px; margin-bottom:2rem; text-align:left; font-size:0.85rem; color:var(--ivory-dim);">
+          <div
+            style="font-family:var(--font-military); color:var(--gold-light); font-weight:700; margin-bottom:6px; font-size:0.8rem; letter-spacing:0.1em;">
             ✦ MANDATORY ACCESS REQUIREMENTS
           </div>
           <div>• Full-screen browser environment throughout the session</div>
@@ -3614,12 +3900,16 @@
   <div id="view-instructions" class="app-view">
     <div class="gate-wrapper">
       <div class="instructions-card-wrap">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(232, 165, 175,0.25); padding-bottom:14px; margin-bottom:1.2rem;">
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(232, 165, 175,0.25); padding-bottom:14px; margin-bottom:1.2rem;">
           <div>
             <span class="gate-badge-tag" style="margin-bottom:4px;">PROTOCOL BRIEFING</span>
-            <h2 style="font-family:var(--font-military); font-size:1.4rem; color:var(--ivory); letter-spacing:0.05em;">IMPORTANT TEST INSTRUCTIONS</h2>
+            <h2 style="font-family:var(--font-military); font-size:1.4rem; color:var(--ivory); letter-spacing:0.05em;">
+              IMPORTANT TEST INSTRUCTIONS</h2>
           </div>
-          <span style="font-family:var(--font-military); color:var(--gold); font-size:0.8rem; border:1px solid var(--gold); border-radius:8px; padding:4px 10px;">STEP 02 // 05</span>
+          <span
+            style="font-family:var(--font-military); color:var(--gold); font-size:0.8rem; border:1px solid var(--gold); border-radius:8px; padding:4px 10px;">STEP
+            02 // 05</span>
         </div>
 
         <p style="color:var(--ivory-dim); font-size:0.9rem; line-height:1.6; margin-bottom:1rem;">
@@ -3629,7 +3919,8 @@
         <div class="instruction-rules-grid">
           <div class="instruction-rule-item">
             <div class="rule-number-pill">1</div>
-            <div class="rule-text-content"><strong>Full-screen mode is mandatory</strong> throughout the assessment.</div>
+            <div class="rule-text-content"><strong>Full-screen mode is mandatory</strong> throughout the assessment.
+            </div>
           </div>
           <div class="instruction-rule-item">
             <div class="rule-number-pill">2</div>
@@ -3649,11 +3940,13 @@
           </div>
           <div class="instruction-rule-item">
             <div class="rule-number-pill">6</div>
-            <div class="rule-text-content">Verify that your personal details and assessment information are correct.</div>
+            <div class="rule-text-content">Verify that your personal details and assessment information are correct.
+            </div>
           </div>
           <div class="instruction-rule-item">
             <div class="rule-number-pill">7</div>
-            <div class="rule-text-content"><strong>Do not close or refresh</strong> the assessment tab during the test.</div>
+            <div class="rule-text-content"><strong>Do not close or refresh</strong> the assessment tab during the test.
+            </div>
           </div>
           <div class="instruction-rule-item">
             <div class="rule-number-pill">8</div>
@@ -3673,17 +3966,22 @@
           </div>
           <div class="instruction-rule-item">
             <div class="rule-number-pill">12</div>
-            <div class="rule-text-content">Once the assessment begins, follow the displayed submission and navigation rules.</div>
+            <div class="rule-text-content">Once the assessment begins, follow the displayed submission and navigation
+              rules.</div>
           </div>
         </div>
 
         <div class="privacy-notice-box">
           <strong style="color:var(--gold-light);">🔒 Privacy &amp; Data Handling Disclosure:</strong>
-          Camera and microphone access are utilized strictly in volatile browser memory for live presence verification, level monitoring, and assessment proctoring during active testing. No video or audio is secretly recorded, permanently stored on server hard drives, or saved to browser localStorage without explicit consent.
+          Camera and microphone access are utilized strictly in volatile browser memory for live presence verification,
+          level monitoring, and assessment proctoring during active testing. No video or audio is secretly recorded,
+          permanently stored on server hard drives, or saved to browser localStorage without explicit consent.
         </div>
 
         <div style="font-size:0.8rem; color:var(--ivory-dim); opacity:0.7; margin-bottom:1.5rem; line-height:1.5;">
-          <em>Notice on Browser Architecture: Standard web browsers cannot override operating system level shortcuts (e.g., Alt+Tab, Windows Key) or prevent application switches. Session integrity relies on event-based window focus monitoring.</em>
+          <em>Notice on Browser Architecture: Standard web browsers cannot override operating system level shortcuts
+            (e.g., Alt+Tab, Windows Key) or prevent application switches. Session integrity relies on event-based window
+            focus monitoring.</em>
         </div>
 
         <label class="ack-checkbox-wrap" id="ackLabel">
@@ -3691,7 +3989,8 @@
           <span class="ack-checkbox-label">I have read and understood all instructions and warnings.</span>
         </label>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-top:2rem;">
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-top:2rem;">
           <button class="btn-secondary" onclick="router.navigateTo('welcome')">← Back to Welcome</button>
           <button id="btnContinueFromInstructions" class="btn-primary" disabled style="opacity:0.5;">
             Proceed to Permission Verification →
@@ -3708,7 +4007,8 @@
     <div class="gate-wrapper">
       <div class="gate-card" style="max-width:680px;">
         <span class="gate-badge-tag">STEP 03 // SECURITY CLEARANCE GATE</span>
-        <h2 style="font-family:var(--font-military); font-size:1.6rem; margin-bottom:0.4rem;">Permission Verification</h2>
+        <h2 style="font-family:var(--font-military); font-size:1.6rem; margin-bottom:0.4rem;">Permission Verification
+        </h2>
         <p class="gate-subtitle">Explicit browser authorization required for flight evaluation</p>
 
         <div class="perms-grid">
@@ -3743,9 +4043,10 @@
           </button>
         </div>
 
-<!-- Chrome Site Settings Guidance Card (Appears if permission denied or camera error) -->
+        <!-- Chrome Site Settings Guidance Card (Appears if permission denied or camera error) -->
         <div class="chrome-help-card" id="chromeSettingsHelpBox">
-          <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:#ff8b73; font-size:0.95rem; margin-bottom:6px;">
+          <div
+            style="display:flex; align-items:center; gap:8px; font-weight:700; color:#ff8b73; font-size:0.95rem; margin-bottom:6px;">
             <span id="chromeHelpTitle">⚠️ Camera &amp; Microphone Access Required</span>
           </div>
           <p id="chromeHelpMessage" style="font-size:0.85rem; color:var(--ivory-dim); line-height:1.5;">
@@ -3753,12 +4054,15 @@
           </p>
 
           <!-- Warning banner if opened via file:/// -->
-          <div id="fileProtocolWarningBox" style="display:none; background:rgba(230,81,0,0.25); border:1px solid #ff9800; border-radius:8px; padding:12px 14px; margin:10px 0; text-align:left;">
+          <div id="fileProtocolWarningBox"
+            style="display:none; background:rgba(230,81,0,0.25); border:1px solid #ff9800; border-radius:8px; padding:12px 14px; margin:10px 0; text-align:left;">
             <strong style="color:#ffb74d; font-size:0.85rem;">📁 Local File Detected (file://)</strong>
             <p style="font-size:0.8rem; color:var(--ivory); margin:4px 0 8px;">
-              Google Chrome and other browsers strictly block camera and microphone access on direct local files (file:///) for security. Please run the website through the local server:
+              Google Chrome and other browsers strictly block camera and microphone access on direct local files
+              (file:///) for security. Please run the website through the local server:
             </p>
-            <a href="http://localhost:3000" class="btn-primary" style="display:inline-block; text-decoration:none; font-size:0.82rem; padding:6px 14px;">
+            <a href="http://localhost:3000" class="btn-primary"
+              style="display:inline-block; text-decoration:none; font-size:0.82rem; padding:6px 14px;">
               🚀 Open http://localhost:3000
             </a>
           </div>
@@ -3767,22 +4071,27 @@
             <li>Click the site controls icon (tune icon 🎛️ or lock icon 🔒) on the left side of the address bar.</li>
             <li>Ensure <strong>Camera</strong> is set to <strong>Allow</strong>.</li>
             <li>Ensure <strong>Microphone</strong> is set to <strong>Allow</strong>.</li>
-            <li>If using a laptop, ensure the <strong>physical webcam privacy shutter/slider</strong> is slid open, and the camera Fn key (e.g., F8 or F10) is enabled.</li>
-            <li>Close any applications that may have an exclusive lock on the camera (Windows Camera app, Microsoft Teams, Zoom, or Windows Phone Link).</li>
+            <li>If using a laptop, ensure the <strong>physical webcam privacy shutter/slider</strong> is slid open, and
+              the camera Fn key (e.g., F8 or F10) is enabled.</li>
+            <li>Close any applications that may have an exclusive lock on the camera (Windows Camera app, Microsoft
+              Teams, Zoom, or Windows Phone Link).</li>
           </ol>
           <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-            <button type="button" class="btn-primary" id="btnRetryPermissions" style="padding:8px 18px; font-size:0.85rem;">
+            <button type="button" class="btn-primary" id="btnRetryPermissions"
+              style="padding:8px 18px; font-size:0.85rem;">
               Retry Permissions ↻
             </button>
-            <button type="button" class="btn-secondary" id="btnDiagnoseCamera" style="padding:8px 18px; font-size:0.85rem;">
+            <button type="button" class="btn-secondary" id="btnDiagnoseCamera"
+              style="padding:8px 18px; font-size:0.85rem;">
               🔍 Run Camera Diagnostic
             </button>
           </div>
-          <div id="cameraDiagnosticLog" style="display:none; margin-top:12px; padding:10px; background:#070d18; border:1px solid var(--card-border); border-radius:8px; font-family:monospace; font-size:0.75rem; color:#76cf96; text-align:left; max-height:160px; overflow-y:auto; line-height:1.4;">
+          <div id="cameraDiagnosticLog"
+            style="display:none; margin-top:12px; padding:10px; background:#070d18; border:1px solid var(--card-border); border-radius:8px; font-family:monospace; font-size:0.75rem; color:#76cf96; text-align:left; max-height:160px; overflow-y:auto; line-height:1.4;">
           </div>
         </div>
 
-                <div style="margin-top:2rem; display:flex; justify-content:space-between; align-items:center;">
+        <div style="margin-top:2rem; display:flex; justify-content:space-between; align-items:center;">
           <button class="btn-secondary" onclick="router.navigateTo('instructions')">← Back to Instructions</button>
           <button id="btnProceedToDeviceCheck" class="btn-primary" disabled style="opacity:0.5;">
             Proceed to Device Verification →
@@ -3816,9 +4125,14 @@
         </div>
 
         <!-- Camera Switcher on Device Verification Screen (Integrated Camera Prioritized) -->
-        <div class="device-selector-strip" style="margin: 12px auto; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
-          <label for="deviceCheckCameraSelect" style="font-family: var(--font-military); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--gold-light);">ACTIVE CAMERA:</label>
-          <select id="deviceCheckCameraSelect" class="studio-select" style="max-width: 380px; padding: 6px 12px; font-size: 0.85rem; border-radius: 8px; background: #0c1726; color: var(--ivory); border: 1px solid var(--card-border); cursor: pointer;" title="Select Integrated Camera or other device"></select>
+        <div class="device-selector-strip"
+          style="margin: 12px auto; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+          <label for="deviceCheckCameraSelect"
+            style="font-family: var(--font-military); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--gold-light);">ACTIVE
+            CAMERA:</label>
+          <select id="deviceCheckCameraSelect" class="studio-select"
+            style="max-width: 380px; padding: 6px 12px; font-size: 0.85rem; border-radius: 8px; background: #0c1726; color: var(--ivory); border: 1px solid var(--card-border); cursor: pointer;"
+            title="Select Integrated Camera or other device"></select>
         </div>
 
         <!-- Real-Time Microphone VU Meter -->
@@ -3942,7 +4256,8 @@
             title="Scroll directly down to active chapter's puzzle">
             <span>🧩 Jump to Puzzle ↓</span>
           </button>
-          <button class="hud-jump-puzzle-btn" id="hudRelockHeaderBtn" style="border-color:rgba(232, 165, 175, 0.4); background:rgba(74, 18, 34, 0.4);"
+          <button class="hud-jump-puzzle-btn" id="hudRelockHeaderBtn"
+            style="border-color:rgba(232, 165, 175, 0.4); background:rgba(74, 18, 34, 0.4);"
             title="Relock Chapters 2-7 and restart puzzles from Chapter 1">
             <span>🔒 Relock All ↺</span>
           </button>
@@ -3975,7 +4290,8 @@
       <div class="vault-header-row">
         <span>✦ Secret Word Collection // Mission Progress</span>
         <div style="display:flex; align-items:center; gap:12px;">
-          <button type="button" class="btn-relock-all" id="btnRelockAllPuzzles" title="Relock Chapters 2-7 and restart tactical puzzle solving from Chapter 1">
+          <button type="button" class="btn-relock-all" id="btnRelockAllPuzzles"
+            title="Relock Chapters 2-7 and restart tactical puzzle solving from Chapter 1">
             🔒 Relock All Puzzles ↺
           </button>
           <span id="wordsProgressCounter">0 / 6 Words Unlocked</span>
@@ -4005,7 +4321,8 @@
               <span class="challenge-badge-pill">✦ APTITUDE PUZZLE 01 ACTIVE ✦</span>
               <div class="challenge-banner-title">Challenge: The Squadron Flight Grid</div>
               <div class="challenge-banner-sub">Multi-Condition Logical Deduction · Solve to reveal secret word:
-                <strong>COURAGE</strong></div>
+                <strong>COURAGE</strong>
+              </div>
             </div>
             <button type="button" class="btn-jump-puzzle" onclick="scrollToPuzzleChamber(1)">
               🧩 Jump to Puzzle Below ↓
@@ -4035,7 +4352,8 @@
             <div class="clues-box">
               <h4>Tactical Intelligence Clues</h4>
               <div class="clue-item"><span class="clue-bullet">1.</span> The pilot flying at 36,000 ft holds call-sign
-                <em>Garuda</em>, but is neither Chetan nor Diya.</div>
+                <em>Garuda</em>, but is neither Chetan nor Diya.
+              </div>
               <div class="clue-item"><span class="clue-bullet">2.</span> Bhavna commands the <em>Vampires</em> squadron,
                 and her altitude is exactly 4,000 ft higher than Arjun's.</div>
               <div class="clue-item"><span class="clue-bullet">3.</span> Chetan flies with the <em>Tigers</em> squadron
@@ -4089,7 +4407,8 @@
               <div class="curtain-lock-icon">🔒</div>
               <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
               <h3>Chapter 02 is Locked</h3>
-              <p>To unlock Tirunelveli and proceed, you must solve the <strong>Squadron Flight Grid</strong> puzzle in Chapter 01 to decode Secret Word 01 (COURAGE).</p>
+              <p>To unlock Tirunelveli and proceed, you must solve the <strong>Squadron Flight Grid</strong> puzzle in
+                Chapter 01 to decode Secret Word 01 (COURAGE).</p>
               <button type="button" class="btn-primary" onclick="router.switchChapter(1); scrollToPuzzleChamber(1);">
                 Go to Chapter 01 Mission 🎯
               </button>
@@ -4104,7 +4423,8 @@
               <span class="challenge-badge-pill">✦ APTITUDE PUZZLE 02 ACTIVE ✦</span>
               <div class="challenge-banner-title">Challenge: The Heritage Banquet Seating</div>
               <div class="challenge-banner-sub">Circular Seating Arrangement · Solve to reveal secret word:
-                <strong>DREAM</strong></div>
+                <strong>DREAM</strong>
+              </div>
             </div>
             <button type="button" class="btn-jump-puzzle" onclick="scrollToPuzzleChamber(2)">
               🧩 Jump to Puzzle Below ↓
@@ -4201,7 +4521,8 @@
               <div class="curtain-lock-icon">🔒</div>
               <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
               <h3>Chapter 03 is Locked</h3>
-              <p>To unlock The Sky and proceed, you must solve the <strong>Nellai Seating Arrangement</strong> puzzle in Chapter 02 to decode Secret Word 02 (DREAM).</p>
+              <p>To unlock The Sky and proceed, you must solve the <strong>Nellai Seating Arrangement</strong> puzzle in
+                Chapter 02 to decode Secret Word 02 (DREAM).</p>
               <button type="button" class="btn-primary" onclick="router.switchChapter(2); scrollToPuzzleChamber(2);">
                 Go to Chapter 02 Mission 🎯
               </button>
@@ -4216,7 +4537,8 @@
               <span class="challenge-badge-pill">✦ CRYPTOGRAPHY PUZZLE 01 ACTIVE ✦</span>
               <div class="challenge-banner-title">Challenge: The Tactical Radio Intercept</div>
               <div class="challenge-banner-sub">Tactical Caesar Shift Cipher · Solve to reveal secret word:
-                <strong>FLIGHT</strong></div>
+                <strong>FLIGHT</strong>
+              </div>
             </div>
             <button type="button" class="btn-jump-puzzle" onclick="scrollToPuzzleChamber(3)">
               🧩 Jump to Puzzle Below ↓
@@ -4292,7 +4614,8 @@
               <div class="curtain-lock-icon">🔒</div>
               <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
               <h3>Chapter 04 is Locked</h3>
-              <p>To unlock Possibilities and proceed, you must decode the <strong>IAF Caesar Cipher Transmission</strong> in Chapter 03 to reveal Secret Word 03 (FLIGHT).</p>
+              <p>To unlock Possibilities and proceed, you must decode the <strong>IAF Caesar Cipher
+                  Transmission</strong> in Chapter 03 to reveal Secret Word 03 (FLIGHT).</p>
               <button type="button" class="btn-primary" onclick="router.switchChapter(3); scrollToPuzzleChamber(3);">
                 Go to Chapter 03 Mission 🎯
               </button>
@@ -4307,7 +4630,8 @@
               <span class="challenge-badge-pill">✦ APTITUDE PUZZLE 03 ACTIVE ✦</span>
               <div class="challenge-banner-title">Challenge: The Altitude Vector Sequence</div>
               <div class="challenge-banner-sub">Mathematical Number Reasoning · Solve to reveal secret word:
-                <strong>STRENGTH</strong></div>
+                <strong>STRENGTH</strong>
+              </div>
             </div>
             <button type="button" class="btn-jump-puzzle" onclick="scrollToPuzzleChamber(4)">
               🧩 Jump to Puzzle Below ↓
@@ -4380,7 +4704,8 @@
               <div class="curtain-lock-icon">🔒</div>
               <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
               <h3>Chapter 05 is Locked</h3>
-              <p>To unlock Her World and proceed, you must solve the <strong>Mathematical Sequence</strong> puzzle in Chapter 04 to decode Secret Word 04 (STRENGTH).</p>
+              <p>To unlock Her World and proceed, you must solve the <strong>Mathematical Sequence</strong> puzzle in
+                Chapter 04 to decode Secret Word 04 (STRENGTH).</p>
               <button type="button" class="btn-primary" onclick="router.switchChapter(4); scrollToPuzzleChamber(4);">
                 Go to Chapter 04 Mission 🎯
               </button>
@@ -4395,7 +4720,8 @@
               <span class="challenge-badge-pill">✦ CRYPTOGRAPHY PUZZLE 02 ACTIVE ✦</span>
               <div class="challenge-banner-title">Challenge: The Connoisseur's Cipher</div>
               <div class="challenge-banner-sub">Alphanumeric Coordinate Decoding · Solve to reveal secret word:
-                <strong>INSPIRE</strong></div>
+                <strong>INSPIRE</strong>
+              </div>
             </div>
             <button type="button" class="btn-jump-puzzle" onclick="scrollToPuzzleChamber(5)">
               🧩 Jump to Puzzle Below ↓
@@ -4494,7 +4820,8 @@
               <div class="curtain-lock-icon">🔒</div>
               <div class="curtain-badge">TACTICAL CLEARANCE REQUIRED</div>
               <h3>Chapter 06 is Locked</h3>
-              <p>To unlock Memories and proceed, you must decode the <strong>Alphanumeric Coordinate Cipher</strong> in Chapter 05 to reveal Secret Word 05 (INSPIRE).</p>
+              <p>To unlock Memories and proceed, you must decode the <strong>Alphanumeric Coordinate Cipher</strong> in
+                Chapter 05 to reveal Secret Word 05 (INSPIRE).</p>
               <button type="button" class="btn-primary" onclick="router.switchChapter(5); scrollToPuzzleChamber(5);">
                 Go to Chapter 05 Mission 🎯
               </button>
@@ -4509,7 +4836,8 @@
               <span class="challenge-badge-pill">✦ MASTER APTITUDE PUZZLE ACTIVE ✦</span>
               <div class="challenge-banner-title">Challenge: The Flight Dispatch Clearance Matrix</div>
               <div class="challenge-banner-sub">Multi-Variable Logic Grid · Solve to reveal final secret word:
-                <strong>ADMIRE</strong></div>
+                <strong>ADMIRE</strong>
+              </div>
             </div>
             <button type="button" class="btn-jump-puzzle" onclick="scrollToPuzzleChamber(6)">
               🧩 Jump to Puzzle Below ↓
@@ -4586,7 +4914,8 @@
               <div class="curtain-lock-icon">🔒</div>
               <div class="curtain-badge">FINAL SURPRISE · RESTRICTED VAULT</div>
               <h3>Chapter 07 is Locked</h3>
-              <p>The sealed birthday aerogramme envelope and squadron studio will unlock once you solve the <strong>Weekly Flight Matrix</strong> puzzle in Chapter 06 to decode Secret Word 06 (ADMIRE).</p>
+              <p>The sealed birthday aerogramme envelope and squadron studio will unlock once you solve the
+                <strong>Weekly Flight Matrix</strong> puzzle in Chapter 06 to decode Secret Word 06 (ADMIRE).</p>
               <button type="button" class="btn-primary" onclick="router.switchChapter(6); scrollToPuzzleChamber(6);">
                 Go to Chapter 06 Mission 🎯
               </button>
@@ -4641,11 +4970,11 @@
 
           <!-- Interactive Folded Letter in Envelope Cover -->
           <div class="letter-envelope-container" id="letterEnvelopeContainer">
-            
+
             <!-- Envelope Cover Scene -->
             <div class="envelope-scene" id="envelopeScene">
               <div class="envelope-card" id="envelopeCard">
-                
+
                 <!-- Airmail Border Trim -->
                 <div class="envelope-airmail-stripe top"></div>
                 <div class="envelope-airmail-stripe bottom"></div>
@@ -4674,7 +5003,7 @@
 
                 <!-- Cover Front Details (Postage, Postmarks, Recipient "For AK") -->
                 <div class="envelope-cover-content">
-                  
+
                   <div class="envelope-header-row">
                     <div class="envelope-airmail-badge">
                       <span class="badge-icon">✈</span> PAR AVION • AIR DISPATCH
@@ -4711,7 +5040,8 @@
                 </div>
 
                 <!-- Clickable 3D Wax Seal positioned on flap -->
-                <div class="envelope-seal-wrapper" id="envelopeSealWrapper" role="button" tabindex="0" title="Click wax seal to open letter" aria-label="Click wax seal to open letter">
+                <div class="envelope-seal-wrapper" id="envelopeSealWrapper" role="button" tabindex="0"
+                  title="Click wax seal to open letter" aria-label="Click wax seal to open letter">
                   <div class="seal-halo-pulse"></div>
                   <div class="wax-seal-cover" id="waxSealCover">
                     <div class="wax-seal-face">
@@ -4730,78 +5060,103 @@
 
             <!-- Full Unfolded Letter View (Slides in / unfolds after seal is clicked) -->
             <div class="unfolded-letter-view" id="unfoldedLetterView" style="display:none;">
-              
+
               <div class="letter-opened-toolbar">
                 <div class="toolbar-badge">
                   <span class="badge-dot">●</span> Letter Unsealed &amp; Unfolded
                 </div>
-                <button type="button" class="btn-refold-cover" id="btnRefoldCover" title="Fold back into envelope cover">
+                <button type="button" class="btn-refold-cover" id="btnRefoldCover"
+                  title="Fold back into envelope cover">
                   ✉ Fold Back into Cover
                 </button>
               </div>
 
               <!-- Handwritten Aerogramme Letter -->
-          <div class="aerogramme-wrapper">
-            <div class="aerogramme-sheet">
-              <div class="letter-header-meta">
-                <div>
-                  <div>AIR DISPATCH: COMMAND COMMENDATION</div>
-                  <div>STATION: HONORARY SQUADRON VIP</div>
+              <div class="aerogramme-wrapper">
+                <div class="aerogramme-sheet">
+                  <div class="letter-header-meta">
+                    <div>
+                      <div>AIR DISPATCH: COMMAND COMMENDATION</div>
+                      <div>STATION: HONORARY SQUADRON VIP</div>
+                    </div>
+                    <div class="letter-postmark">NOVEMBER EDITION<br>CONFIDENTIAL &amp; PERSONAL</div>
+                  </div>
+
+                  <div class="letter-title"
+                    style="font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; color: #1a1614; margin: 10px 0 22px 0; text-align: center; letter-spacing: 0.02em;">
+                    Happy Birthday, My Favourite Ma'am! ❤️
+                  </div>
+
+                  <div class="letter-salutation">Dear Ma'am,</div>
+
+                  <div class="letter-body">
+                    <p class="no-indent">
+                      On your birthday, I just wanted to do something a little special for you. Not just to wish you
+                      another happy year, but to remind you how wonderful a person you are and how much I genuinely
+                      admire you. So, here's a little something from my heart, especially for you.
+                    </p>
+                    <p>
+                      I hope life surprises you with beautiful moments, new opportunities, and experiences that make you
+                      truly happy. There's still so much waiting for you, and I sincerely wish that the coming years
+                      bring you everything you've been hoping for.
+                    </p>
+                    <p>
+                      You know, sometimes life doesn't take us exactly where we once dreamed of going. Maybe the
+                      fighter's cockpit we imagined sitting in when we were younger remains an unfulfilled dream. But
+                      one thing I've realised is that being a fighter isn't always about flying an aircraft. Sometimes,
+                      it's about facing life's challenges, standing strong through difficult moments, and finding the
+                      courage to move forward when things don't go as planned. And that's something I truly admire about
+                      you.
+                    </p>
+                    <p>
+                      I also admire the way you carry yourself. You have your own way of looking at life, your own
+                      opinions, and your own standards. You don't have to prove anything to anyone, and there's
+                      something really special about that. The confidence, dignity, and strength with which you handle
+                      things make you someone who naturally earns respect.
+                    </p>
+                    <p>
+                      But Ma'am, there's one thing I really want to tell you...
+                    </p>
+                    <p
+                      style="font-size: 1.35rem; font-weight: 700; color: #8a1f11; margin: 1.4rem 0; text-align: center; text-indent: 0; font-family: var(--font-display);">
+                      Please don't lose that beautiful smile of yours! ❤️
+                    </p>
+                    <p>
+                      I know you have your moments — sometimes angry, sometimes annoyed, sometimes probably ready to get
+                      irritated with the whole world! 😂 And that's perfectly fine. But even on those days, I hope you
+                      don't stay away from smiling for too long. There's something about your smile that makes it
+                      special, and honestly, it suits you more than you might realise.
+                    </p>
+                    <p>
+                      Thank you for being yourself. You may not always notice it, but sometimes the smallest things a
+                      person says or does can leave a lasting impression on someone. You have taught me things not just
+                      through words, but also through the way you handle situations and live your life. And I genuinely
+                      appreciate that.
+                    </p>
+                    <p>
+                      On this birthday, I wish you good health, peace of mind, endless happiness, success, and all the
+                      little things that make life beautiful. I hope you get more reasons to laugh, more opportunities
+                      to enjoy yourself, and more moments that make you feel proud and happy.
+                    </p>
+                    <p>
+                      No matter what life brings your way, keep that strength, keep being the wonderful person you are,
+                      and never forget to smile.
+                    </p>
+                  </div>
+
+                  <div class="letter-signoff">
+                    <p
+                      style="font-weight: 700; font-size: 1.25rem; color: #1a1614; margin-bottom: 8px; font-style: normal; font-family: var(--font-display);">
+                      Once again, Happy Birthday, my favourite Ma'am! ❤️
+                    </p>
+                    <p style="font-style: italic; color: #3d3430; margin-top: 6px; font-size: 1.15rem;">
+                      With lots of affection, admiration, and heartfelt gratitude.
+                    </p>
+                  </div>
+
+                  <div class="wax-seal-emblem" title="AK💗">AK💗</div>
                 </div>
-                <div class="letter-postmark">NOVEMBER EDITION<br>CONFIDENTIAL &amp; PERSONAL</div>
               </div>
-
-              <div class="letter-title" style="font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; color: #1a1614; margin: 10px 0 22px 0; text-align: center; letter-spacing: 0.02em;">
-                Happy Birthday, My Favourite Ma'am! ❤️
-              </div>
-
-              <div class="letter-salutation">Dear Ma'am,</div>
-
-              <div class="letter-body">
-                <p class="no-indent">
-                  On your birthday, I just wanted to do something a little special for you. Not just to wish you another happy year, but to remind you how wonderful a person you are and how much I genuinely admire you. So, here's a little something from my heart, especially for you.
-                </p>
-                <p>
-                  I hope life surprises you with beautiful moments, new opportunities, and experiences that make you truly happy. There's still so much waiting for you, and I sincerely wish that the coming years bring you everything you've been hoping for.
-                </p>
-                <p>
-                  You know, sometimes life doesn't take us exactly where we once dreamed of going. Maybe the fighter's cockpit we imagined sitting in when we were younger remains an unfulfilled dream. But one thing I've realised is that being a fighter isn't always about flying an aircraft. Sometimes, it's about facing life's challenges, standing strong through difficult moments, and finding the courage to move forward when things don't go as planned. And that's something I truly admire about you.
-                </p>
-                <p>
-                  I also admire the way you carry yourself. You have your own way of looking at life, your own opinions, and your own standards. You don't have to prove anything to anyone, and there's something really special about that. The confidence, dignity, and strength with which you handle things make you someone who naturally earns respect.
-                </p>
-                <p>
-                  But Ma'am, there's one thing I really want to tell you...
-                </p>
-                <p style="font-size: 1.35rem; font-weight: 700; color: #8a1f11; margin: 1.4rem 0; text-align: center; text-indent: 0; font-family: var(--font-display);">
-                  Please don't lose that beautiful smile of yours! ❤️
-                </p>
-                <p>
-                  I know you have your moments — sometimes angry, sometimes annoyed, sometimes probably ready to get irritated with the whole world! 😂 And that's perfectly fine. But even on those days, I hope you don't stay away from smiling for too long. There's something about your smile that makes it special, and honestly, it suits you more than you might realise.
-                </p>
-                <p>
-                  Thank you for being yourself. You may not always notice it, but sometimes the smallest things a person says or does can leave a lasting impression on someone. You have taught me things not just through words, but also through the way you handle situations and live your life. And I genuinely appreciate that.
-                </p>
-                <p>
-                  On this birthday, I wish you good health, peace of mind, endless happiness, success, and all the little things that make life beautiful. I hope you get more reasons to laugh, more opportunities to enjoy yourself, and more moments that make you feel proud and happy.
-                </p>
-                <p>
-                  No matter what life brings your way, keep that strength, keep being the wonderful person you are, and never forget to smile.
-                </p>
-              </div>
-
-              <div class="letter-signoff">
-                <p style="font-weight: 700; font-size: 1.25rem; color: #1a1614; margin-bottom: 8px; font-style: normal; font-family: var(--font-display);">
-                  Once again, Happy Birthday, my favourite Ma'am! ❤️
-                </p>
-                <p style="font-style: italic; color: #3d3430; margin-top: 6px; font-size: 1.15rem;">
-                  With lots of affection, admiration, and heartfelt gratitude.
-                </p>
-              </div>
-
-              <div class="wax-seal-emblem" title="AK💗">AK💗</div>
-            </div>
-          </div>
 
             </div>
 
@@ -4815,13 +5170,14 @@
               onclick="document.getElementById('recordingStudioSection').scrollIntoView({ behavior: 'smooth' })">
               Record Video Salute 🎥
             </button>
-            <button class="btn-primary" style="background:linear-gradient(135deg, #7E203E, #4A1222); border:1px solid rgba(232, 165, 175, 0.45);"
+            <button class="btn-primary"
+              style="background:linear-gradient(135deg, #7E203E, #4A1222); border:1px solid rgba(232, 165, 175, 0.45);"
               onclick="router.navigateTo('gate2')">
               Open Our Memories 📷 →
             </button>
           </div>
 
-<!-- =====================================================================
+          <!-- =====================================================================
                SQUADRON AV RECORDING STUDIO (CAMERA, MIC & SUPABASE STORAGE)
                ===================================================================== -->
           <div class="recording-studio-panel" id="recordingStudioSection">
@@ -4829,7 +5185,8 @@
               <span class="editorial-tag">Squadron AV Dispatch // Supabase Archive</span>
               <h3>Record Audio &amp; Video Salute for Ma'am 🎥</h3>
               <p class="story-text" style="font-size:0.95rem; color:var(--ivory-dim); margin-bottom:1.2rem;">
-                Deliver your personalized live birthday tribute directly to Ma'am. Select your laptop's integrated camera or external device, record with automatic cloud backup, and review past dispatches.
+                Deliver your personalized live birthday tribute directly to Ma'am. Select your laptop's integrated
+                camera or external device, record with automatic cloud backup, and review past dispatches.
               </p>
             </div>
 
@@ -4839,14 +5196,17 @@
                 <span class="recovery-icon">⚠️</span>
                 <div class="recovery-text">
                   <strong>Interrupted Recording Session Detected</strong>
-                  <p id="recoveryDesc">A previous recording session has saved chunks in local IndexedDB and Supabase Storage.</p>
+                  <p id="recoveryDesc">A previous recording session has saved chunks in local IndexedDB and Supabase
+                    Storage.</p>
                 </div>
               </div>
               <div class="recovery-actions">
-                <button type="button" class="btn-primary" id="btnRecoverSession" style="background:#106f3e; font-size:0.8rem; padding:6px 14px;">
+                <button type="button" class="btn-primary" id="btnRecoverSession"
+                  style="background:#106f3e; font-size:0.8rem; padding:6px 14px;">
                   🎬 Reconstruct &amp; Finalize
                 </button>
-                <button type="button" class="btn-secondary" id="btnDismissRecovery" style="font-size:0.8rem; padding:6px 14px;">
+                <button type="button" class="btn-secondary" id="btnDismissRecovery"
+                  style="font-size:0.8rem; padding:6px 14px;">
                   ✕ Discard
                 </button>
               </div>
@@ -4886,10 +5246,12 @@
             <div class="studio-controls-bar">
               <div class="studio-status-group">
                 <span class="status-indicator-badge" id="camStatusBadge">
-                  <span class="status-dot offline" id="camStatusDot">●</span> Camera: <span id="camStatusText">Standby</span>
+                  <span class="status-dot offline" id="camStatusDot">●</span> Camera: <span
+                    id="camStatusText">Standby</span>
                 </span>
                 <span class="status-indicator-badge" id="micStatusBadge">
-                  <span class="status-dot offline" id="micStatusDot">●</span> Mic: <span id="micStatusText">Standby</span>
+                  <span class="status-dot offline" id="micStatusDot">●</span> Mic: <span
+                    id="micStatusText">Standby</span>
                 </span>
               </div>
 
@@ -4897,7 +5259,8 @@
               <div class="device-selectors-row" id="deviceSelectorsRow" style="display:none;">
                 <div class="selector-unit">
                   <label for="videoSourceSelect">Camera:</label>
-                  <select id="videoSourceSelect" class="studio-select" title="Select Laptop Integrated Camera or other video device"></select>
+                  <select id="videoSourceSelect" class="studio-select"
+                    title="Select Laptop Integrated Camera or other video device"></select>
                 </div>
                 <div class="selector-unit">
                   <label for="audioSourceSelect">Microphone:</label>
@@ -4931,7 +5294,7 @@
 
             <!-- Viewports: Live Feed & Recorded Playback -->
             <div class="studio-stage-grid" id="studioStageGrid">
-              
+
               <!-- Left Stage: Live Camera Feed & Recording Controls -->
               <div class="studio-viewport-card" id="livePreviewContainer">
                 <div class="viewport-header">
@@ -4945,7 +5308,8 @@
                   <video id="studioLiveVideo" autoplay playsinline muted></video>
                   <div class="video-standby-placeholder" id="videoStandbyPlaceholder">
                     <span style="font-size:2.6rem; opacity:0.85;">📹</span>
-                    <p style="margin-top:10px; font-family:var(--font-military); letter-spacing:0.05em; font-size:0.85rem;">
+                    <p
+                      style="margin-top:10px; font-family:var(--font-military); letter-spacing:0.05em; font-size:0.85rem;">
                       Camera Standby • Click "Enable Camera &amp; Mic" Above
                     </p>
                   </div>
@@ -4961,7 +5325,8 @@
                   <button type="button" class="btn-secondary" id="btnResumeRecord" style="display:none;">
                     ▶ Resume
                   </button>
-                  <button type="button" class="btn-secondary" id="btnStopRecord" style="display:none; background:#781c10; color:#fff;">
+                  <button type="button" class="btn-secondary" id="btnStopRecord"
+                    style="display:none; background:#781c10; color:#fff;">
                     ■ Stop Recording
                   </button>
                 </div>
@@ -5002,18 +5367,20 @@
             <div class="recordings-history-zone">
               <div class="history-header">
                 <h4>MY BIRTHDAY RECORDINGS</h4>
-                <button type="button" class="btn-secondary" id="btnRefreshRecordings" style="font-size:0.75rem; padding:4px 10px;">
+                <button type="button" class="btn-secondary" id="btnRefreshRecordings"
+                  style="font-size:0.75rem; padding:4px 10px;">
                   ↻ Refresh Archive
                 </button>
               </div>
               <div class="recordings-history-grid" id="recordingsHistoryGrid">
-                <p style="color:var(--ivory-dim); font-size:0.85rem; font-style:italic;">No recorded dispatches saved yet. Be the first to record a video salute above!</p>
+                <p style="color:var(--ivory-dim); font-size:0.85rem; font-style:italic;">No recorded dispatches saved
+                  yet. Be the first to record a video salute above!</p>
               </div>
             </div>
 
           </div>
 
-                    <!-- Wishes Log -->
+          <!-- Wishes Log -->
           <div
             style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:20px; padding:32px 28px; max-width:760px; margin:0 auto; text-align:left;">
             <h3 style="font-size:1.3rem; margin-bottom:0.4rem;">Squadron Log &amp; Wishes</h3>
@@ -5062,7 +5429,8 @@
         <span class="gate-tag">CLASSIFIED ARCHIVE // MEMORIES VAULT</span>
         <h2>Private Gallery Clearance</h2>
         <p class="gate-subtitle">Enter secondary access PIN to view private photo memories</p>
-        <div class="gate-clue-pill" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:rgba(74, 18, 34, 0.65); border:1px solid rgba(232, 165, 175, 0.4); border-radius:20px; padding:6px 18px; margin: 0 auto 1.4rem; font-family:var(--font-military); font-size:0.75rem; letter-spacing:0.12em; color:#E8A5AF; box-shadow:0 0 15px rgba(74, 18, 34, 0.4);">
+        <div class="gate-clue-pill"
+          style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:rgba(74, 18, 34, 0.65); border:1px solid rgba(232, 165, 175, 0.4); border-radius:20px; padding:6px 18px; margin: 0 auto 1.4rem; font-family:var(--font-military); font-size:0.75rem; letter-spacing:0.12em; color:#E8A5AF; box-shadow:0 0 15px rgba(74, 18, 34, 0.4);">
           <span>💡 CLUE: The Date I First Saw You</span>
         </div>
 
@@ -5119,7 +5487,8 @@
         <button class="gallery-ctrl-btn" id="galleryLockBtn">
           <span>🔒 Lock Gallery</span>
         </button>
-        <button class="gallery-ctrl-btn" id="gallerySessionExitBtn" onclick="router.secureSessionExit()" style="border-color:var(--danger); color:#ff8b73;">
+        <button class="gallery-ctrl-btn" id="gallerySessionExitBtn" onclick="router.secureSessionExit()"
+          style="border-color:var(--danger); color:#ff8b73;">
           <span>✕ Exit Session</span>
         </button>
       </div>
@@ -5128,29 +5497,28 @@
     <div style="max-width:980px; margin:0 auto; padding:0 16px;">
       <div style="text-align:center; margin-bottom:2.5rem;">
         <span class="editorial-tag">Chronicles &amp; Memories // Restricted Access</span>
-        <h2>Private Photo Memories</h2>
-        <p style="color:var(--ivory-dim); font-size:0.95rem;">A curated collection of moments, smiles, and unforgettable
-          flights.</p>
+        <h2>Our Private Memories · Photos &amp; Videos</h2>
+        <p style="color:var(--ivory-dim); font-size:0.95rem;">A curated collection of unforgettable moments, smiles, videos, and flights.</p>
       </div>
 
       <div id="galleryContentArea">
         <div class="cinematic-stage-wrap">
-          <button class="stage-arrow-btn prev" id="stagePrevBtn" aria-label="Previous photograph">‹</button>
-          <button class="stage-arrow-btn next" id="stageNextBtn" aria-label="Next photograph">›</button>
+          <button class="stage-arrow-btn prev" id="stagePrevBtn" aria-label="Previous memory">‹</button>
+          <button class="stage-arrow-btn next" id="stageNextBtn" aria-label="Next memory">›</button>
 
-          <div class="cinematic-photo-box">
-            <img class="main-stage-img" id="mainStageImg" src="" alt="Private Photograph">
+          <div class="cinematic-photo-box" style="position:relative; min-height:360px; display:flex; align-items:center; justify-content:center; background:#0b0d10; border-radius:16px; overflow:hidden;">
+            <img class="main-stage-img" id="mainStageImg" src="" alt="Private Memory Photograph" style="max-width:100%; max-height:68vh; object-fit:contain; border-radius:12px; transition:opacity 0.25s ease;">
+            <video class="main-stage-video" id="mainStageVideo" controls playsinline preload="metadata" style="display:none; max-width:100%; max-height:68vh; border-radius:12px; background:#000; outline:none; box-shadow:0 8px 30px rgba(0,0,0,0.6);"></video>
           </div>
 
           <div class="stage-caption-card">
             <div id="stageCaptionText"
-              style="font-family:var(--font-letter); font-style:italic; font-size:1rem; color:var(--ivory);">Photograph
-              Memory</div>
+              style="font-family:var(--font-letter); font-style:italic; font-size:1rem; color:var(--ivory);">Memory Item</div>
             <div style="display:flex; align-items:center; gap:12px;">
               <button class="gallery-ctrl-btn" id="fullscreenBtn" title="Full-screen view">⛶</button>
               <div id="stageCounter"
                 style="font-family:var(--font-military); font-size:0.75rem; letter-spacing:0.15em; color:var(--gold);">
-                PHOTO 01 / 01</div>
+                MEMORY 01 / 01</div>
             </div>
           </div>
         </div>
@@ -5160,11 +5528,11 @@
 
       <div class="gallery-empty-state" id="galleryEmptyState"
         style="display:none; text-align:center; padding:60px 20px; background:var(--card-bg); border:1px dashed var(--card-border); border-radius:24px;">
-        <div style="font-size:3rem; margin-bottom:1rem; color:var(--gold);">📷</div>
+        <div style="font-size:3rem; margin-bottom:1rem; color:var(--gold);">🎬</div>
         <h3>Your Private Memory Vault is Ready</h3>
-        <p style="color:var(--ivory-dim); font-size:0.95rem; margin-bottom:1.5rem;">No photographs have been uploaded to
-          this vault yet. Click below to add genuine photos from your device.</p>
-        <button class="btn-primary" id="emptyStateUploadBtn">＋ Upload Your First Photo</button>
+        <p style="color:var(--ivory-dim); font-size:0.95rem; margin-bottom:1.5rem;">No photos or videos have been uploaded to
+          this vault yet. Click below to add genuine memories from your device.</p>
+        <button class="btn-primary" id="emptyStateUploadBtn">＋ Upload Memories (Photos &amp; Videos)</button>
       </div>
     </div>
 
@@ -5175,19 +5543,19 @@
           style="position:absolute; top:20px; right:20px; background:none; border:none; color:var(--ivory); font-size:1.5rem; cursor:pointer;"
           id="uploadModalCloseBtn">&times;</button>
         <span class="editorial-tag">Memory Upload</span>
-        <h3 style="margin-bottom:0.4rem;">Add Private Photographs</h3>
-        <p style="color:var(--ivory-dim); font-size:0.85rem;">Select your local photos (JPG, PNG, WEBP). Photos are
-          stored securely in your private vault.</p>
+        <h3 style="margin-bottom:0.4rem;">Add Private Photos &amp; Videos</h3>
+        <p style="color:var(--ivory-dim); font-size:0.85rem;">Select your local photos (JPG, PNG, WEBP) or videos (MP4, WebM, MOV, MKV). Media is
+          stored securely in your private vault (up to 250MB each).</p>
 
         <div class="dropzone-area" id="dropzoneArea">
           <div style="font-size:2.2rem; margin-bottom:6px; color:var(--gold);">☁️</div>
-          <div style="font-weight:600;">Drag &amp; Drop Photographs Here</div>
-          <div style="font-size:0.8rem; color:var(--ivory-dim); margin-top:4px;">or click to browse from device</div>
-          <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp,image/jpg"
+          <div style="font-weight:600;">Drag &amp; Drop Photos &amp; Videos Here</div>
+          <div style="font-size:0.8rem; color:var(--ivory-dim); margin-top:4px;">or click to browse from device (MP4, WebM, MOV, JPG, PNG)</div>
+          <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp,image/jpg,image/gif,video/mp4,video/webm,video/quicktime,video/x-matroska,video/*"
             style="display:none;">
         </div>
 
-        <div id="uploadPreviewsList" style="display:grid; gap:10px; max-height:200px; overflow-y:auto; margin:1rem 0;">
+        <div id="uploadPreviewsList" style="display:grid; gap:10px; max-height:220px; overflow-y:auto; margin:1rem 0;">
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:1.5rem;">
@@ -5200,9 +5568,11 @@
     <!-- Fullscreen Modal -->
     <div class="fullscreen-viewer" id="fullscreenViewer">
       <button
-        style="position:absolute; top:24px; right:24px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.5rem; cursor:pointer;"
+        style="position:absolute; top:24px; right:24px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.5rem; cursor:pointer; z-index:10;"
         id="fsCloseBtn">&times;</button>
-      <img id="fsImg" src="" alt="Full-screen view">
+      <img id="fsImg" src="" alt="Full-screen view" style="max-width:95vw; max-height:90vh; object-fit:contain; border-radius:8px;">
+      <video id="fsVideo" controls playsinline style="display:none; max-width:95vw; max-height:90vh; border-radius:8px; background:#000;"></video>
+    </div>
     </div>
   </div>
 
@@ -5210,7 +5580,8 @@
      GLOBAL OVERLAY 1: MANDATORY FULL-SCREEN RE-ENTRY GUARD
      ========================================================================== -->
   <div id="overlay-fullscreen-guard">
-    <div class="gate-card" style="max-width:520px; border-color:var(--danger); box-shadow:0 0 50px rgba(207,79,54,0.35);">
+    <div class="gate-card"
+      style="max-width:520px; border-color:var(--danger); box-shadow:0 0 50px rgba(207,79,54,0.35);">
       <div style="font-size:3rem; margin-bottom:1rem; color:var(--danger);">⚠️</div>
       <span class="gate-badge-tag" style="background:rgba(207,79,54,0.15); border-color:var(--danger); color:#ff8b73;">
         SECURITY ENFORCEMENT
@@ -5219,9 +5590,11 @@
         Please Return to Full-Screen Mode
       </h2>
       <p style="color:var(--ivory-dim); font-size:0.92rem; line-height:1.6; margin-bottom:1.5rem;">
-        Full-screen mode is mandatory for this assessment and storybook experience. All questions and content are paused until full-screen is restored.
+        Full-screen mode is mandatory for this assessment and storybook experience. All questions and content are paused
+        until full-screen is restored.
       </p>
-      <button id="btnReenterFullscreen" class="btn-primary" style="background:linear-gradient(135deg, #7E203E, #4A1222); border:1px solid rgba(232, 165, 175, 0.45); font-size:1.05rem; padding:15px 32px; width:100%;">
+      <button id="btnReenterFullscreen" class="btn-primary"
+        style="background:linear-gradient(135deg, #7E203E, #4A1222); border:1px solid rgba(232, 165, 175, 0.45); font-size:1.05rem; padding:15px 32px; width:100%;">
         Re-Enter Full-Screen Mode ⛶
       </button>
     </div>
@@ -5235,7 +5608,8 @@
       <div style="display:flex; align-items:center; gap:10px;">
         <span style="font-size:1.5rem;">⚠️</span>
         <div>
-          <div style="font-family:var(--font-military); font-size:0.85rem; font-weight:700; color:#fff; letter-spacing:0.05em;">
+          <div
+            style="font-family:var(--font-military); font-size:0.85rem; font-weight:700; color:#fff; letter-spacing:0.05em;">
             TAB SWITCH DETECTED (<span id="tabSwitchCountDisplay">1</span>)
           </div>
           <div style="font-size:0.8rem; color:var(--ivory-dim); margin-top:2px;">
@@ -5243,7 +5617,8 @@
           </div>
         </div>
       </div>
-      <button id="btnDismissTabWarning" style="background:none; border:none; color:var(--ivory); font-size:1.2rem; cursor:pointer; padding:0 6px;">×</button>
+      <button id="btnDismissTabWarning"
+        style="background:none; border:none; color:var(--ivory); font-size:1.2rem; cursor:pointer; padding:0 6px;">×</button>
     </div>
   </div>
 
@@ -5254,16 +5629,23 @@
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
       <div style="display:flex; align-items:center; gap:5px;">
         <span class="hud-rec-dot" style="width:7px; height:7px;"></span>
-        <span style="font-family:var(--font-military); font-size:0.65rem; color:var(--gold-light); letter-spacing:0.08em;">PROCTOR HUD</span>
+        <span
+          style="font-family:var(--font-military); font-size:0.65rem; color:var(--gold-light); letter-spacing:0.08em;">PROCTOR
+          HUD</span>
       </div>
-      <button id="btnToggleHud" style="background:none; border:none; color:var(--ivory-dim); font-size:0.75rem; cursor:pointer; padding:0 4px;" title="Minimize/Expand">_</button>
+      <button id="btnToggleHud"
+        style="background:none; border:none; color:var(--ivory-dim); font-size:0.75rem; cursor:pointer; padding:0 4px;"
+        title="Minimize/Expand">_</button>
     </div>
     <div class="hud-expandable-content">
-      <div style="width:100%; aspect-ratio:4/3; background:#000; border-radius:8px; overflow:hidden; border:1px solid rgba(232, 165, 175,0.3); margin-bottom:6px;">
-        <video id="hudProctorVideo" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
+      <div
+        style="width:100%; aspect-ratio:4/3; background:#000; border-radius:8px; overflow:hidden; border:1px solid rgba(232, 165, 175,0.3); margin-bottom:6px;">
+        <video id="hudProctorVideo" autoplay playsinline muted
+          style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
       </div>
       <div style="background:rgba(0,0,0,0.5); border-radius:6px; padding:4px 6px;">
-        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:var(--ivory-dim); margin-bottom:2px;">
+        <div
+          style="display:flex; justify-content:space-between; font-size:0.6rem; color:var(--ivory-dim); margin-bottom:2px;">
           <span>MIC</span>
           <span id="hudMicStatus">OK</span>
         </div>
@@ -5582,7 +5964,7 @@
                 'x-gate1-token': this.gate1Token
               }
             });
-          } catch (e) {}
+          } catch (e) { }
         }
         for (let i = 1; i <= 6; i++) {
           const sol = document.getElementById('pSolution' + i);
@@ -5714,7 +6096,7 @@
     /* ==========================================================================
        3. GLOBAL PERMISSION & ASSESSMENT CONTROLLER
        ========================================================================== */
-class AssessmentPermissionGate {
+    class AssessmentPermissionGate {
       constructor() {
         this.cameraPermission = 'prompt';
         this.microphonePermission = 'prompt';
@@ -5809,7 +6191,7 @@ class AssessmentPermissionGate {
         try {
           const devices = await navigator.mediaDevices.enumerateDevices();
           videoDevices = devices.filter(d => d.kind === 'videoinput');
-        } catch (e) {}
+        } catch (e) { }
 
         let preferredDeviceId = null;
         if (videoDevices.length > 0) {
@@ -5821,11 +6203,11 @@ class AssessmentPermissionGate {
         // 2. Ladder of fallback attempts
         const attempts = [
           // Attempt A: Preferred Integrated Camera + Audio
-          preferredDeviceId 
+          preferredDeviceId
             ? { video: { deviceId: { ideal: preferredDeviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true }
             : { video: { width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true },
           // Attempt B: Preferred Camera alone (in case microphone is locked/failed)
-          preferredDeviceId 
+          preferredDeviceId
             ? { video: { deviceId: { ideal: preferredDeviceId } } }
             : { video: true },
           // Attempt C: Generic video and audio
@@ -6007,7 +6389,7 @@ class AssessmentPermissionGate {
               const devVideo = document.getElementById('deviceVideoPreview');
               if (devVideo) {
                 devVideo.srcObject = this.mediaStream;
-                devVideo.play().catch(() => {});
+                devVideo.play().catch(() => { });
               }
             }
           } catch (e) {
@@ -6221,12 +6603,12 @@ class AssessmentPermissionGate {
         }
         if (this.mediaStream) {
           this.mediaStream.getTracks().forEach(track => {
-            try { track.stop(); } catch (e) {}
+            try { track.stop(); } catch (e) { }
           });
           this.mediaStream = null;
         }
         if (this.audioContext && this.audioContext.state !== 'closed') {
-          try { this.audioContext.close(); } catch (e) {}
+          try { this.audioContext.close(); } catch (e) { }
           this.audioContext = null;
         }
         this.audioSource = null;
@@ -6251,7 +6633,7 @@ class AssessmentPermissionGate {
       }
     }
 
-        const permissionGate = new AssessmentPermissionGate();
+    const permissionGate = new AssessmentPermissionGate();
 
     /* ==========================================================================
        4. ROUTING & STORYBOOK CONTROLLER (STRICT 10-STEP SEQUENCE ENFORCED)
@@ -6332,7 +6714,7 @@ class AssessmentPermissionGate {
         permissionGate.stopMediaStreams();
 
         if (document.fullscreenElement) {
-          try { document.exitFullscreen(); } catch (e) {}
+          try { document.exitFullscreen(); } catch (e) { }
         }
 
         state.gate1Token = null;
@@ -6891,14 +7273,14 @@ class AssessmentPermissionGate {
       if (!audioCtx) {
         try {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        } catch(e) {}
+        } catch (e) { }
       }
       if (!audioCtx) return;
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
       const now = audioCtx.currentTime;
-      
+
       // 1. Tactile wax-crack / paper rustle
       try {
         const bufferSize = audioCtx.sampleRate * 0.12;
@@ -6920,7 +7302,7 @@ class AssessmentPermissionGate {
         filter.connect(noiseGain);
         noiseGain.connect(audioCtx.destination);
         noise.start(now);
-      } catch(e) {}
+      } catch (e) { }
 
       // 2. Rising magical chime chord
       const notes = [523.25, 659.25, 783.99, 1046.50];
@@ -6937,7 +7319,7 @@ class AssessmentPermissionGate {
           gain.connect(audioCtx.destination);
           osc.start(now + 0.08 + idx * 0.09);
           osc.stop(now + 0.8 + idx * 0.09);
-        } catch(e) {}
+        } catch (e) { }
       });
     }
 
@@ -7063,10 +7445,10 @@ class AssessmentPermissionGate {
     }
 
 
-/* ==========================================================================
-       CHAPTER 7: SQUADRON AUDIO/VIDEO RECORDING STUDIO CLIENT
-       (INTEGRATED LAPTOP CAMERA + 5S CHUNK BACKUP + INDEXEDDB + SUPABASE)
-       ========================================================================== */
+    /* ==========================================================================
+           CHAPTER 7: SQUADRON AUDIO/VIDEO RECORDING STUDIO CLIENT
+           (INTEGRATED LAPTOP CAMERA + 5S CHUNK BACKUP + INDEXEDDB + SUPABASE)
+           ========================================================================== */
     class IndexedDBRecordingStore {
       constructor() {
         this.dbName = 'SkywardRecordingDB';
@@ -7312,7 +7694,7 @@ class AssessmentPermissionGate {
                 headers: { 'Content-Type': 'application/json' },
                 body: payload,
                 keepalive: true
-              }).catch(() => {});
+              }).catch(() => { });
             }
           }
         };
@@ -7389,7 +7771,7 @@ class AssessmentPermissionGate {
               devices = await navigator.mediaDevices.enumerateDevices();
               videoDevices = devices.filter(d => d.kind === 'videoinput');
               audioDevices = devices.filter(d => d.kind === 'audioinput');
-            } catch (e) {}
+            } catch (e) { }
           }
 
           const isIntegrated = (label) => {
@@ -7412,8 +7794,8 @@ class AssessmentPermissionGate {
           let bestCamId = savedCamId;
           if (!bestCamId || !videoDevices.some(d => d.deviceId === bestCamId)) {
             const preferred = videoDevices.find(d => isIntegrated(d.label)) ||
-                              videoDevices.find(d => !/phone|link/i.test(d.label)) ||
-                              videoDevices[0];
+              videoDevices.find(d => !/phone|link/i.test(d.label)) ||
+              videoDevices[0];
             bestCamId = preferred?.deviceId || '';
           }
 
@@ -7568,7 +7950,7 @@ class AssessmentPermissionGate {
             this.vuAnimFrame = requestAnimationFrame(updateVu);
           };
           updateVu();
-        } catch (e) {}
+        } catch (e) { }
       }
 
       toggleCamera() {
@@ -7870,7 +8252,7 @@ class AssessmentPermissionGate {
 
       discardRecording() {
         if (this.activeRecordingId) {
-          this.idb.deleteSession(this.activeRecordingId).catch(() => {});
+          this.idb.deleteSession(this.activeRecordingId).catch(() => { });
           localStorage.removeItem('activeRecordingId');
         }
         if (this.recordedBlobUrl) {
@@ -7950,7 +8332,7 @@ class AssessmentPermissionGate {
 
       dismissRecovery() {
         if (this.interruptedSessionId) {
-          this.idb.deleteSession(this.interruptedSessionId).catch(() => {});
+          this.idb.deleteSession(this.interruptedSessionId).catch(() => { });
           localStorage.removeItem('activeRecordingId');
           this.interruptedSessionId = null;
         }
@@ -8009,7 +8391,7 @@ class AssessmentPermissionGate {
           this.stageGrid.classList.add('has-preview');
           this.playbackMetaTag.textContent = 'Archive Playback';
           this.playbackCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          this.playbackVideo.play().catch(() => {});
+          this.playbackVideo.play().catch(() => { });
         }
       }
 
@@ -8036,9 +8418,9 @@ class AssessmentPermissionGate {
       videoStudio = new VideoRecordingStudio();
     });
 
-        /* ==========================================================================
-       7. FINAL CELEBRATION BURST & WISHES STREAM
-       ========================================================================== */
+    /* ==========================================================================
+   7. FINAL CELEBRATION BURST & WISHES STREAM
+   ========================================================================== */
     document.getElementById('finalBurstBtn').addEventListener('click', (e) => {
       const rect = e.target.getBoundingClientRect();
       spawnCelebrationParticles(rect.left + rect.width / 2, rect.top, 70, ['#E8A5AF', '#F6CAD1', '#FDF9F2', '#7E203E', '#4A1222']);
@@ -8074,7 +8456,7 @@ class AssessmentPermissionGate {
       localStorage.removeItem('squadron_birthday_wishes_v4');
       localStorage.removeItem('squadron_birthday_wishes_v5');
       localStorage.removeItem('squadron_birthday_wishes_v6');
-    } catch (e) {}
+    } catch (e) { }
 
     // Previous placeholder messages deleted - fresh clean log
     const defaultSalutes = [];
@@ -8082,7 +8464,7 @@ class AssessmentPermissionGate {
     try {
       const localData = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (localData && Array.isArray(localData)) savedWishes = localData;
-    } catch (e) {}
+    } catch (e) { }
 
     const wishesStream = document.getElementById('wishesStream');
     function renderWishes() {
@@ -8111,7 +8493,7 @@ class AssessmentPermissionGate {
         wishesStream.appendChild(card);
       });
     }
-    window.deleteWish = function(idx) {
+    window.deleteWish = function (idx) {
       savedWishes.splice(idx, 1);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(savedWishes));
       renderWishes();
@@ -8266,6 +8648,7 @@ class AssessmentPermissionGate {
         this.pendingUploads = [];
 
         this.mainStageImg = document.getElementById('mainStageImg');
+        this.mainStageVideo = document.getElementById('mainStageVideo');
         this.stageCaptionText = document.getElementById('stageCaptionText');
         this.stageCounter = document.getElementById('stageCounter');
         this.filmstrip = document.getElementById('filmstripContainer');
@@ -8285,15 +8668,41 @@ class AssessmentPermissionGate {
           if (!document.getElementById('view-gallery').classList.contains('active-view')) return;
           if (e.key === 'ArrowLeft') { this.pauseSlideshow(); this.prev(); }
           else if (e.key === 'ArrowRight') { this.pauseSlideshow(); this.next(); }
-          else if (e.key === 'Escape') document.getElementById('fullscreenViewer').classList.remove('fs-open');
+          else if (e.key === 'Escape') {
+            const fsVideo = document.getElementById('fsVideo');
+            if (fsVideo) { fsVideo.pause(); fsVideo.src = ''; }
+            document.getElementById('fullscreenViewer').classList.remove('fs-open');
+          }
         });
 
         document.getElementById('fullscreenBtn').addEventListener('click', () => {
-          if (!this.photos[this.currentIndex]) return;
-          document.getElementById('fsImg').src = this.getPhotoUrl(this.photos[this.currentIndex]);
+          const cur = this.photos[this.currentIndex];
+          if (!cur) return;
+          const isVid = Boolean(cur.isVideo || (cur.mimeType && cur.mimeType.startsWith('video/')) || (cur.filename && /\.(mp4|webm|mov|mkv|avi)$/i.test(cur.filename)));
+          const fsImg = document.getElementById('fsImg');
+          const fsVideo = document.getElementById('fsVideo');
+          if (isVid) {
+            if (fsImg) fsImg.style.display = 'none';
+            if (fsVideo) {
+              fsVideo.style.display = 'block';
+              fsVideo.src = this.getPhotoUrl(cur);
+              fsVideo.play().catch(() => {});
+            }
+          } else {
+            if (fsVideo) {
+              fsVideo.pause();
+              fsVideo.style.display = 'none';
+            }
+            if (fsImg) {
+              fsImg.style.display = 'block';
+              fsImg.src = this.getPhotoUrl(cur);
+            }
+          }
           document.getElementById('fullscreenViewer').classList.add('fs-open');
         });
         document.getElementById('fsCloseBtn').addEventListener('click', () => {
+          const fsVideo = document.getElementById('fsVideo');
+          if (fsVideo) { fsVideo.pause(); fsVideo.src = ''; }
           document.getElementById('fullscreenViewer').classList.remove('fs-open');
         });
 
@@ -8346,21 +8755,49 @@ class AssessmentPermissionGate {
         this.emptyState.style.display = 'none';
         if (this.currentIndex >= this.photos.length) this.currentIndex = 0;
         const cur = this.photos[this.currentIndex];
+        const isVid = Boolean(cur.isVideo || (cur.mimeType && cur.mimeType.startsWith('video/')) || (cur.filename && /\.(mp4|webm|mov|mkv|avi)$/i.test(cur.filename)));
 
-        this.mainStageImg.style.opacity = '0';
-        setTimeout(() => {
-          this.mainStageImg.src = this.getPhotoUrl(cur);
-          this.mainStageImg.onload = () => this.mainStageImg.style.opacity = '1';
-        }, 120);
-
-        this.stageCaptionText.textContent = cur.caption ? `"${cur.caption}"` : 'Photograph Memory';
-        this.stageCounter.textContent = `PHOTO ${String(this.currentIndex + 1).padStart(2, '0')} / ${String(this.photos.length).padStart(2, '0')}`;
+        if (isVid) {
+          this.pauseSlideshow();
+          if (this.mainStageImg) this.mainStageImg.style.display = 'none';
+          if (this.mainStageVideo) {
+            this.mainStageVideo.style.display = 'block';
+            this.mainStageVideo.src = this.getPhotoUrl(cur);
+          }
+          this.stageCaptionText.textContent = cur.caption ? `"${cur.caption}"` : (cur.originalName || 'Video Memory');
+          this.stageCounter.textContent = `VIDEO ${String(this.currentIndex + 1).padStart(2, '0')} / ${String(this.photos.length).padStart(2, '0')}`;
+        } else {
+          if (this.mainStageVideo) {
+            this.mainStageVideo.pause();
+            this.mainStageVideo.style.display = 'none';
+          }
+          if (this.mainStageImg) {
+            this.mainStageImg.style.display = 'block';
+            this.mainStageImg.style.opacity = '0';
+            setTimeout(() => {
+              this.mainStageImg.src = this.getPhotoUrl(cur);
+              this.mainStageImg.onload = () => this.mainStageImg.style.opacity = '1';
+            }, 100);
+          }
+          this.stageCaptionText.textContent = cur.caption ? `"${cur.caption}"` : 'Photograph Memory';
+          this.stageCounter.textContent = `PHOTO ${String(this.currentIndex + 1).padStart(2, '0')} / ${String(this.photos.length).padStart(2, '0')}`;
+        }
 
         this.filmstrip.innerHTML = '';
         this.photos.forEach((p, idx) => {
+          const isItemVid = Boolean(p.isVideo || (p.mimeType && p.mimeType.startsWith('video/')) || (p.filename && /\.(mp4|webm|mov|mkv|avi)$/i.test(p.filename)));
           const th = document.createElement('div');
           th.className = `thumb-card ${idx === this.currentIndex ? 'active-thumb' : ''}`;
-          th.innerHTML = `<img src="${this.getPhotoUrl(p)}" alt="Thumb">`;
+          if (isItemVid) {
+            th.innerHTML = `
+              <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#161014; color:#E8A5AF; text-align:center;">
+                <span style="font-size:1.15rem;">📹</span>
+                <span style="font-size:0.55rem; font-family:var(--font-military); letter-spacing:0.08em; font-weight:700; color:#F6CAD1; margin-top:2px;">VIDEO</span>
+              </div>
+            `;
+          } else {
+            th.innerHTML = `<img src="${this.getPhotoUrl(p)}" alt="Thumb">`;
+          }
           th.addEventListener('click', () => { this.pauseSlideshow(); this.currentIndex = idx; this.render(); });
           this.filmstrip.appendChild(th);
         });
@@ -8384,18 +8821,40 @@ class AssessmentPermissionGate {
       handleFiles(files) {
         const list = document.getElementById('uploadPreviewsList');
         for (const f of files) {
-          if (!f.type.startsWith('image/')) continue;
-          const r = new FileReader();
-          r.onload = (e) => {
-            const item = { file: f, dataUrl: e.target.result, caption: '' };
+          const isImg = f.type.startsWith('image/');
+          const isVid = f.type.startsWith('video/') || /\.(mp4|webm|mov|mkv|avi)$/i.test(f.name);
+          if (!isImg && !isVid) continue;
+
+          if (isImg) {
+            const r = new FileReader();
+            r.onload = (e) => {
+              const item = { file: f, dataUrl: e.target.result, caption: '', isVideo: false, mimeType: f.type || 'image/jpeg' };
+              this.pendingUploads.push(item);
+              const row = document.createElement('div');
+              row.style.cssText = 'display:flex; align-items:center; gap:10px; background:rgba(14, 15, 18,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:6px 10px;';
+              row.innerHTML = `<img src="${item.dataUrl}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;"><input type="text" placeholder="Add caption for photo…" style="flex:1; background:transparent; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:4px 8px; border-radius:4px; font-size:0.8rem;">`;
+              row.querySelector('input').addEventListener('input', (evt) => item.caption = evt.target.value);
+              list.appendChild(row);
+            };
+            r.readAsDataURL(f);
+          } else {
+            // Video preview
+            const item = { file: f, dataUrl: '', caption: '', isVideo: true, mimeType: f.type || 'video/mp4' };
             this.pendingUploads.push(item);
             const row = document.createElement('div');
-            row.style.cssText = 'display:flex; align-items:center; gap:10px; background:rgba(14, 15, 18,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:6px 10px;';
-            row.innerHTML = `<img src="${item.dataUrl}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;"><input type="text" placeholder="Add caption…" style="flex:1; background:transparent; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:4px 8px; border-radius:4px; font-size:0.8rem;">`;
+            row.style.cssText = 'display:flex; align-items:center; gap:10px; background:rgba(14, 15, 18,0.8); border:1px solid rgba(232, 165, 175, 0.25); border-radius:8px; padding:6px 10px;';
+            row.innerHTML = `
+              <div style="width:40px; height:40px; background:#1a0f14; border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#E8A5AF; font-size:1.1rem;">
+                <span>📹</span>
+              </div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+                <div style="font-size:0.75rem; color:var(--gold-light); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:280px;">${f.name} (${(f.size/1024/1024).toFixed(1)} MB)</div>
+                <input type="text" placeholder="Add caption for video…" style="background:transparent; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:4px 8px; border-radius:4px; font-size:0.8rem;">
+              </div>
+            `;
             row.querySelector('input').addEventListener('input', (evt) => item.caption = evt.target.value);
             list.appendChild(row);
-          };
-          r.readAsDataURL(f);
+          }
         }
       }
 
@@ -8572,12 +9031,17 @@ class AssessmentPermissionGate {
       });
 
       function handleAdminFiles(files) {
-        const valid = files.filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
+        const valid = files.filter(f => /\.(jpe?g|png|webp|gif|mp4|webm|mov|quicktime|mkv|avi|m4v)$/i.test(f.name));
         adminSelectedFiles = [...adminSelectedFiles, ...valid];
         if (adminSelectedList && adminSelectedFiles.length > 0) {
           adminSelectedList.style.display = 'block';
-          adminSelectedList.innerHTML = `<strong>Selected ${adminSelectedFiles.length} photo(s):</strong><br>` +
-            adminSelectedFiles.map(f => `• ${f.name} (${(f.size/1024).toFixed(1)} KB)`).join('<br>');
+          adminSelectedList.innerHTML = `<strong>Selected ${adminSelectedFiles.length} item(s):</strong><br>` +
+            adminSelectedFiles.map(f => {
+              const isVid = /\.(mp4|webm|mov|quicktime|mkv|avi|m4v)$/i.test(f.name);
+              const icon = isVid ? '📹 [VIDEO]' : '📷';
+              const sizeStr = f.size > 1024 * 1024 ? `${(f.size / (1024 * 1024)).toFixed(1)} MB` : `${(f.size / 1024).toFixed(1)} KB`;
+              return `• ${icon} ${f.name} (${sizeStr})`;
+            }).join('<br>');
         }
       }
 
@@ -8607,13 +9071,13 @@ class AssessmentPermissionGate {
             return;
           }
           if (adminSelectedFiles.length === 0) {
-            if (adminStatus) adminStatus.innerHTML = '<span style="color:#ff8b73;">⚠️ Please select or drop at least one photograph.</span>';
+            if (adminStatus) adminStatus.innerHTML = '<span style="color:#ff8b73;">⚠️ Please select or drop at least one photo or video.</span>';
             return;
           }
 
           btnSubmitAdmin.disabled = true;
           btnSubmitAdmin.textContent = 'Uploading to Vault...';
-          if (adminStatus) adminStatus.innerHTML = '<span style="color:var(--gold-light);">⏳ Encrypting & storing photographs in Supabase Cloud...</span>';
+          if (adminStatus) adminStatus.innerHTML = '<span style="color:var(--gold-light);">⏳ Encrypting & storing media in Supabase Cloud...</span>';
 
           const formData = new FormData();
           formData.append('adminPin', pin);

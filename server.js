@@ -250,13 +250,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 25 * 1024 * 1024 },
+  limits: { fileSize: 250 * 1024 * 1024 }, // 250MB limit to support high-res video and photo memories
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
-    if (allowedTypes.includes(file.mimetype)) {
+    const isImage = file.mimetype.startsWith('image/') || /\.(jpe?g|png|webp|gif)$/i.test(file.originalname);
+    const isVideo = file.mimetype.startsWith('video/') || /\.(mp4|webm|mov|quicktime|mkv|avi|m4v)$/i.test(file.originalname);
+    if (isImage || isVideo) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only JPG, PNG, and WEBP images are supported.'));
+      cb(new Error('Invalid file type. Only photos (JPG, PNG, WEBP) and videos (MP4, WebM, MOV, MKV) are supported.'));
     }
   }
 });
@@ -409,40 +410,45 @@ app.get('/api/gallery/photos', requireLaunchGate, authenticateGate2, async (req,
 app.post('/api/gallery/upload', requireLaunchGate, authenticateGate2, upload.array('photos', 20), async (req, res) => {
   try {
     const files = req.files || [];
-    if (files.length === 0) return res.status(400).json({ error: 'No image files provided.' });
+    if (files.length === 0) return res.status(400).json({ error: 'No media files provided.' });
 
     const currentPhotos = loadPhotoMetadata();
-    const newItems = files.map((file, idx) => ({
-      id: 'photo_' + Date.now() + '_' + idx,
-      filename: file.filename,
-      originalName: file.originalname,
-      mimeType: file.mimetype,
-      size: file.size,
-      caption: '',
-      uploadedAt: new Date().toISOString(),
-      order: currentPhotos.length + idx
-    }));
+    const newItems = files.map((file, idx) => {
+      const isVideo = file.mimetype.startsWith('video/') || /\.(mp4|webm|mov|quicktime|mkv|avi|m4v)$/i.test(file.originalname);
+      return {
+        id: (isVideo ? 'video_' : 'photo_') + Date.now() + '_' + idx,
+        filename: file.filename,
+        originalName: file.originalname,
+        mimeType: file.mimetype || (isVideo ? 'video/mp4' : 'image/jpeg'),
+        mediaType: isVideo ? 'video' : 'photo',
+        isVideo,
+        size: file.size,
+        caption: '',
+        uploadedAt: new Date().toISOString(),
+        order: currentPhotos.length + idx
+      };
+    });
 
     const updated = [...currentPhotos, ...newItems];
     savePhotoMetadata(updated);
 
-    // Persist new photos to PostgreSQL Database
+    // Persist new media to PostgreSQL Database
     for (const item of newItems) {
       await db.insertPhotoToDb(item);
     }
 
     res.json({
       success: true,
-      message: `${files.length} photo(s) added to the private memory vault.`,
+      message: `${files.length} memory item(s) added to the private memory vault.`,
       photos: updated
     });
   } catch (err) {
     console.error('Upload processing error:', err);
-    res.status(500).json({ error: 'Failed to process photo upload.' });
+    res.status(500).json({ error: 'Failed to process memory upload.' });
   }
 });
 
-// Admin Pre-Launch Photo Upload Endpoint (Requires Gate 1 or Gate 2 PIN verification)
+// Admin Pre-Launch Photo/Video Upload Endpoint (Requires Gate 1 or Gate 2 PIN verification)
 app.post('/api/admin/upload-photos', upload.array('photos', 50), async (req, res) => {
   try {
     const adminPin = req.headers['x-admin-pin'] || req.body.adminPin;
@@ -455,20 +461,25 @@ app.post('/api/admin/upload-photos', upload.array('photos', 50), async (req, res
 
     const files = req.files || [];
     if (files.length === 0) {
-      return res.status(400).json({ error: 'No photo files provided.' });
+      return res.status(400).json({ error: 'No media files provided.' });
     }
 
     const currentPhotos = loadPhotoMetadata();
-    const newItems = files.map((file, idx) => ({
-      id: 'photo_' + Date.now() + '_' + idx,
-      filename: file.filename,
-      originalName: file.originalname,
-      mimeType: file.mimetype,
-      size: file.size,
-      caption: '',
-      uploadedAt: new Date().toISOString(),
-      order: currentPhotos.length + idx
-    }));
+    const newItems = files.map((file, idx) => {
+      const isVideo = file.mimetype.startsWith('video/') || /\.(mp4|webm|mov|quicktime|mkv|avi|m4v)$/i.test(file.originalname);
+      return {
+        id: (isVideo ? 'video_' : 'photo_') + Date.now() + '_' + idx,
+        filename: file.filename,
+        originalName: file.originalname,
+        mimeType: file.mimetype || (isVideo ? 'video/mp4' : 'image/jpeg'),
+        mediaType: isVideo ? 'video' : 'photo',
+        isVideo,
+        size: file.size,
+        caption: '',
+        uploadedAt: new Date().toISOString(),
+        order: currentPhotos.length + idx
+      };
+    });
 
     const updated = [...currentPhotos, ...newItems];
     savePhotoMetadata(updated);
@@ -479,14 +490,14 @@ app.post('/api/admin/upload-photos', upload.array('photos', 50), async (req, res
 
     res.json({
       success: true,
-      message: `${files.length} photograph(s) successfully pre-loaded into the Memory Vault.`,
+      message: `${files.length} memory item(s) successfully pre-loaded into the Memory Vault.`,
       uploadedCount: files.length,
       totalPhotos: updated.length,
       photos: newItems
     });
   } catch (err) {
-    console.error('Admin photo upload error:', err);
-    res.status(500).json({ error: 'Failed to process admin photo upload.' });
+    console.error('Admin photo/video upload error:', err);
+    res.status(500).json({ error: 'Failed to process admin memory upload.' });
   }
 });
 
@@ -495,17 +506,49 @@ app.get('/api/admin/photos-count', (req, res) => {
   res.json({ count: photos.length });
 });
 
-app.get('/api/gallery/photo/:id', requireLaunchGate, authenticateGate2, (req, res) => {
+// Stream/serve Memory Vault item (Photo or Video with HTTP 206 Partial Content / Range support)
+app.get(['/api/gallery/photo/:id', '/api/gallery/media/:id'], requireLaunchGate, authenticateGate2, (req, res) => {
   const photos = loadPhotoMetadata();
   const photo = photos.find(p => p.id === req.params.id);
-  if (!photo) return res.status(404).send('Photo not found.');
+  if (!photo) return res.status(404).send('Memory item not found.');
 
   const filePath = path.join(PRIVATE_STORAGE_DIR, photo.filename);
-  if (!fs.existsSync(filePath)) return res.status(404).send('Photo file is missing.');
+  if (!fs.existsSync(filePath)) return res.status(404).send('Memory file is missing.');
 
-  res.setHeader('Content-Type', photo.mimeType);
-  res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-  fs.createReadStream(filePath).pipe(res);
+  const isVideo = (photo.mediaType === 'video' || (photo.mimeType && photo.mimeType.startsWith('video/')) || /\.(mp4|webm|mov|mkv|avi)$/i.test(photo.filename));
+
+  if (isVideo) {
+    const stat = fs.statSync(filePath);
+    const total = stat.size;
+    const range = req.headers.range;
+
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+
+    if (range) {
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : total - 1;
+      const chunk = (end - start) + 1;
+      const stream = fs.createReadStream(filePath, { start, end });
+      res.writeHead(206, {
+        'Content-Range': `bytes ${start}-${end}/${total}`,
+        'Content-Length': chunk,
+        'Content-Type': photo.mimeType || 'video/mp4'
+      });
+      stream.pipe(res);
+    } else {
+      res.writeHead(200, {
+        'Content-Length': total,
+        'Content-Type': photo.mimeType || 'video/mp4'
+      });
+      fs.createReadStream(filePath).pipe(res);
+    }
+  } else {
+    res.setHeader('Content-Type', photo.mimeType || 'image/jpeg');
+    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    fs.createReadStream(filePath).pipe(res);
+  }
 });
 
 // --------------------------------------------------------------------------

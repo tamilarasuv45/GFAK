@@ -3798,17 +3798,17 @@
       <div
         style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(232, 165, 175, 0.2); padding-bottom:12px; margin-bottom:18px;">
         <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:1.4rem;">📷</span>
+          <span style="font-size:1.4rem;">📷📹</span>
           <h3
             style="margin:0; font-family:var(--font-military); color:var(--gold-light); font-size:1.15rem; letter-spacing:0.06em;">
-            PRE-LOAD MEMORY VAULT PHOTOS</h3>
+            PRE-LOAD MEMORY VAULT PHOTOS &amp; VIDEOS</h3>
         </div>
         <button id="btnCloseAdminModal" type="button"
           style="background:none; border:none; color:var(--ivory-dim); font-size:1.5rem; cursor:pointer; padding:0 4px;">&times;</button>
       </div>
 
       <p style="font-size:0.85rem; color:var(--ivory-dim); margin-bottom:14px; line-height:1.5;">
-        As the site creator, you can pre-load private photos right now before launch. These will appear in the Memory
+        As the site creator, you can pre-load private photos and videos right now before launch. These will appear in the Memory
         Vault immediately when the website unlocks at midnight.
       </p>
 
@@ -3824,10 +3824,9 @@
       <div class="dropzone-area" id="adminDropzone"
         style="border:2px dashed rgba(232, 165, 175, 0.4); border-radius:12px; padding:24px 16px; text-align:center; background:rgba(14, 15, 18, 0.5); cursor:pointer; margin-bottom:14px; transition:border-color 0.2s ease;">
         <div style="font-size:2rem; margin-bottom:6px;">☁️</div>
-        <div style="font-weight:600; font-size:0.92rem;">Click or Drag &amp; Drop Photos Here</div>
-        <div style="font-size:0.78rem; color:var(--ivory-dim); margin-top:4px;">JPG, PNG, or WEBP images (up to 25MB
-          each)</div>
-        <input type="file" id="adminFileInput" multiple accept="image/jpeg,image/png,image/webp,image/jpg"
+        <div style="font-weight:600; font-size:0.92rem;">Click or Drag &amp; Drop Photos &amp; Videos Here</div>
+        <div style="font-size:0.78rem; color:var(--ivory-dim); margin-top:4px;">JPG, PNG, WEBP images or MP4, WebM, MOV videos (up to 250MB each)</div>
+        <input type="file" id="adminFileInput" multiple accept="image/jpeg,image/png,image/webp,image/jpg,image/gif,video/mp4,video/webm,video/quicktime,video/x-matroska,video/*"
           style="display:none;">
       </div>
 
@@ -5498,29 +5497,28 @@
     <div style="max-width:980px; margin:0 auto; padding:0 16px;">
       <div style="text-align:center; margin-bottom:2.5rem;">
         <span class="editorial-tag">Chronicles &amp; Memories // Restricted Access</span>
-        <h2>Private Photo Memories</h2>
-        <p style="color:var(--ivory-dim); font-size:0.95rem;">A curated collection of moments, smiles, and unforgettable
-          flights.</p>
+        <h2>Our Private Memories · Photos &amp; Videos</h2>
+        <p style="color:var(--ivory-dim); font-size:0.95rem;">A curated collection of unforgettable moments, smiles, videos, and flights.</p>
       </div>
 
       <div id="galleryContentArea">
         <div class="cinematic-stage-wrap">
-          <button class="stage-arrow-btn prev" id="stagePrevBtn" aria-label="Previous photograph">‹</button>
-          <button class="stage-arrow-btn next" id="stageNextBtn" aria-label="Next photograph">›</button>
+          <button class="stage-arrow-btn prev" id="stagePrevBtn" aria-label="Previous memory">‹</button>
+          <button class="stage-arrow-btn next" id="stageNextBtn" aria-label="Next memory">›</button>
 
-          <div class="cinematic-photo-box">
-            <img class="main-stage-img" id="mainStageImg" src="" alt="Private Photograph">
+          <div class="cinematic-photo-box" style="position:relative; min-height:360px; display:flex; align-items:center; justify-content:center; background:#0b0d10; border-radius:16px; overflow:hidden;">
+            <img class="main-stage-img" id="mainStageImg" src="" alt="Private Memory Photograph" style="max-width:100%; max-height:68vh; object-fit:contain; border-radius:12px; transition:opacity 0.25s ease;">
+            <video class="main-stage-video" id="mainStageVideo" controls playsinline preload="metadata" style="display:none; max-width:100%; max-height:68vh; border-radius:12px; background:#000; outline:none; box-shadow:0 8px 30px rgba(0,0,0,0.6);"></video>
           </div>
 
           <div class="stage-caption-card">
             <div id="stageCaptionText"
-              style="font-family:var(--font-letter); font-style:italic; font-size:1rem; color:var(--ivory);">Photograph
-              Memory</div>
+              style="font-family:var(--font-letter); font-style:italic; font-size:1rem; color:var(--ivory);">Memory Item</div>
             <div style="display:flex; align-items:center; gap:12px;">
               <button class="gallery-ctrl-btn" id="fullscreenBtn" title="Full-screen view">⛶</button>
               <div id="stageCounter"
                 style="font-family:var(--font-military); font-size:0.75rem; letter-spacing:0.15em; color:var(--gold);">
-                PHOTO 01 / 01</div>
+                MEMORY 01 / 01</div>
             </div>
           </div>
         </div>
@@ -5530,11 +5528,11 @@
 
       <div class="gallery-empty-state" id="galleryEmptyState"
         style="display:none; text-align:center; padding:60px 20px; background:var(--card-bg); border:1px dashed var(--card-border); border-radius:24px;">
-        <div style="font-size:3rem; margin-bottom:1rem; color:var(--gold);">📷</div>
+        <div style="font-size:3rem; margin-bottom:1rem; color:var(--gold);">🎬</div>
         <h3>Your Private Memory Vault is Ready</h3>
-        <p style="color:var(--ivory-dim); font-size:0.95rem; margin-bottom:1.5rem;">No photographs have been uploaded to
-          this vault yet. Click below to add genuine photos from your device.</p>
-        <button class="btn-primary" id="emptyStateUploadBtn">＋ Upload Your First Photo</button>
+        <p style="color:var(--ivory-dim); font-size:0.95rem; margin-bottom:1.5rem;">No photos or videos have been uploaded to
+          this vault yet. Click below to add genuine memories from your device.</p>
+        <button class="btn-primary" id="emptyStateUploadBtn">＋ Upload Memories (Photos &amp; Videos)</button>
       </div>
     </div>
 
@@ -5545,19 +5543,19 @@
           style="position:absolute; top:20px; right:20px; background:none; border:none; color:var(--ivory); font-size:1.5rem; cursor:pointer;"
           id="uploadModalCloseBtn">&times;</button>
         <span class="editorial-tag">Memory Upload</span>
-        <h3 style="margin-bottom:0.4rem;">Add Private Photographs</h3>
-        <p style="color:var(--ivory-dim); font-size:0.85rem;">Select your local photos (JPG, PNG, WEBP). Photos are
-          stored securely in your private vault.</p>
+        <h3 style="margin-bottom:0.4rem;">Add Private Photos &amp; Videos</h3>
+        <p style="color:var(--ivory-dim); font-size:0.85rem;">Select your local photos (JPG, PNG, WEBP) or videos (MP4, WebM, MOV, MKV). Media is
+          stored securely in your private vault (up to 250MB each).</p>
 
         <div class="dropzone-area" id="dropzoneArea">
           <div style="font-size:2.2rem; margin-bottom:6px; color:var(--gold);">☁️</div>
-          <div style="font-weight:600;">Drag &amp; Drop Photographs Here</div>
-          <div style="font-size:0.8rem; color:var(--ivory-dim); margin-top:4px;">or click to browse from device</div>
-          <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp,image/jpg"
+          <div style="font-weight:600;">Drag &amp; Drop Photos &amp; Videos Here</div>
+          <div style="font-size:0.8rem; color:var(--ivory-dim); margin-top:4px;">or click to browse from device (MP4, WebM, MOV, JPG, PNG)</div>
+          <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp,image/jpg,image/gif,video/mp4,video/webm,video/quicktime,video/x-matroska,video/*"
             style="display:none;">
         </div>
 
-        <div id="uploadPreviewsList" style="display:grid; gap:10px; max-height:200px; overflow-y:auto; margin:1rem 0;">
+        <div id="uploadPreviewsList" style="display:grid; gap:10px; max-height:220px; overflow-y:auto; margin:1rem 0;">
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:1.5rem;">
@@ -5570,9 +5568,11 @@
     <!-- Fullscreen Modal -->
     <div class="fullscreen-viewer" id="fullscreenViewer">
       <button
-        style="position:absolute; top:24px; right:24px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.5rem; cursor:pointer;"
+        style="position:absolute; top:24px; right:24px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.5rem; cursor:pointer; z-index:10;"
         id="fsCloseBtn">&times;</button>
-      <img id="fsImg" src="" alt="Full-screen view">
+      <img id="fsImg" src="" alt="Full-screen view" style="max-width:95vw; max-height:90vh; object-fit:contain; border-radius:8px;">
+      <video id="fsVideo" controls playsinline style="display:none; max-width:95vw; max-height:90vh; border-radius:8px; background:#000;"></video>
+    </div>
     </div>
   </div>
 
@@ -8648,6 +8648,7 @@
         this.pendingUploads = [];
 
         this.mainStageImg = document.getElementById('mainStageImg');
+        this.mainStageVideo = document.getElementById('mainStageVideo');
         this.stageCaptionText = document.getElementById('stageCaptionText');
         this.stageCounter = document.getElementById('stageCounter');
         this.filmstrip = document.getElementById('filmstripContainer');
@@ -8667,15 +8668,41 @@
           if (!document.getElementById('view-gallery').classList.contains('active-view')) return;
           if (e.key === 'ArrowLeft') { this.pauseSlideshow(); this.prev(); }
           else if (e.key === 'ArrowRight') { this.pauseSlideshow(); this.next(); }
-          else if (e.key === 'Escape') document.getElementById('fullscreenViewer').classList.remove('fs-open');
+          else if (e.key === 'Escape') {
+            const fsVideo = document.getElementById('fsVideo');
+            if (fsVideo) { fsVideo.pause(); fsVideo.src = ''; }
+            document.getElementById('fullscreenViewer').classList.remove('fs-open');
+          }
         });
 
         document.getElementById('fullscreenBtn').addEventListener('click', () => {
-          if (!this.photos[this.currentIndex]) return;
-          document.getElementById('fsImg').src = this.getPhotoUrl(this.photos[this.currentIndex]);
+          const cur = this.photos[this.currentIndex];
+          if (!cur) return;
+          const isVid = Boolean(cur.isVideo || (cur.mimeType && cur.mimeType.startsWith('video/')) || (cur.filename && /\.(mp4|webm|mov|mkv|avi)$/i.test(cur.filename)));
+          const fsImg = document.getElementById('fsImg');
+          const fsVideo = document.getElementById('fsVideo');
+          if (isVid) {
+            if (fsImg) fsImg.style.display = 'none';
+            if (fsVideo) {
+              fsVideo.style.display = 'block';
+              fsVideo.src = this.getPhotoUrl(cur);
+              fsVideo.play().catch(() => {});
+            }
+          } else {
+            if (fsVideo) {
+              fsVideo.pause();
+              fsVideo.style.display = 'none';
+            }
+            if (fsImg) {
+              fsImg.style.display = 'block';
+              fsImg.src = this.getPhotoUrl(cur);
+            }
+          }
           document.getElementById('fullscreenViewer').classList.add('fs-open');
         });
         document.getElementById('fsCloseBtn').addEventListener('click', () => {
+          const fsVideo = document.getElementById('fsVideo');
+          if (fsVideo) { fsVideo.pause(); fsVideo.src = ''; }
           document.getElementById('fullscreenViewer').classList.remove('fs-open');
         });
 
@@ -8728,21 +8755,49 @@
         this.emptyState.style.display = 'none';
         if (this.currentIndex >= this.photos.length) this.currentIndex = 0;
         const cur = this.photos[this.currentIndex];
+        const isVid = Boolean(cur.isVideo || (cur.mimeType && cur.mimeType.startsWith('video/')) || (cur.filename && /\.(mp4|webm|mov|mkv|avi)$/i.test(cur.filename)));
 
-        this.mainStageImg.style.opacity = '0';
-        setTimeout(() => {
-          this.mainStageImg.src = this.getPhotoUrl(cur);
-          this.mainStageImg.onload = () => this.mainStageImg.style.opacity = '1';
-        }, 120);
-
-        this.stageCaptionText.textContent = cur.caption ? `"${cur.caption}"` : 'Photograph Memory';
-        this.stageCounter.textContent = `PHOTO ${String(this.currentIndex + 1).padStart(2, '0')} / ${String(this.photos.length).padStart(2, '0')}`;
+        if (isVid) {
+          this.pauseSlideshow();
+          if (this.mainStageImg) this.mainStageImg.style.display = 'none';
+          if (this.mainStageVideo) {
+            this.mainStageVideo.style.display = 'block';
+            this.mainStageVideo.src = this.getPhotoUrl(cur);
+          }
+          this.stageCaptionText.textContent = cur.caption ? `"${cur.caption}"` : (cur.originalName || 'Video Memory');
+          this.stageCounter.textContent = `VIDEO ${String(this.currentIndex + 1).padStart(2, '0')} / ${String(this.photos.length).padStart(2, '0')}`;
+        } else {
+          if (this.mainStageVideo) {
+            this.mainStageVideo.pause();
+            this.mainStageVideo.style.display = 'none';
+          }
+          if (this.mainStageImg) {
+            this.mainStageImg.style.display = 'block';
+            this.mainStageImg.style.opacity = '0';
+            setTimeout(() => {
+              this.mainStageImg.src = this.getPhotoUrl(cur);
+              this.mainStageImg.onload = () => this.mainStageImg.style.opacity = '1';
+            }, 100);
+          }
+          this.stageCaptionText.textContent = cur.caption ? `"${cur.caption}"` : 'Photograph Memory';
+          this.stageCounter.textContent = `PHOTO ${String(this.currentIndex + 1).padStart(2, '0')} / ${String(this.photos.length).padStart(2, '0')}`;
+        }
 
         this.filmstrip.innerHTML = '';
         this.photos.forEach((p, idx) => {
+          const isItemVid = Boolean(p.isVideo || (p.mimeType && p.mimeType.startsWith('video/')) || (p.filename && /\.(mp4|webm|mov|mkv|avi)$/i.test(p.filename)));
           const th = document.createElement('div');
           th.className = `thumb-card ${idx === this.currentIndex ? 'active-thumb' : ''}`;
-          th.innerHTML = `<img src="${this.getPhotoUrl(p)}" alt="Thumb">`;
+          if (isItemVid) {
+            th.innerHTML = `
+              <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#161014; color:#E8A5AF; text-align:center;">
+                <span style="font-size:1.15rem;">📹</span>
+                <span style="font-size:0.55rem; font-family:var(--font-military); letter-spacing:0.08em; font-weight:700; color:#F6CAD1; margin-top:2px;">VIDEO</span>
+              </div>
+            `;
+          } else {
+            th.innerHTML = `<img src="${this.getPhotoUrl(p)}" alt="Thumb">`;
+          }
           th.addEventListener('click', () => { this.pauseSlideshow(); this.currentIndex = idx; this.render(); });
           this.filmstrip.appendChild(th);
         });
@@ -8766,18 +8821,40 @@
       handleFiles(files) {
         const list = document.getElementById('uploadPreviewsList');
         for (const f of files) {
-          if (!f.type.startsWith('image/')) continue;
-          const r = new FileReader();
-          r.onload = (e) => {
-            const item = { file: f, dataUrl: e.target.result, caption: '' };
+          const isImg = f.type.startsWith('image/');
+          const isVid = f.type.startsWith('video/') || /\.(mp4|webm|mov|mkv|avi)$/i.test(f.name);
+          if (!isImg && !isVid) continue;
+
+          if (isImg) {
+            const r = new FileReader();
+            r.onload = (e) => {
+              const item = { file: f, dataUrl: e.target.result, caption: '', isVideo: false, mimeType: f.type || 'image/jpeg' };
+              this.pendingUploads.push(item);
+              const row = document.createElement('div');
+              row.style.cssText = 'display:flex; align-items:center; gap:10px; background:rgba(14, 15, 18,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:6px 10px;';
+              row.innerHTML = `<img src="${item.dataUrl}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;"><input type="text" placeholder="Add caption for photo…" style="flex:1; background:transparent; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:4px 8px; border-radius:4px; font-size:0.8rem;">`;
+              row.querySelector('input').addEventListener('input', (evt) => item.caption = evt.target.value);
+              list.appendChild(row);
+            };
+            r.readAsDataURL(f);
+          } else {
+            // Video preview
+            const item = { file: f, dataUrl: '', caption: '', isVideo: true, mimeType: f.type || 'video/mp4' };
             this.pendingUploads.push(item);
             const row = document.createElement('div');
-            row.style.cssText = 'display:flex; align-items:center; gap:10px; background:rgba(14, 15, 18,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:6px 10px;';
-            row.innerHTML = `<img src="${item.dataUrl}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;"><input type="text" placeholder="Add caption…" style="flex:1; background:transparent; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:4px 8px; border-radius:4px; font-size:0.8rem;">`;
+            row.style.cssText = 'display:flex; align-items:center; gap:10px; background:rgba(14, 15, 18,0.8); border:1px solid rgba(232, 165, 175, 0.25); border-radius:8px; padding:6px 10px;';
+            row.innerHTML = `
+              <div style="width:40px; height:40px; background:#1a0f14; border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#E8A5AF; font-size:1.1rem;">
+                <span>📹</span>
+              </div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+                <div style="font-size:0.75rem; color:var(--gold-light); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:280px;">${f.name} (${(f.size/1024/1024).toFixed(1)} MB)</div>
+                <input type="text" placeholder="Add caption for video…" style="background:transparent; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:4px 8px; border-radius:4px; font-size:0.8rem;">
+              </div>
+            `;
             row.querySelector('input').addEventListener('input', (evt) => item.caption = evt.target.value);
             list.appendChild(row);
-          };
-          r.readAsDataURL(f);
+          }
         }
       }
 
@@ -8954,12 +9031,17 @@
       });
 
       function handleAdminFiles(files) {
-        const valid = files.filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
+        const valid = files.filter(f => /\.(jpe?g|png|webp|gif|mp4|webm|mov|quicktime|mkv|avi|m4v)$/i.test(f.name));
         adminSelectedFiles = [...adminSelectedFiles, ...valid];
         if (adminSelectedList && adminSelectedFiles.length > 0) {
           adminSelectedList.style.display = 'block';
-          adminSelectedList.innerHTML = `<strong>Selected ${adminSelectedFiles.length} photo(s):</strong><br>` +
-            adminSelectedFiles.map(f => `• ${f.name} (${(f.size / 1024).toFixed(1)} KB)`).join('<br>');
+          adminSelectedList.innerHTML = `<strong>Selected ${adminSelectedFiles.length} item(s):</strong><br>` +
+            adminSelectedFiles.map(f => {
+              const isVid = /\.(mp4|webm|mov|quicktime|mkv|avi|m4v)$/i.test(f.name);
+              const icon = isVid ? '📹 [VIDEO]' : '📷';
+              const sizeStr = f.size > 1024 * 1024 ? `${(f.size / (1024 * 1024)).toFixed(1)} MB` : `${(f.size / 1024).toFixed(1)} KB`;
+              return `• ${icon} ${f.name} (${sizeStr})`;
+            }).join('<br>');
         }
       }
 
@@ -8989,13 +9071,13 @@
             return;
           }
           if (adminSelectedFiles.length === 0) {
-            if (adminStatus) adminStatus.innerHTML = '<span style="color:#ff8b73;">⚠️ Please select or drop at least one photograph.</span>';
+            if (adminStatus) adminStatus.innerHTML = '<span style="color:#ff8b73;">⚠️ Please select or drop at least one photo or video.</span>';
             return;
           }
 
           btnSubmitAdmin.disabled = true;
           btnSubmitAdmin.textContent = 'Uploading to Vault...';
-          if (adminStatus) adminStatus.innerHTML = '<span style="color:var(--gold-light);">⏳ Encrypting & storing photographs in Supabase Cloud...</span>';
+          if (adminStatus) adminStatus.innerHTML = '<span style="color:var(--gold-light);">⏳ Encrypting & storing media in Supabase Cloud...</span>';
 
           const formData = new FormData();
           formData.append('adminPin', pin);
