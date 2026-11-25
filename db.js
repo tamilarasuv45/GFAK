@@ -51,91 +51,98 @@ if (SUPABASE_SERVICE_ROLE_KEY) {
   }
 }
 
-// Initialize tables
+// Initialize tables with retry for robust cloud deployment (Render & Supabase)
 async function initDatabase() {
   if (!pool) return false;
-  try {
-    const client = await pool.connect();
-    
-    // Create wishes table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS wishes (
-        id SERIAL PRIMARY KEY,
-        author VARCHAR(255) NOT NULL,
-        message TEXT NOT NULL,
-        timestamp VARCHAR(255) NOT NULL,
-        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    // Create photos table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS photos (
-        id VARCHAR(255) PRIMARY KEY,
-        filename VARCHAR(255) NOT NULL,
-        original_name VARCHAR(255),
-        mime_type VARCHAR(100),
-        size BIGINT,
-        caption TEXT DEFAULT '',
-        uploaded_at VARCHAR(255),
-        sort_order INT DEFAULT 0,
-        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    // Ensure birthday_recordings table exists
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS birthday_recordings (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-        session_id TEXT,
-        file_name TEXT NOT NULL,
-        storage_path TEXT NOT NULL,
-        mime_type TEXT,
-        duration_seconds INTEGER DEFAULT 0,
-        status TEXT DEFAULT 'completed',
-        total_chunks INTEGER DEFAULT 1,
-        uploaded_chunks INTEGER DEFAULT 1,
-        file_size BIGINT DEFAULT 0,
-        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-        completed_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    // Ensure birthday_recording_chunks table exists
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS birthday_recording_chunks (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        recording_id UUID REFERENCES birthday_recordings(id) ON DELETE CASCADE,
-        chunk_number INTEGER NOT NULL,
-        storage_path TEXT NOT NULL,
-        file_size BIGINT,
-        mime_type TEXT,
-        uploaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-        CONSTRAINT uq_recording_chunk UNIQUE (recording_id, chunk_number)
-      );
-    `);
-
-    // Ensure birthday-recordings bucket exists in storage.buckets
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
+      const client = await pool.connect();
+      
+      // Create wishes table
       await client.query(`
-        INSERT INTO storage.buckets (id, name, public)
-        VALUES ('birthday-recordings', 'birthday-recordings', false)
-        ON CONFLICT (id) DO NOTHING;
+        CREATE TABLE IF NOT EXISTS wishes (
+          id SERIAL PRIMARY KEY,
+          author VARCHAR(255) NOT NULL,
+          message TEXT NOT NULL,
+          timestamp VARCHAR(255) NOT NULL,
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
       `);
-    } catch (bErr) {
-      // Storage schema might be managed by Supabase internal service
-    }
 
-    client.release();
-    isConnected = true;
-    console.log('✓ PostgreSQL connected & tables verified on Supabase');
-    return true;
-  } catch (err) {
-    console.warn('PostgreSQL connection check failed, will use local storage fallback:', err.message);
-    isConnected = false;
-    return false;
+      // Create photos table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS photos (
+          id VARCHAR(255) PRIMARY KEY,
+          filename VARCHAR(255) NOT NULL,
+          original_name VARCHAR(255),
+          mime_type VARCHAR(100),
+          size BIGINT,
+          caption TEXT DEFAULT '',
+          uploaded_at VARCHAR(255),
+          sort_order INT DEFAULT 0,
+          data BYTEA,
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await client.query(`ALTER TABLE photos ADD COLUMN IF NOT EXISTS data BYTEA;`);
+      await client.query(`DELETE FROM photos WHERE original_name = 'test_sample.png';`);
+
+      // Ensure birthday_recordings table exists
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS birthday_recordings (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+          session_id TEXT,
+          file_name TEXT NOT NULL,
+          storage_path TEXT NOT NULL,
+          mime_type TEXT,
+          duration_seconds INTEGER DEFAULT 0,
+          status TEXT DEFAULT 'completed',
+          total_chunks INTEGER DEFAULT 1,
+          uploaded_chunks INTEGER DEFAULT 1,
+          file_size BIGINT DEFAULT 0,
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+          completed_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // Ensure birthday_recording_chunks table exists
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS birthday_recording_chunks (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          recording_id UUID REFERENCES birthday_recordings(id) ON DELETE CASCADE,
+          chunk_number INTEGER NOT NULL,
+          storage_path TEXT NOT NULL,
+          file_size BIGINT,
+          mime_type TEXT,
+          uploaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT uq_recording_chunk UNIQUE (recording_id, chunk_number)
+        );
+      `);
+
+      // Ensure birthday-recordings bucket exists in storage.buckets
+      try {
+        await client.query(`
+          INSERT INTO storage.buckets (id, name, public)
+          VALUES ('birthday-recordings', 'birthday-recordings', false)
+          ON CONFLICT (id) DO NOTHING;
+        `);
+      } catch (bErr) {
+        // Storage schema might be managed by Supabase internal service
+      }
+
+      client.release();
+      isConnected = true;
+      console.log('✓ PostgreSQL connected & tables verified on Supabase');
+      return true;
+    } catch (err) {
+      console.warn(`PostgreSQL connection attempt ${attempt}/3 failed:`, err.message);
+      if (attempt < 3) await new Promise(r => setTimeout(r, 1500));
+    }
   }
+  console.warn('PostgreSQL connection check failed after retries, will use local storage fallback until pool recovers.');
+  isConnected = false;
+  return false;
 }
 
 // Wishes database methods
@@ -168,9 +175,10 @@ async function insertWishToDb(author, message, timestamp) {
 // Photos database methods
 async function getPhotosFromDb() {
   if (!isWebsiteLaunched()) return [];
-  if (!pool || !isConnected) return null;
+  if (!pool) return null;
   try {
     const res = await pool.query('SELECT id, filename, original_name as "originalName", mime_type as "mimeType", size, caption, uploaded_at as "uploadedAt", sort_order as "order" FROM photos ORDER BY sort_order ASC, id ASC');
+    isConnected = true;
     return res.rows;
   } catch (err) {
     console.error('Error querying photos from PostgreSQL:', err.message);
@@ -178,15 +186,17 @@ async function getPhotosFromDb() {
   }
 }
 
-async function insertPhotoToDb(photo) {
-  if (!pool || !isConnected) return false;
+async function insertPhotoToDb(photo, buffer = null) {
+  if (!pool) return false;
   try {
     await pool.query(
-      `INSERT INTO photos (id, filename, original_name, mime_type, size, caption, uploaded_at, sort_order)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO photos (id, filename, original_name, mime_type, size, caption, uploaded_at, sort_order, data)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        ON CONFLICT (id) DO UPDATE SET
          caption = EXCLUDED.caption,
-         sort_order = EXCLUDED.sort_order;`,
+         sort_order = EXCLUDED.sort_order,
+         size = EXCLUDED.size,
+         data = COALESCE(EXCLUDED.data, photos.data);`,
       [
         photo.id,
         photo.filename,
@@ -195,9 +205,11 @@ async function insertPhotoToDb(photo) {
         photo.size || 0,
         photo.caption || '',
         photo.uploadedAt || new Date().toISOString(),
-        photo.order || 0
+        photo.order || 0,
+        buffer
       ]
     );
+    isConnected = true;
     return true;
   } catch (err) {
     console.error('Error inserting photo into PostgreSQL:', err.message);
@@ -205,10 +217,24 @@ async function insertPhotoToDb(photo) {
   }
 }
 
+async function getPhotoDataFromDb(id) {
+  if (!pool) return null;
+  try {
+    const res = await pool.query('SELECT id, filename, mime_type as "mimeType", size, data FROM photos WHERE id = $1', [id]);
+    if (res.rows.length === 0) return null;
+    isConnected = true;
+    return res.rows[0];
+  } catch (err) {
+    console.error('Error fetching photo data from PostgreSQL:', err.message);
+    return null;
+  }
+}
+
 async function deletePhotoFromDb(id) {
-  if (!pool || !isConnected) return false;
+  if (!pool) return false;
   try {
     await pool.query('DELETE FROM photos WHERE id = $1', [id]);
+    isConnected = true;
     return true;
   } catch (err) {
     console.error('Error deleting photo from PostgreSQL:', err.message);
@@ -722,6 +748,7 @@ module.exports = {
   getWishesFromDb,
   insertWishToDb,
   getPhotosFromDb,
+  getPhotoDataFromDb,
   insertPhotoToDb,
   deletePhotoFromDb,
   getRecordingsFromDb,

@@ -130,8 +130,9 @@ async function uploadMemories() {
 
     newItems.push(mediaItem);
 
-    // Insert into PostgreSQL database
-    const dbSuccess = await db.insertPhotoToDb(mediaItem);
+    // Insert into PostgreSQL database with binary buffer for Cloud persistence (Render live)
+    const fileBuffer = fs.readFileSync(srcPath);
+    const dbSuccess = await db.insertPhotoToDb(mediaItem, fileBuffer);
     const dbTag = dbSuccess ? '✓ DB Synced' : '⚠ DB Fallback';
     const typeTag = isVideo ? '📹 VIDEO' : '📷 PHOTO';
     console.log(`   + [${idx + 1}/${filesToProcess.length}] [${typeTag}] ${originalName} -> ${uniqueName} (${(stat.size / 1024 / 1024).toFixed(2)} MB) [${dbTag}]`);

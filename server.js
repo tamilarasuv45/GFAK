@@ -432,9 +432,16 @@ app.post('/api/gallery/upload', requireLaunchGate, authenticateGate2, upload.arr
     const updated = [...currentPhotos, ...newItems];
     savePhotoMetadata(updated);
 
-    // Persist new media to PostgreSQL Database
-    for (const item of newItems) {
-      await db.insertPhotoToDb(item);
+    // Persist new media to PostgreSQL Database with full binary data for Cloud persistence
+    for (const [idx, item] of newItems.entries()) {
+      const file = files[idx];
+      let buf = null;
+      if (file && file.path && fs.existsSync(file.path)) {
+        buf = fs.readFileSync(file.path);
+      } else if (file && file.buffer) {
+        buf = file.buffer;
+      }
+      await db.insertPhotoToDb(item, buf);
     }
 
     res.json({
@@ -484,8 +491,15 @@ app.post('/api/admin/upload-photos', upload.array('photos', 50), async (req, res
     const updated = [...currentPhotos, ...newItems];
     savePhotoMetadata(updated);
 
-    for (const item of newItems) {
-      await db.insertPhotoToDb(item);
+    for (const [idx, item] of newItems.entries()) {
+      const file = files[idx];
+      let buf = null;
+      if (file && file.path && fs.existsSync(file.path)) {
+        buf = fs.readFileSync(file.path);
+      } else if (file && file.buffer) {
+        buf = file.buffer;
+      }
+      await db.insertPhotoToDb(item, buf);
     }
 
     res.json({
@@ -507,47 +521,96 @@ app.get('/api/admin/photos-count', (req, res) => {
 });
 
 // Stream/serve Memory Vault item (Photo or Video with HTTP 206 Partial Content / Range support)
-app.get(['/api/gallery/photo/:id', '/api/gallery/media/:id'], requireLaunchGate, authenticateGate2, (req, res) => {
-  const photos = loadPhotoMetadata();
-  const photo = photos.find(p => p.id === req.params.id);
-  if (!photo) return res.status(404).send('Memory item not found.');
+// Seamlessly falls back to Supabase Cloud PostgreSQL binary storage when local files are missing (essential for Render live!)
+app.get(['/api/gallery/photo/:id', '/api/gallery/media/:id'], requireLaunchGate, authenticateGate2, async (req, res) => {
+  try {
+    const photoId = req.params.id;
+    let photos = await db.getPhotosFromDb();
+    if (!photos || photos.length === 0) {
+      photos = loadPhotoMetadata();
+    }
+    const photo = photos.find(p => p.id === photoId);
 
-  const filePath = path.join(PRIVATE_STORAGE_DIR, photo.filename);
-  if (!fs.existsSync(filePath)) return res.status(404).send('Memory file is missing.');
+    // 1. Check local disk cache first
+    const localFileName = photo ? photo.filename : null;
+    const filePath = localFileName ? path.join(PRIVATE_STORAGE_DIR, localFileName) : null;
+    let hasLocalFile = filePath && fs.existsSync(filePath);
 
-  const isVideo = (photo.mediaType === 'video' || (photo.mimeType && photo.mimeType.startsWith('video/')) || /\.(mp4|webm|mov|mkv|avi)$/i.test(photo.filename));
+    let fileBuffer = null;
+    let mimeType = (photo && photo.mimeType) ? photo.mimeType : 'image/jpeg';
+    let totalSize = photo ? Number(photo.size) : 0;
 
-  if (isVideo) {
-    const stat = fs.statSync(filePath);
-    const total = stat.size;
-    const range = req.headers.range;
+    // 2. Fallback to Supabase Cloud PostgreSQL database if missing from disk (e.g. Render live ephemeral disk)
+    if (!hasLocalFile) {
+      const dbRecord = await db.getPhotoDataFromDb(photoId);
+      if (dbRecord && dbRecord.data) {
+        fileBuffer = dbRecord.data;
+        mimeType = dbRecord.mimeType || mimeType;
+        totalSize = fileBuffer.length;
+        // Cache to local disk for fast subsequent reads
+        try {
+          if (!fs.existsSync(PRIVATE_STORAGE_DIR)) fs.mkdirSync(PRIVATE_STORAGE_DIR, { recursive: true });
+          const cacheName = dbRecord.filename || `cached_${photoId}.${mimeType.includes('png') ? 'png' : 'jpeg'}`;
+          fs.writeFileSync(path.join(PRIVATE_STORAGE_DIR, cacheName), fileBuffer);
+        } catch (err) {
+          // Disk caching is best-effort
+        }
+      } else {
+        return res.status(404).send('Memory item not found.');
+      }
+    }
+
+    const isVideo = (photo && photo.mediaType === 'video') || mimeType.startsWith('video/') || (localFileName && /\.(mp4|webm|mov|mkv|avi)$/i.test(localFileName));
 
     res.setHeader('Accept-Ranges', 'bytes');
     res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
 
-    if (range) {
-      const parts = range.replace(/bytes=/, '').split('-');
-      const start = parseInt(parts[0], 10);
-      const end = parts[1] ? parseInt(parts[1], 10) : total - 1;
-      const chunk = (end - start) + 1;
-      const stream = fs.createReadStream(filePath, { start, end });
-      res.writeHead(206, {
-        'Content-Range': `bytes ${start}-${end}/${total}`,
-        'Content-Length': chunk,
-        'Content-Type': photo.mimeType || 'video/mp4'
-      });
-      stream.pipe(res);
+    const range = req.headers.range;
+
+    if (isVideo) {
+      const total = totalSize || (hasLocalFile ? fs.statSync(filePath).size : fileBuffer.length);
+
+      if (range) {
+        const parts = range.replace(/bytes=/, '').split('-');
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : total - 1;
+        const chunk = (end - start) + 1;
+
+        res.writeHead(206, {
+          'Content-Range': `bytes ${start}-${end}/${total}`,
+          'Content-Length': chunk,
+          'Content-Type': mimeType || 'video/mp4'
+        });
+
+        if (hasLocalFile) {
+          const stream = fs.createReadStream(filePath, { start, end });
+          stream.pipe(res);
+        } else {
+          res.end(fileBuffer.subarray(start, end + 1));
+        }
+      } else {
+        res.writeHead(200, {
+          'Content-Length': total,
+          'Content-Type': mimeType || 'video/mp4'
+        });
+        if (hasLocalFile) {
+          fs.createReadStream(filePath).pipe(res);
+        } else {
+          res.end(fileBuffer);
+        }
+      }
     } else {
-      res.writeHead(200, {
-        'Content-Length': total,
-        'Content-Type': photo.mimeType || 'video/mp4'
-      });
-      fs.createReadStream(filePath).pipe(res);
+      res.setHeader('Content-Type', mimeType || 'image/jpeg');
+      if (hasLocalFile) {
+        fs.createReadStream(filePath).pipe(res);
+      } else {
+        res.setHeader('Content-Length', fileBuffer.length);
+        res.end(fileBuffer);
+      }
     }
-  } else {
-    res.setHeader('Content-Type', photo.mimeType || 'image/jpeg');
-    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-    fs.createReadStream(filePath).pipe(res);
+  } catch (err) {
+    console.error('Error streaming memory media:', err);
+    res.status(500).send('Internal error streaming memory media.');
   }
 });
 
