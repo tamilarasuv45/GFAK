@@ -404,6 +404,20 @@ app.get('/api/gallery/photos', requireLaunchGate, authenticateGate2, async (req,
   if (!photos || photos.length === 0) {
     photos = loadPhotoMetadata();
   }
+  const manifestPath = path.join(__dirname, 'public', 'memories', 'manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    try {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const manifestMap = new Map(manifest.map(m => [m.id, m]));
+      photos = photos.map(p => {
+        const m = manifestMap.get(p.id);
+        if (m) {
+          return { ...p, cleanFilename: m.cleanFilename, url: m.url };
+        }
+        return p;
+      });
+    } catch (e) { }
+  }
   res.json({ success: true, photos });
 });
 
@@ -533,8 +547,23 @@ app.get(['/api/gallery/photo/:id', '/api/gallery/media/:id'], requireLaunchGate,
 
     // 1. Check local disk cache first
     const localFileName = photo ? photo.filename : null;
-    const filePath = localFileName ? path.join(PRIVATE_STORAGE_DIR, localFileName) : null;
+    let filePath = localFileName ? path.join(PRIVATE_STORAGE_DIR, localFileName) : null;
     let hasLocalFile = filePath && fs.existsSync(filePath);
+
+    // Also check public/memories for bundled assets
+    if (!hasLocalFile && photo) {
+      const memDir = path.join(__dirname, 'public', 'memories');
+      if (photo.cleanFilename && fs.existsSync(path.join(memDir, photo.cleanFilename))) {
+        filePath = path.join(memDir, photo.cleanFilename);
+        hasLocalFile = true;
+      } else if (photo.url && fs.existsSync(path.join(__dirname, 'public', photo.url))) {
+        filePath = path.join(__dirname, 'public', photo.url);
+        hasLocalFile = true;
+      } else if (localFileName && fs.existsSync(path.join(memDir, localFileName))) {
+        filePath = path.join(memDir, localFileName);
+        hasLocalFile = true;
+      }
+    }
 
     let fileBuffer = null;
     let mimeType = (photo && photo.mimeType) ? photo.mimeType : 'image/jpeg';

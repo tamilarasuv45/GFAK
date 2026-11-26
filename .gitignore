@@ -27,4 +27,11 @@ private_uploads/recordings/
 photos_to_upload/*
 !photos_to_upload/.gitkeep
 
+# Ensure curated memories are tracked
+!public/memories/
+!public/memories/**
+!build/memories/
+!build/memories/**
+
+
 
